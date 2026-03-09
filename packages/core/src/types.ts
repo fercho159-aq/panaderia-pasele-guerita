@@ -13,6 +13,7 @@ export interface PickupLocation {
     address: string;
     days: ('Wednesday' | 'Saturday')[];
     hours: string;
+    isSoldOut?: boolean;
 }
 
 export interface Order {

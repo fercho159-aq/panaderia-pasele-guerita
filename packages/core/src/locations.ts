@@ -13,7 +13,8 @@ export const pickupLocations: PickupLocation[] = [
         name: 'Deep Ellum Market',
         address: '2800 Main St, Dallas, TX',
         days: ['Wednesday'],
-        hours: '10:00 AM - 2:00 PM'
+        hours: '10:00 AM - 2:00 PM',
+        isSoldOut: true
     },
     {
         id: 'white-rock-lake',

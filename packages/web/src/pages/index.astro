@@ -1,0 +1,45 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Button } from '@pasele-guerita/ui';
+import { Card } from '@pasele-guerita/ui';
+import { cookieFlavors, monthlySpecial } from '@pasele-guerita/core';
+---
+
+<Layout title="Home">
+	<!-- Hero Section -->
+	<section class="py-20 bg-white border-b border-bg">
+		<div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+			<div>
+				<span class="text-accent font-serif text-xl italic mb-4 block">Handmade Sourdough Bakery</span>
+				<h1 class="text-6xl md:text-8xl font-serif text-primary mb-8 leading-tight">Sabor con Alma & Masa Madre</h1>
+				<p class="text-xl text-gray-600 mb-10 max-w-lg leading-relaxed">
+					En Dallas, horneamos tradición. Descubre nuestras galletas artesanales y pan de masa madre recién salido del horno.
+				</p>
+				<div class="flex gap-4">
+					<a href="#menu"><Button variant="primary">Ver Menú</Button></a>
+					<a href="/checkout"><Button variant="outline">Hacer Pedido</Button></a>
+				</div>
+			</div>
+			<div class="relative">
+				<div class="aspect-square rounded-full bg-accent/20 absolute -top-10 -left-10 w-64 h-64 -z-10 animate-pulse"></div>
+				<img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?q=80&w=1000" alt="Sourdough Cookies" class="rounded-3xl shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500" />
+			</div>
+		</div>
+	</section>
+
+	<!-- Flavors Section -->
+	<section id="menu" class="py-24 max-w-7xl mx-auto px-6">
+		<div class="text-center mb-16">
+			<h2 class="font-serif text-5xl text-primary mb-4 italic">Sabores del Mes</h2>
+			<p class="text-gray-500">El especial: {monthlySpecial.name}</p>
+		</div>
+		
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+			{cookieFlavors.map(flavor => (
+				<Card title={flavor.name} price={12.00} description="Set de 3 galletas artesanales horneadas con masa madre.">
+					<a href="/checkout"><Button variant="accent" className="w-full">Agregar al Carrito</Button></a>
+				</Card>
+			))}
+		</div>
+	</section>
+</Layout>

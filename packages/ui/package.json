@@ -1,0 +1,12 @@
+{
+    "name": "@pasele-guerita/ui",
+    "version": "1.0.0",
+    "main": "src/index.ts",
+    "scripts": {
+        "build": "tsc"
+    },
+    "peerDependencies": {
+        "react": "^18.0.0",
+        "tailwindcss": "^3.0.0"
+    }
+}

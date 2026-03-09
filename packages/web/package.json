@@ -9,15 +9,18 @@
         "preview": "astro preview"
     },
     "dependencies": {
-        "astro": "^4.0.0",
-        "@astrojs/tailwind": "^5.0.0",
         "@astrojs/react": "^3.0.0",
+        "@astrojs/tailwind": "^5.0.0",
         "@astrojs/vercel": "^6.0.0",
-        "sharp": "^0.33.0",
+        "@pasele-guerita/core": "*",
+        "@pasele-guerita/ui": "*",
+        "astro": "^4.0.0",
         "react": "^18.0.0",
         "react-dom": "^18.0.0",
-        "tailwindcss": "^3.0.0",
-        "@pasele-guerita/core": "*",
-        "@pasele-guerita/ui": "*"
+        "sharp": "^0.33.0",
+        "tailwindcss": "^3.0.0"
+    },
+    "engines": {
+        "node": "20.x"
     }
 }

@@ -65,11 +65,9 @@ export async function fetchLocations() {
 
 export async function createOrder(orderData: any) {
     const supabase = createBrowserClient();
-    const { data, error } = await supabase
+    const { error } = await supabase
         .from('orders')
-        .insert([orderData])
-        .select()
-        .single();
+        .insert([orderData]);
 
     if (error) throw error;
     return data;

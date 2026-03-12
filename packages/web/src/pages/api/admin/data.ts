@@ -11,8 +11,17 @@ export const GET: APIRoute = async ({ request, cookies }) => {
     const type = url.searchParams.get('type');
 
     // Server client (uses anon key for reading since RLS allows public read)
-    const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL || process.env.PUBLIC_SUPABASE_URL;
-    const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || process.env.PUBLIC_SUPABASE_ANON_KEY;
+    let supabaseUrl = '';
+    let anonKey = '';
+    try {
+        // @ts-ignore
+        if (import.meta.env.PUBLIC_SUPABASE_URL) supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+        // @ts-ignore
+        if (import.meta.env.PUBLIC_SUPABASE_ANON_KEY) anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+    } catch (e) { }
+    if (!supabaseUrl && process.env.PUBLIC_SUPABASE_URL) supabaseUrl = process.env.PUBLIC_SUPABASE_URL;
+    if (!anonKey && process.env.PUBLIC_SUPABASE_ANON_KEY) anonKey = process.env.PUBLIC_SUPABASE_ANON_KEY;
+
     const supabase = getSupabaseClient(supabaseUrl as string, anonKey as string);
 
     try {

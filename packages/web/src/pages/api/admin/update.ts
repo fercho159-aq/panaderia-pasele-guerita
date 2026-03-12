@@ -13,8 +13,16 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
         // We MUST use the Service Role Key here because our RLS blocks anonymous updates.
         // The service role key bypasses RLS securely on the server.
-        const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL || process.env.PUBLIC_SUPABASE_URL;
-        const serviceKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+        let supabaseUrl = '';
+        let serviceKey = '';
+        try {
+            // @ts-ignore
+            if (import.meta.env.PUBLIC_SUPABASE_URL) supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+            // @ts-ignore
+            if (import.meta.env.SUPABASE_SERVICE_ROLE_KEY) serviceKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+        } catch (e) { }
+        if (!supabaseUrl && process.env.PUBLIC_SUPABASE_URL) supabaseUrl = process.env.PUBLIC_SUPABASE_URL;
+        if (!serviceKey && process.env.SUPABASE_SERVICE_ROLE_KEY) serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
         if (!serviceKey) {
             console.error("Missing SUPABASE_SERVICE_ROLE_KEY required for updates.");

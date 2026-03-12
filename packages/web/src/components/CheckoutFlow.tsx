@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
-import { pickupLocations, cookieFlavors, calculateCookiePrice } from '@pasele-guerita/core';
+import React, { useState, useEffect } from 'react';
+import { calculateCookiePrice, fetchActiveFlavors, fetchLocations, createOrder, PickupLocation } from '@pasele-guerita/core';
 import { Button } from '@pasele-guerita/ui';
 
 export const CheckoutFlow: React.FC = () => {
+    // Data states
+    const [liveFlavors, setLiveFlavors] = useState<any[]>([]);
+    const [liveLocations, setLiveLocations] = useState<PickupLocation[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Flow states
     const [step, setStep] = useState(1);
     const [boxSize, setBoxSize] = useState<number | null>(null);
     const [cart, setCart] = useState<Record<string, number>>({});
@@ -11,7 +17,25 @@ export const CheckoutFlow: React.FC = () => {
     const [customer, setCustomer] = useState({ name: '', phone: '', email: '' });
     const [fileUploaded, setFileUploaded] = useState(false);
 
-    const selectedLocation = pickupLocations.find(l => l.id === locationId);
+    useEffect(() => {
+        async function loadData() {
+            try {
+                const [flavors, locations] = await Promise.all([
+                    fetchActiveFlavors(),
+                    fetchLocations()
+                ]);
+                setLiveFlavors(flavors);
+                setLiveLocations(locations);
+            } catch (error) {
+                console.error("Failed to load DB data:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        loadData();
+    }, []);
+
+    const selectedLocation = liveLocations.find((l: PickupLocation) => l.id === locationId);
     const totalCookies = Object.values(cart).reduce((a, b) => a + b, 0);
     const isBoxFull = boxSize !== null && totalCookies === boxSize;
 
@@ -28,6 +52,10 @@ export const CheckoutFlow: React.FC = () => {
             setCart(newCart);
         }
     };
+
+    if (isLoading) {
+        return <div className="text-center py-20 animate-pulse text-primary font-serif italic text-2xl">Calentando los hornos...</div>;
+    }
 
     return (
         <div className="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-3xl shadow-xl mt-12 border border-bg">
@@ -60,7 +88,7 @@ export const CheckoutFlow: React.FC = () => {
                         <div className="mb-10 bg-bg p-6 rounded-2xl border border-accent/20">
                             <h3 className="font-bold text-center mb-6 text-primary">Mix & Match: Elige tus Sabores ({totalCookies}/{boxSize})</h3>
                             <div className="space-y-4">
-                                {cookieFlavors.map(flavor => (
+                                {liveFlavors.map(flavor => (
                                     <div key={flavor.id} className="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm">
                                         <span className="font-serif text-lg">{flavor.name}</span>
                                         <div className="flex items-center gap-4">
@@ -117,7 +145,7 @@ export const CheckoutFlow: React.FC = () => {
                 <div className="animate-fade-in">
                     <h2 className="font-serif text-4xl text-primary mb-8 italic">Paso 3: ¿Dónde? ({pickupDay === 'Wednesday' ? 'Miércoles' : 'Sábado'})</h2>
                     <div className="grid md:grid-cols-2 gap-6 mb-10">
-                        {pickupLocations.filter(loc => loc.days.includes(pickupDay as any)).map(loc => {
+                        {liveLocations.filter(loc => loc.days.includes(pickupDay as any)).map(loc => {
                             const isSoldOut = loc.isSoldOut;
                             const isSelected = locationId === loc.id;
 
@@ -129,8 +157,8 @@ export const CheckoutFlow: React.FC = () => {
                                     key={loc.id}
                                     onClick={() => !isSoldOut && setLocationId(loc.id)}
                                     className={`p-6 rounded-2xl border-2 transition-all relative ${isSoldOut ? 'opacity-50 cursor-not-allowed bg-gray-50 border-gray-200' :
-                                            isSelected ? 'border-primary bg-primary/5 shadow-inner cursor-pointer' :
-                                                'border-bg hover:border-accent cursor-pointer'
+                                        isSelected ? 'border-primary bg-primary/5 shadow-inner cursor-pointer' :
+                                            'border-bg hover:border-accent cursor-pointer'
                                         }`}
                                 >
                                     <div className="flex justify-between items-start mb-2">

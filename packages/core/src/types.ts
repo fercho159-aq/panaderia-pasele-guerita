@@ -14,6 +14,7 @@ export interface PickupLocation {
     days: ('Wednesday' | 'Saturday')[];
     hours: string;
     isSoldOut?: boolean;
+    type?: 'pos' | 'pickup' | 'delivery';
 }
 
 export interface Order {

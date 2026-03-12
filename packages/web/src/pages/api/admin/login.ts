@@ -5,8 +5,13 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         const body = await request.json();
         const clientPassword = body.password;
 
-        // Define hardcoded password for MVP via env variable (or fallback to 'guerita2026')
-        const adminPassword = import.meta.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || 'guerita2026';
+        let adminPassword = 'guerita2026';
+        try {
+            // @ts-ignore
+            if (import.meta.env.ADMIN_PASSWORD) adminPassword = import.meta.env.ADMIN_PASSWORD;
+            // @ts-ignore
+            else if (process.env.ADMIN_PASSWORD) adminPassword = process.env.ADMIN_PASSWORD;
+        } catch (e) { }
 
         if (clientPassword === adminPassword) {
             // Set a simple auth cookie that expires in 1 day

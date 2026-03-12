@@ -70,5 +70,5 @@ export async function createOrder(orderData: any) {
         .insert([orderData]);
 
     if (error) throw error;
-    return data;
+    return true;
 }

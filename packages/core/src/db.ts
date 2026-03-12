@@ -5,21 +5,28 @@ import { PickupLocation } from './types';
 // In a real SSR app like Astro, you'd pass the client down or rebuild it per request
 // For client-side React components, we use the public anon key.
 export const createBrowserClient = () => {
-    // In Astro, env vars are often available via process.env or import.meta.env depending on the context
     let url = '';
     let anonKey = '';
 
     try {
         // @ts-ignore
-        url = import.meta.env.PUBLIC_SUPABASE_URL || process.env.PUBLIC_SUPABASE_URL;
-        // @ts-ignore
-        anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || process.env.PUBLIC_SUPABASE_ANON_KEY;
-    } catch (e) {
-        url = process.env.PUBLIC_SUPABASE_URL || '';
-        anonKey = process.env.PUBLIC_SUPABASE_ANON_KEY || '';
-    }
+        if (typeof import.meta !== 'undefined' && import.meta.env) {
+            // @ts-ignore
+            url = import.meta.env.PUBLIC_SUPABASE_URL;
+            // @ts-ignore
+            anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+        }
+    } catch (e) { }
+
+    try {
+        if (!url && typeof process !== 'undefined' && process.env) {
+            url = process.env.PUBLIC_SUPABASE_URL || '';
+            anonKey = process.env.PUBLIC_SUPABASE_ANON_KEY || '';
+        }
+    } catch (e) { }
 
     if (!url || !anonKey) {
+        console.error("Missing Supabase config. Please check Vercel Environment Variables.");
         throw new Error('Supabase variables are missing');
     }
     return getSupabaseClient(url, anonKey);

@@ -37,6 +37,9 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         } else if (type === 'location') {
             const { error } = await supabaseAdmin.from('locations').update({ is_sold_out: status }).eq('id', id);
             if (error) throw error;
+        } else if (type === 'order') {
+            const { error } = await supabaseAdmin.from('orders').update({ status }).eq('id', id);
+            if (error) throw error;
         }
 
         return new Response(JSON.stringify({ success: true }), { status: 200 });

@@ -264,7 +264,23 @@ export const CheckoutFlow: React.FC = () => {
                         <Button variant="outline" onClick={() => setStep(4)} className="w-full sm:w-1/3 border-gray-300">Tus Datos</Button>
                         <Button
                             disabled={!fileUploaded}
-                            onClick={() => setStep(6)}
+                            onClick={async () => {
+                                try {
+                                    await createOrder({
+                                        customer_name: customer.name,
+                                        customer_phone: customer.phone,
+                                        customer_email: customer.email,
+                                        location_id: locationId,
+                                        pickup_day: pickupDay,
+                                        box_size: boxSize,
+                                        flavors_selected: cart,
+                                        total_price: calculateCookiePrice(boxSize || 0)
+                                    });
+                                    setStep(6);
+                                } catch (e) {
+                                    alert("Hubo un error guardando tu pedido. Por favor intenta de nuevo.");
+                                }
+                            }}
                             className="w-full sm:w-2/3 h-16 text-xl"
                         >
                             Confirmar Pedido

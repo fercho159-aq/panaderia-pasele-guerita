@@ -54,6 +54,15 @@ export const AdminDashboard: React.FC = () => {
         });
     };
 
+    const updateOrderStatus = async (id: string, newStatus: string) => {
+        setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus } : o));
+        await fetch('/api/admin/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type: 'order', id, status: newStatus })
+        });
+    };
+
     if (isLoading) return <div className="p-20 text-center text-primary font-serif italic text-2xl">Cargando Panel Secreto...</div>;
 
     return (
@@ -152,9 +161,17 @@ export const AdminDashboard: React.FC = () => {
                                                 <td className="py-4">{order.box_size} Galletas</td>
                                                 <td className="py-4 font-bold text-primary">${order.total_price}</td>
                                                 <td className="py-4">
-                                                    <span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold">
-                                                        {order.status}
-                                                    </span>
+                                                    <select
+                                                        value={order.status}
+                                                        onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                                                        className={`font-bold outline-none cursor-pointer appearance-none bg-transparent ${order.status === 'Pendiente' ? 'text-yellow-600' :
+                                                            order.status === 'Confirmado' ? 'text-blue-600' : 'text-green-600'
+                                                            }`}
+                                                    >
+                                                        <option value="Pendiente">Pendiente</option>
+                                                        <option value="Confirmado">Confirmado</option>
+                                                        <option value="Enviado">Enviado</option>
+                                                    </select>
                                                 </td>
                                             </tr>
                                         ))

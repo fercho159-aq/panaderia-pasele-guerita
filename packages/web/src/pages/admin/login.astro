@@ -1,0 +1,19 @@
+---
+import { AdminLogin } from '@pasele-guerita/ui';
+
+// If already logged in, redirect to dashboard
+if (Astro.cookies.has('admin_token')) {
+    return Astro.redirect('/admin/dashboard');
+}
+---
+
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Login - Panel de Administración</title>
+</head>
+<body>
+    <AdminLogin client:load />
+</body>
+</html>

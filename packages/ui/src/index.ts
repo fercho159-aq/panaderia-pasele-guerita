@@ -1,3 +1,6 @@
 export * from './components/Button';
 export * from './components/Card';
 export * from './components/Badge';
+export * from './components/AdminLogin';
+export * from './components/AdminDashboard';
+

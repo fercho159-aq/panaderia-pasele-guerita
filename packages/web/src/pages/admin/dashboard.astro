@@ -1,0 +1,19 @@
+---
+import { AdminDashboard } from '@pasele-guerita/ui';
+
+// Simple Auth Check via Cookie
+if (!Astro.cookies.has('admin_token')) {
+    return Astro.redirect('/admin/login');
+}
+---
+
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Panel de Administración - Pásele Güerita</title>
+</head>
+<body>
+    <AdminDashboard client:load />
+</body>
+</html>

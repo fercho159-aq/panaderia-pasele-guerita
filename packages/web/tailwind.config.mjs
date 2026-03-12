@@ -7,13 +7,13 @@ export default {
     theme: {
         extend: {
             colors: {
-                primary: "#4A675D", // Verde
+                primary: "#486D62", // Verde Botánico
                 accent: "#F4A7C1",  // Rosa
-                bg: "#FDF5F0",      // Crema
+                bg: "#FFEFEA",      // Crema
             },
             fontFamily: {
-                serif: ["Playfair Display", "serif"],
-                sans: ["Inter", "sans-serif"],
+                serif: ["'Frunchy Sage'", "serif"],
+                sans: ["'Lumberjack'", "sans-serif"],
             },
         },
     },

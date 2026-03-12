@@ -1,0 +1,54 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Button } from '@pasele-guerita/ui';
+
+// Mock recipes for now
+const recipes = [
+    {
+        title: "Guía: Inicia tu propia Masa Madre",
+        description: "Un PDF paso a paso para crear, alimentar y mantener tu Sourdough Starter desde cero hasta tu primer pan.",
+        pdf: "/dummy-recipe.pdf",
+        tag: "Básico"
+    },
+    {
+        title: "Receta: Classic Sourdough Cookies",
+        description: "Nuestra receta secreta base para que intentes hornear nuestras famosas galletas en casa.",
+        pdf: "/dummy-recipe.pdf",
+        tag: "Intermedio"
+    },
+    {
+        title: "Tips de Horneado y Tiempos Largos",
+        description: "Información valiosa sobre fermentación en frío, autolisis y desarrollo de sabor para panaderos caseros.",
+        pdf: "/dummy-recipe.pdf",
+        tag: "Avanzado"
+    }
+];
+---
+
+<Layout title="Recetas y Guías">
+    <div class="max-w-6xl mx-auto px-6 py-20 animate-fade-in">
+        <div class="text-center max-w-2xl mx-auto mb-16">
+            <h1 class="font-serif text-7xl text-primary mb-6 italic">Recetario Digital</h1>
+            <p class="text-xl text-gray-600 font-sans">Comparte nuestra pasión por la masa madre. Descarga gratis nuestras guías y recetas oficiales listas para imprimir.</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            {recipes.map((recipe) => (
+                <div class="bg-white rounded-[2rem] p-8 border hover:border-accent transition-all hover:shadow-xl flex flex-col justify-between h-full relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 w-full h-2 bg-accent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div>
+                        <span class="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-bold uppercase rounded-full mb-4 font-sans tracking-wide">
+                            {recipe.tag}
+                        </span>
+                        <h2 class="font-serif text-3xl text-primary font-bold mb-4">{recipe.title}</h2>
+                        <p class="text-gray-600 mb-8 font-sans text-lg">{recipe.description}</p>
+                    </div>
+                    
+                    <a href={recipe.pdf} download>
+                        <Button className="w-full h-14 font-serif text-xl">Descargar PDF →</Button>
+                    </a>
+                </div>
+            ))}
+        </div>
+    </div>
+</Layout>

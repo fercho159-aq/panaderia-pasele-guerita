@@ -21,10 +21,6 @@ const { title, description = "Artisanal Sourdough Dallas, Handmade Cookies" } = 
 		
 		<!-- SEO -->
 		<meta name="keywords" content="Artisanal Sourdough Dallas, Limited Edition Cookies, Healthy Bread Dallas, Texas Bakery" />
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
-		
 		<!-- LocalBusiness Schema -->
 		<script type="application/ld+json">
 		{
@@ -46,20 +42,30 @@ const { title, description = "Artisanal Sourdough Dallas, Handmade Cookies" } = 
 	<body class="bg-bg font-sans text-gray-900">
 		<nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-bg">
 			<div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-				<a href="/" class="font-serif text-3xl font-bold text-primary italic">Pásele Güerita</a>
-				<div class="space-x-8 font-serif">
-					<a href="/" class="hover:text-accent">Menu</a>
-					<a href="/checkout" class="hover:text-accent">Cart</a>
+				<a href="/" class="font-serif text-4xl font-bold text-primary italic">Pásele Güerita</a>
+				<div class="hidden md:flex space-x-8 font-serif text-xl border-l border-primary/20 pl-8">
+					<a href="/" class="hover:text-accent transition-colors">Menú</a>
+					<a href="/about" class="hover:text-accent transition-colors">Quiénes somos</a>
+					<a href="/recipes" class="hover:text-accent transition-colors">Recetas</a>
+					<a href="/checkout" class="text-primary hover:text-accent font-bold transition-colors">Carrito</a>
 				</div>
+                <div class="md:hidden">
+                    <a href="/checkout" class="text-primary font-serif font-bold text-xl">Carrito</a>
+                </div>
 			</div>
 		</nav>
 		<main>
 			<slot />
 		</main>
-		<footer class="bg-primary text-white py-12 mt-20">
+		<footer class="bg-primary text-bg py-12 mt-20">
 			<div class="max-w-7xl mx-auto px-6 text-center">
-				<h2 class="font-serif text-3xl mb-4 italic">Hecho con masa madre y mucho amor.</h2>
-				<p class="font-sans text-white/80">Dallas, Texas | Artisanal Bakery</p>
+				<h2 class="font-serif text-5xl mb-6 italic">Hecho con masa madre y mucho amor.</h2>
+				<div class="font-sans flex justify-center gap-6 mb-8 text-lg opacity-90">
+                    <a href="/" class="hover:text-accent transition-colors">Inicio</a>
+                    <a href="/about" class="hover:text-accent transition-colors">Historia</a>
+                    <a href="/legal" class="hover:text-accent transition-colors">Aviso Legal</a>
+                </div>
+                <p class="font-sans text-bg/60 text-sm">Dallas, Texas | Artisanal Bakery</p>
 			</div>
 		</footer>
 	</body>

@@ -10,19 +10,19 @@ export const GET: APIRoute = async ({ request, cookies }) => {
     const url = new URL(request.url);
     const type = url.searchParams.get('type');
 
-    // Server client (uses anon key for reading since RLS allows public read)
+    // Server client (must use Service Role Key to bypass RLS and read Orders)
     let supabaseUrl = '';
-    let anonKey = '';
+    let serviceKey = '';
     try {
         // @ts-ignore
         if (import.meta.env.PUBLIC_SUPABASE_URL) supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
         // @ts-ignore
-        if (import.meta.env.PUBLIC_SUPABASE_ANON_KEY) anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+        if (import.meta.env.SUPABASE_SERVICE_ROLE_KEY) serviceKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
     } catch (e) { }
     if (!supabaseUrl && process.env.PUBLIC_SUPABASE_URL) supabaseUrl = process.env.PUBLIC_SUPABASE_URL;
-    if (!anonKey && process.env.PUBLIC_SUPABASE_ANON_KEY) anonKey = process.env.PUBLIC_SUPABASE_ANON_KEY;
+    if (!serviceKey && process.env.SUPABASE_SERVICE_ROLE_KEY) serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    const supabase = getSupabaseClient(supabaseUrl as string, anonKey as string);
+    const supabase = getSupabaseClient(supabaseUrl as string, serviceKey as string);
 
     try {
         if (type === 'flavors') {

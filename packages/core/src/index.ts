@@ -4,4 +4,4 @@ export * from './locations';
 export * from './flavors.config';
 export * from './supabase';
 export * from './db';
-
+export * from './utils';

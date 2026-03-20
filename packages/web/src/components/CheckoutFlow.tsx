@@ -40,8 +40,18 @@ export const CheckoutFlow: React.FC = () => {
                     fetchActiveFlavors(),
                     fetchLocations()
                 ]);
-                setLiveFlavors(flavors);
-                setLiveLocations(locations);
+                
+                if (flavors && flavors.length > 0) {
+                    setLiveFlavors(flavors);
+                } else {
+                    setLiveFlavors(cookieFlavors);
+                }
+
+                if (locations && locations.length > 0) {
+                    setLiveLocations(locations);
+                } else {
+                    setLiveLocations(pickupLocations);
+                }
             } catch (error) {
                 console.error("Failed to load DB data, using fallbacks:", error);
                 setLiveFlavors(cookieFlavors);

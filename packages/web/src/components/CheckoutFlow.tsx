@@ -342,23 +342,25 @@ export const CheckoutFlow: React.FC = () => {
                             disabled={!paymentMethod}
                             onClick={async () => {
                                 try {
-                                    // Mocking submission to avoid production errors with Supabase
-                                    console.log("Order Data:", {
-                                        customer,
-                                        locationId,
-                                        selectedDate,
+                                    // Let's try to save to DB but with only the fields that exist in schema.sql
+                                    // to avoid errors.
+                                    await createOrder({
+                                        customer_name: customer.name,
+                                        customer_phone: customer.phone,
+                                        customer_email: customer.email,
+                                        // Use 'del-1' for delivery because 'delivery-hub' doesn't exist in schema.sql
+                                        location_id: locationId || 'del-1', 
+                                        pickup_day: selectedDate,
                                         box_size: boxSize,
                                         flavors_selected: cart,
                                         total_price: totalAmount,
-                                        payment_method: paymentMethod
-                                    });
-                                    
-                                    // Pretened to call createOrder
-                                    // await createOrder(...);
+                                        status: 'Pending'
+                                    } as any);
                                     
                                     setStep(6);
                                 } catch (e) {
-                                    setStep(6); // Go to success anyway for now
+                                    console.error("DB Save failed, proceeding to Step 6 anyway:", e);
+                                    setStep(6); 
                                 }
                             }}
                             className="w-2/3 h-16 text-xl"

@@ -40,7 +40,18 @@ export const CheckoutFlow: React.FC = () => {
                 if (!response.ok) throw new Error('Failed to fetch from /api/storefront-data');
                 const data = await response.json();
 
-                setLiveCookies(data.cookies?.length > 0 ? data.cookies : cookieFlavors);
+                setLiveCookies(data.cookies?.length > 0 
+                    ? data.cookies.map((c: any) => {
+                        // Merge DB with static — keep static values when DB has null
+                        const s = cookieFlavors.find((sf: any) => sf.id === c.id) || {};
+                        return {
+                            ...s,
+                            ...c,
+                            description: c.description ?? (s as any).description,
+                            ingredients: c.ingredients ?? (s as any).ingredients,
+                        };
+                    }) 
+                    : cookieFlavors);
                 setLiveBreads(data.breads?.length > 0 ? data.breads : breadFlavors);
                 setLiveLocations(data.locations?.length > 0 ? data.locations : pickupLocations);
             } catch (error) {
@@ -67,7 +78,9 @@ export const CheckoutFlow: React.FC = () => {
     }, 0);
 
     const handleAddCookie = (id: string) => {
-        if (boxSize && totalCookies < boxSize) {
+        const isBread = liveBreads.some((b: any) => b.id === id);
+        // Breads: unlimited quantity. Cookies: limited by boxSize.
+        if (isBread || (boxSize && totalCookies < boxSize)) {
             setCart({ ...cart, [id]: (cart[id] || 0) + 1 });
         }
     };

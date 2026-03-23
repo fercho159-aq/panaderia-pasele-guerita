@@ -144,38 +144,57 @@ export const AdminDashboard: React.FC = () => {
                                 <thead>
                                     <tr className="text-gray-400 text-sm uppercase">
                                         <th className="pb-4 font-normal min-w-[150px]">Cliente</th>
-                                        <th className="pb-4 font-normal min-w-[100px]">Fecha</th>
-                                        <th className="pb-4 font-normal min-w-[200px]">Caja</th>
+                                        <th className="pb-4 font-normal min-w-[120px]">Pedido</th>
+                                        <th className="pb-4 font-normal min-w-[120px]">Entrega</th>
+                                        <th className="pb-4 font-normal min-w-[250px]">Detalle de Productos</th>
                                         <th className="pb-4 font-normal">Total</th>
                                         <th className="pb-4 font-normal">Estado</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {orders.length === 0 ? (
-                                        <tr><td colSpan={5} className="py-8 text-center text-gray-400 italic">Aún no hay pedidos en la base de datos.</td></tr>
+                                        <tr><td colSpan={6} className="py-8 text-center text-gray-400 italic">Aún no hay pedidos en la base de datos.</td></tr>
                                     ) : (
                                         orders.map(order => (
-                                            <tr key={order.id} className="border-t border-gray-50">
-                                                <td className="py-4 font-bold">{order.customer_name}</td>
-                                                <td className="py-4 text-gray-500">{new Date(order.created_at).toLocaleDateString()}</td>
+                                            <tr key={order.id} className="border-t border-gray-50 align-top">
+                                                <td className="py-4 pr-4">
+                                                    <div className="font-bold">{order.customer_name}</div>
+                                                    <div className="text-[10px] text-gray-400 font-mono">#{order.id.slice(0, 8)}</div>
+                                                </td>
+                                                <td className="py-4 text-gray-500 text-sm">
+                                                    {new Date(order.created_at).toLocaleDateString()}
+                                                </td>
                                                 <td className="py-4">
-                                                    <div className="font-bold mb-1">{(() => {
-                                                        if (!order.flavors_selected) return `${order.box_size} Galletas`;
-                                                        const ids = Object.keys(order.flavors_selected);
-                                                        const breadIds = ['hogaza-clasica', 'pan-centeno', 'multigrano'];
-                                                        const allBreads = ids.every(id => breadIds.includes(id));
-                                                        const anyBread = ids.some(id => breadIds.includes(id));
-                                                        const label = allBreads ? 'Panes' : anyBread ? 'Galletas + Pan' : 'Galletas';
-                                                        return `${order.box_size} ${label}`;
-                                                    })()}</div>
-                                                    <div className="text-xs text-gray-500 leading-tight">
+                                                    <div className="bg-primary/5 text-primary font-bold px-3 py-1 rounded-lg inline-block border border-primary/10">
+                                                        {(order as any).pickup_day || 'N/A'}
+                                                    </div>
+                                                </td>
+                                                <td className="py-4 pr-4">
+                                                    <div className="flex flex-wrap gap-2">
                                                         {order.flavors_selected ? 
                                                             Object.entries(order.flavors_selected).map(([f_id, qty]) => {
-                                                                const fName = flavors.find(f => f.id === f_id)?.name || f_id;
-                                                                return `${qty}x ${fName}`;
-                                                            }).join(', ') 
-                                                            : 'Sin detalles'
+                                                                const flavor = flavors.find(f => f.id === f_id);
+                                                                const isBread = f_id.includes('hogaza') || f_id.includes('pan-') || f_id.includes('multigrano');
+                                                                return (
+                                                                    <div key={f_id} className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border ${isBread ? 'bg-amber-50 border-amber-200 text-amber-800' : 'bg-pink-50 border-pink-100 text-pink-700'}`}>
+                                                                        <span className="font-black text-xs bg-white/50 w-5 h-5 flex items-center justify-center rounded-full shadow-sm">{qty}</span>
+                                                                        <span className="text-xs font-bold whitespace-nowrap">{flavor?.name || f_id}</span>
+                                                                    </div>
+                                                                );
+                                                            }) 
+                                                            : <span className="text-gray-400 italic text-sm">Sin detalles</span>
                                                         }
+                                                    </div>
+                                                    <div className="mt-2 text-[10px] font-bold uppercase tracking-widest opacity-30">
+                                                        {(() => {
+                                                            const ids = Object.keys(order.flavors_selected || {});
+                                                            const breadIds = ['hogaza-clasica', 'pan-centeno', 'multigrano'];
+                                                            const anyBread = ids.some(id => breadIds.includes(id));
+                                                            const anyCookie = ids.some(id => !breadIds.includes(id));
+                                                            if (anyBread && anyCookie) return 'Mixto';
+                                                            if (anyBread) return 'Solo Pan';
+                                                            return `${order.box_size} Galletas`;
+                                                        })()}
                                                     </div>
                                                 </td>
                                                 <td className="py-4 font-bold text-primary">${order.total_price}</td>

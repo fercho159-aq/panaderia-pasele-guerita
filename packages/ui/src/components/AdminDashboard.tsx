@@ -97,19 +97,47 @@ export const AdminDashboard: React.FC = () => {
                     <div className="grid md:grid-cols-2 gap-8">
                         {/* Sabores */}
                         <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-                            <h2 className="font-serif text-2xl text-primary mb-6 border-b border-gray-100 pb-4">Menú de Galletas</h2>
-                            <div className="space-y-4">
-                                {flavors.map(flavor => (
-                                    <div key={flavor.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
-                                        <span className="font-bold text-lg">{flavor.name}</span>
-                                        <button
-                                            onClick={() => toggleFlavor(flavor.id, flavor.active)}
-                                            className={`px-6 py-2 rounded-full font-bold text-sm transition-colors ${flavor.active ? 'bg-accent text-primary' : 'bg-gray-200 text-gray-500'}`}
-                                        >
-                                            {flavor.active ? 'Disponible' : 'Apagado'}
-                                        </button>
+                            <h2 className="font-serif text-2xl text-primary mb-6 border-b border-gray-100 pb-4">Catálogo de Productos</h2>
+                            <div className="space-y-8">
+                                {/* Galletas */}
+                                <div>
+                                    <h3 className="text-xs uppercase tracking-widest font-bold text-pink-400 mb-4 flex items-center gap-2">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-pink-400"></span> Galletas Artesanales
+                                    </h3>
+                                    <div className="space-y-3">
+                                        {flavors.filter(f => !f.id.includes('hogaza') && !f.id.includes('pan-') && !f.id.includes('multigrano')).map(flavor => (
+                                            <div key={flavor.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
+                                                <span className="font-bold">{flavor.name}</span>
+                                                <button
+                                                    onClick={() => toggleFlavor(flavor.id, flavor.active)}
+                                                    className={`px-5 py-1.5 rounded-full font-bold text-xs transition-colors ${flavor.active ? 'bg-pink-100 text-pink-700' : 'bg-gray-200 text-gray-400'}`}
+                                                >
+                                                    {flavor.active ? 'Disponible' : 'Apagado'}
+                                                </button>
+                                            </div>
+                                        ))}
                                     </div>
-                                ))}
+                                </div>
+
+                                {/* Panes */}
+                                <div>
+                                    <h3 className="text-xs uppercase tracking-widest font-bold text-amber-500 mb-4 flex items-center gap-2">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Pan de Masa Madre
+                                    </h3>
+                                    <div className="space-y-3">
+                                        {flavors.filter(f => f.id.includes('hogaza') || f.id.includes('pan-') || f.id.includes('multigrano')).map(flavor => (
+                                            <div key={flavor.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
+                                                <span className="font-bold">{flavor.name}</span>
+                                                <button
+                                                    onClick={() => toggleFlavor(flavor.id, flavor.active)}
+                                                    className={`px-5 py-1.5 rounded-full font-bold text-xs transition-colors ${flavor.active ? 'bg-amber-100 text-amber-800' : 'bg-gray-200 text-gray-400'}`}
+                                                >
+                                                    {flavor.active ? 'Disponible' : 'Apagado'}
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

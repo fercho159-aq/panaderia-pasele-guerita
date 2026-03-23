@@ -34,17 +34,9 @@ export const cookieFlavors = [
         ingredients: 'Masa madre pura, mantequilla artesanal, azúcar de caña.',
         is_sourdough: true,
         is_gluten_free: false
-    },
-    { 
-        id: 'glam-pecan', // Assuming the 5th flavor might be a gluten free or new one, but let's add a placeholder just in case, or let DB fetch handle the 5th.
-        name: 'Glam Pecan GF', 
-        active: true,
-        description: 'Todo el sabor, cero gluten. Totalmente deliciosa.',
-        ingredients: 'Harina de almendra, nuez pecana, mantequilla clarificada, azúcar de coco.',
-        is_sourdough: false,
-        is_gluten_free: true
     }
 ];
+
 
 export const monthlySpecial = {
     name: 'Dragon Fruit Sourdough',

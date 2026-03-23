@@ -98,47 +98,44 @@ export const CheckoutFlow: React.FC = () => {
                 ))}
             </div>
 
-            {/* Step 1: Logística */}
+            {/* Step 1: Logística — Select a location from the live DB */}
             {step === 1 && (
                 <div className="animate-fade-in flex-1">
-                    <h2 className="font-serif text-4xl text-primary mb-2 italic">1. Logística</h2>
-                    <p className="text-gray-600 mb-10">¿Cómo prefieres recibir tu pan en Houston?</p>
+                    <h2 className="font-serif text-4xl text-primary mb-2 italic">1. Punto de Entrega</h2>
+                    <p className="text-gray-600 mb-8">Elige dónde recogerás tu pedido. Las ubicaciones se actualizan en tiempo real.</p>
 
-                    <div className="grid md:grid-cols-2 gap-6 mb-10">
-                        <button 
-                            onClick={() => setLogistics('pickup')}
-                            className={`p-8 rounded-2xl border-2 text-left transition-all ${logistics === 'pickup' ? 'border-primary bg-primary/5 shadow-inner' : 'border-bg hover:border-accent'}`}>
-                            <h3 className="text-xl font-serif font-bold text-primary mb-1 italic">Pickup en Tienda</h3>
-                            <p className="text-sm text-gray-500">Recoge tu pedido en nuestros puntos autorizados.</p>
-                        </button>
-
-                        <button 
-                            onClick={() => setLogistics('delivery')}
-                            className={`p-8 rounded-2xl border-2 text-left transition-all ${logistics === 'delivery' ? 'border-primary bg-primary/5 shadow-inner' : 'border-bg hover:border-accent'}`}>
-                            <h3 className="text-xl font-serif font-bold text-primary mb-1 italic">Delivery a Casa</h3>
-                            <p className="text-sm text-gray-500">Llevamos el pan recién horneado a tu puerta.</p>
-                        </button>
-                    </div>
-
-                    {logistics === 'delivery' && (
-                        <div className="mb-10 animate-fade-in">
-                            <label className="block text-sm font-bold text-primary mb-2">Valida tu Código Postal</label>
-                            <input 
-                                type="text" 
-                                placeholder="Ej. 77002"
-                                className="w-full p-4 rounded-xl border border-bg focus:ring-2 focus:outline-none focus:ring-accent"
-                                value={zipCode}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setZipCode(e.target.value)}
-                            />
-                            {zipCode.length >= 5 && !isValidHoustonZip(zipCode) && (
-                                <p className="text-xs text-red-500 mt-2 italic font-serif">Lo sentimos, no cubrimos la zona {zipCode} aún.</p>
-                            )}
+                    {liveLocations.length === 0 ? (
+                        <p className="text-gray-400 italic text-center py-10">Cargando ubicaciones...</p>
+                    ) : (
+                        <div className="space-y-6 mb-10 max-h-[380px] overflow-y-auto pr-1">
+                            {(['pos', 'pickup', 'delivery'] as const).map(type => {
+                                const group = liveLocations.filter(l => l.type === type && !l.isSoldOut);
+                                if (group.length === 0) return null;
+                                const labels: Record<string, string> = { pos: '🛍️ Puntos de Venta', pickup: '📦 Pickup', delivery: '🚚 Puntos de Entrega' };
+                                return (
+                                    <div key={type}>
+                                        <p className="text-[10px] uppercase font-bold tracking-widest text-primary mb-2">{labels[type]}</p>
+                                        <div className="grid gap-3">
+                                            {group.map(l => (
+                                                <button
+                                                    key={l.id}
+                                                    onClick={() => { setLocationId(l.id); setLogistics(type === 'delivery' ? 'delivery' : 'pickup'); }}
+                                                    className={`p-4 rounded-xl border-2 text-left transition-all ${locationId === l.id ? 'border-primary bg-primary/5' : 'border-bg hover:border-accent'}`}
+                                                >
+                                                    <h4 className="font-serif text-primary italic">{l.name}</h4>
+                                                    <p className="text-[10px] text-gray-500">{l.address} · {Array.isArray(l.days) ? l.days.join(' & ') : l.days} · {l.hours}</p>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
                     )}
 
                     <div className="mt-auto">
-                        <Button 
-                            disabled={!logistics || (logistics === 'delivery' && !isValidHoustonZip(zipCode))}
+                        <Button
+                            disabled={!locationId}
                             onClick={() => setStep(2)}
                             className="w-full h-16 text-xl"
                         >
@@ -185,7 +182,7 @@ export const CheckoutFlow: React.FC = () => {
                     <div className="flex gap-4 mt-auto">
                         <Button variant="outline" onClick={() => setStep(1)} className="w-1/3 border-gray-300">Atrás</Button>
                         <Button
-                            disabled={!selectedDate || (logistics === 'pickup' && !locationId)}
+                            disabled={!selectedDate}
                             onClick={() => setStep(3)}
                             className="w-2/3 h-16"
                         >
@@ -198,60 +195,70 @@ export const CheckoutFlow: React.FC = () => {
             {/* Step 3: Menú */}
             {step === 3 && (
                 <div className="animate-fade-in flex-1">
-                    <h2 className="font-serif text-4xl text-primary mb-4 italic">3. Arma tu Caja</h2>
-                    <p className="text-gray-600 mb-8">Selecciona el tamaño y elige tus sabores ({totalCookies}/{boxSize || '?'})</p>
-
-                    <div className="flex gap-4 mb-8 justify-center">
-                        {[3, 6, 9].map(size => (
-                            <button
-                                key={size}
-                                onClick={() => { setBoxSize(size); setCart({}); }}
-                                className={`px-6 py-3 rounded-xl border-2 font-bold transition-all ${boxSize === size ? 'border-primary bg-primary/10 text-primary' : 'border-bg hover:border-accent text-gray-500'}`}
-                            >
-                                {size} Galletas
-                            </button>
-                        ))}
-                    </div>
+                    <h2 className="font-serif text-4xl text-primary mb-4 italic">3. Tu Pedido</h2>
 
                     {/* Category Tabs */}
                     <div className="flex gap-3 mb-6">
-                        <button onClick={() => setMenuTab('cookies')} className={`flex-1 py-2 rounded-xl font-bold text-sm transition-all ${menuTab === 'cookies' ? 'bg-primary text-white' : 'bg-bg text-gray-500'}`}>🍪 Galletas</button>
-                        <button onClick={() => setMenuTab('breads')} className={`flex-1 py-2 rounded-xl font-bold text-sm transition-all ${menuTab === 'breads' ? 'bg-primary text-white' : 'bg-bg text-gray-500'}`}>🍞 Pan de Masa Madre</button>
+                        <button onClick={() => { setMenuTab('cookies'); }} className={`flex-1 py-2 rounded-xl font-bold text-sm transition-all ${menuTab === 'cookies' ? 'bg-primary text-white' : 'bg-bg text-gray-500'}`}>🍪 Galletas</button>
+                        <button onClick={() => { setMenuTab('breads'); }} className={`flex-1 py-2 rounded-xl font-bold text-sm transition-all ${menuTab === 'breads' ? 'bg-primary text-white' : 'bg-bg text-gray-500'}`}>🍞 Pan de Masa Madre</button>
                     </div>
 
-                    {boxSize && (
-                        <div className="mb-10 space-y-4 max-h-[400px] overflow-y-auto px-2">
-                            {(menuTab === 'cookies' ? liveCookies : liveBreads).map((flavor: any) => (
-                                <div key={flavor.id} className="flex flex-col bg-bg/5 p-4 rounded-xl border border-bg">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <div>
-                                            <span className="font-serif text-lg italic text-primary">{flavor.name}</span>
-                                            <div className="flex gap-2 mt-1">
-                                                {flavor.is_sourdough && <span className="text-[9px] uppercase tracking-wider bg-transparent border border-accent text-primary px-2 py-0.5 rounded-full">Sourdough</span>}
-                                                {flavor.is_gluten_free && <span className="text-[9px] uppercase tracking-wider bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Gluten Free</span>}
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <button onClick={() => handleRemoveCookie(flavor.id)} className="w-8 h-8 rounded-full bg-white border border-bg text-primary font-bold disabled:opacity-30 flex items-center justify-center pb-1" disabled={!cart[flavor.id]}>-</button>
-                                            <span className="w-4 text-center font-bold">{cart[flavor.id] || 0}</span>
-                                            <button onClick={() => handleAddCookie(flavor.id)} className="w-8 h-8 rounded-full bg-primary text-white font-bold disabled:opacity-30 flex items-center justify-center pb-1" disabled={totalCookies >= boxSize}>+</button>
-                                        </div>
-                                    </div>
-                                    {flavor.description && (
-                                        <p className="text-sm text-gray-600 mb-1">{flavor.description}</p>
-                                    )}
-                                    {flavor.ingredients && (
-                                        <p className="text-[10px] text-gray-400 italic">Ingredientes: {flavor.ingredients}</p>
-                                    )}
-                                </div>
-                            ))}
+                    {/* Cookie box size selector (only for cookie tab) */}
+                    {menuTab === 'cookies' && (
+                        <div className="mb-6">
+                            <p className="text-gray-600 mb-4 text-sm">Elige el tamaño de tu caja ({totalCookies}/{boxSize ?? '?'})</p>
+                            <div className="flex gap-4 justify-center">
+                                {[3, 6, 9].map(size => (
+                                    <button
+                                        key={size}
+                                        onClick={() => { setBoxSize(size); setCart(prev => { const next: Record<string, number> = {}; Object.entries(prev).filter(([id]) => liveBreads.some((b: any) => b.id === id)).forEach(([id, q]) => { next[id] = q as number; }); return next; }); }}
+                                        className={`px-6 py-3 rounded-xl border-2 font-bold transition-all ${boxSize === size ? 'border-primary bg-primary/10 text-primary' : 'border-bg hover:border-accent text-gray-500'}`}
+                                    >
+                                        {size} Galletas
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     )}
+
+                    {/* Product list */}
+                    <div className="mb-10 space-y-4 max-h-[380px] overflow-y-auto px-2">
+                        {(menuTab === 'cookies' ? (boxSize ? liveCookies : []) : liveBreads).map((item: any) => (
+                            <div key={item.id} className="flex flex-col bg-bg/5 p-4 rounded-xl border border-bg">
+                                <div className="flex justify-between items-start mb-2">
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-serif text-lg italic text-primary">{item.name}</span>
+                                            {item.price && <span className="text-sm font-bold text-primary">${item.price}</span>}
+                                        </div>
+                                        <div className="flex gap-2 mt-1">
+                                            {item.is_sourdough && <span className="text-[9px] uppercase tracking-wider border border-accent text-primary px-2 py-0.5 rounded-full">Sourdough</span>}
+                                            {item.is_gluten_free && <span className="text-[9px] uppercase tracking-wider bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Gluten Free</span>}
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <button onClick={() => handleRemoveCookie(item.id)} className="w-8 h-8 rounded-full bg-white border border-bg text-primary font-bold disabled:opacity-30 flex items-center justify-center" disabled={!cart[item.id]}>-</button>
+                                        <span className="w-4 text-center font-bold">{cart[item.id] || 0}</span>
+                                        <button
+                                            onClick={() => handleAddCookie(item.id)}
+                                            className="w-8 h-8 rounded-full bg-primary text-white font-bold disabled:opacity-30 flex items-center justify-center"
+                                            disabled={menuTab === 'cookies' && !!boxSize && totalCookies >= boxSize}
+                                        >+</button>
+                                    </div>
+                                </div>
+                                {item.description && <p className="text-sm text-gray-600 mb-1">{item.description}</p>}
+                                {item.ingredients && <p className="text-[10px] text-gray-400 italic">Ingredientes: {item.ingredients}</p>}
+                            </div>
+                        ))}
+                        {menuTab === 'cookies' && !boxSize && (
+                            <p className="text-center text-gray-400 italic py-6">Selecciona el tamaño de tu caja primero.</p>
+                        )}
+                    </div>
 
                     <div className="flex gap-4 mt-auto">
                         <Button variant="outline" onClick={() => setStep(2)} className="w-1/3 border-gray-300">Atrás</Button>
                         <Button
-                            disabled={!isBoxFull}
+                            disabled={totalCookies === 0 || (menuTab === 'cookies' && boxSize !== null && totalCookies !== boxSize)}
                             onClick={() => setStep(4)}
                             className="w-2/3 h-16"
                         >

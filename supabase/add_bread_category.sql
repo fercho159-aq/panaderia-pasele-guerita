@@ -15,8 +15,10 @@ ALTER TABLE flavors ADD COLUMN IF NOT EXISTS price NUMERIC(10,2) NOT NULL DEFAUL
 UPDATE flavors SET category = 'cookie' WHERE category IS NULL OR category = '';
 
 -- 3. Insert the 3 sourdough bread items
-INSERT INTO flavors (name, active, category, description, ingredients, is_sourdough, is_gluten_free, price) VALUES
+-- (Safe to run once — if you need to re-run, delete the bread rows first)
+INSERT INTO flavors (id, name, active, category, description, ingredients, is_sourdough, is_gluten_free, price) VALUES
 (
+    'hogaza-clasica',
     'Hogaza Clásica',
     TRUE,
     'bread',
@@ -27,6 +29,7 @@ INSERT INTO flavors (name, active, category, description, ingredients, is_sourdo
     18.00
 ),
 (
+    'pan-centeno',
     'Pan de Centeno',
     TRUE,
     'bread',
@@ -37,6 +40,7 @@ INSERT INTO flavors (name, active, category, description, ingredients, is_sourdo
     20.00
 ),
 (
+    'multigrano',
     'Multigrano con Semillas',
     TRUE,
     'bread',
@@ -45,5 +49,4 @@ INSERT INTO flavors (name, active, category, description, ingredients, is_sourdo
     TRUE,
     FALSE,
     22.00
-)
-ON CONFLICT (name) DO NOTHING;
+);

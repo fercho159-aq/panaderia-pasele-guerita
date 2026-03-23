@@ -4,6 +4,21 @@ import { Button } from '@pasele-guerita/ui';
 import { Card } from '@pasele-guerita/ui';
 import { Badge } from '@pasele-guerita/ui';
 import { cookieFlavors, monthlySpecial } from '@pasele-guerita/core';
+
+// Fetch live flavors from the database at render time
+let displayFlavors = cookieFlavors; // fallback to static
+try {
+    const origin = Astro.url.origin;
+    const res = await fetch(`${origin}/api/storefront-data`);
+    if (res.ok) {
+        const data = await res.json();
+        if (data.flavors && data.flavors.length > 0) {
+            displayFlavors = data.flavors;
+        }
+    }
+} catch (e) {
+    console.error("Could not fetch live flavors for homepage, using fallback:", e);
+}
 ---
 
 <Layout title="Home">
@@ -79,7 +94,7 @@ import { cookieFlavors, monthlySpecial } from '@pasele-guerita/core';
 		</div>
 		
 		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-16">
-			{cookieFlavors.map(flavor => (
+			{displayFlavors.map((flavor: any) => (
 				<Card title={flavor.name} price={12.00} description="Set de 3 galletas artesanales horneadas con masa madre.">
 					<a href="/checkout"><Button variant="accent" className="w-full">Agregar al Carrito</Button></a>
 				</Card>

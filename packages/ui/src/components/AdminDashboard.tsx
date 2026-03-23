@@ -159,7 +159,15 @@ export const AdminDashboard: React.FC = () => {
                                                 <td className="py-4 font-bold">{order.customer_name}</td>
                                                 <td className="py-4 text-gray-500">{new Date(order.created_at).toLocaleDateString()}</td>
                                                 <td className="py-4">
-                                                    <div className="font-bold mb-1">{order.box_size} Galletas</div>
+                                                    <div className="font-bold mb-1">{(() => {
+                                                        if (!order.flavors_selected) return `${order.box_size} Galletas`;
+                                                        const ids = Object.keys(order.flavors_selected);
+                                                        const breadIds = ['hogaza-clasica', 'pan-centeno', 'multigrano'];
+                                                        const allBreads = ids.every(id => breadIds.includes(id));
+                                                        const anyBread = ids.some(id => breadIds.includes(id));
+                                                        const label = allBreads ? 'Panes' : anyBread ? 'Galletas + Pan' : 'Galletas';
+                                                        return `${order.box_size} ${label}`;
+                                                    })()}</div>
                                                     <div className="text-xs text-gray-500 leading-tight">
                                                         {order.flavors_selected ? 
                                                             Object.entries(order.flavors_selected).map(([f_id, qty]) => {

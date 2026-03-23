@@ -387,10 +387,10 @@ export const CheckoutFlow: React.FC = () => {
                                         customer_name: customer.name,
                                         customer_phone: customer.phone,
                                         customer_email: customer.email,
-                                        // Use 'del-1' for delivery because 'delivery-hub' doesn't exist in schema.sql
                                         location_id: locationId || 'del-1', 
                                         pickup_day: selectedDate,
-                                        box_size: boxSize,
+                                        // For bread orders boxSize is null — use total item count instead
+                                        box_size: boxSize ?? totalCookies,
                                         flavors_selected: cart,
                                         total_price: totalAmount,
                                         status: 'Pending'

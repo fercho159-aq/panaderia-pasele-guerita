@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { 
-    calculateCookiePrice, 
-    fetchActiveFlavors, 
-    fetchLocations, 
     createOrder, 
     PickupLocation,
     isValidHoustonZip,
     getEarliestAvailableDate,
     cookieFlavors,
+    breadFlavors,
     pickupLocations
 } from '@pasele-guerita/core';
 import { Button } from '@pasele-guerita/ui';
 
 export const CheckoutFlow: React.FC = () => {
     // Data states
-    const [liveFlavors, setLiveFlavors] = useState<any[]>([]);
+    const [liveCookies, setLiveCookies] = useState<any[]>([]);
+    const [liveBreads, setLiveBreads] = useState<any[]>([]);
     const [liveLocations, setLiveLocations] = useState<PickupLocation[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [menuTab, setMenuTab] = useState<'cookies' | 'breads'>('cookies');
 
     // Flow states
     const [step, setStep] = useState(1);
@@ -36,28 +36,17 @@ export const CheckoutFlow: React.FC = () => {
     useEffect(() => {
         async function loadData() {
             try {
-                // Fetch from our new server-side endpoint to bypass Astro's client env limitations
                 const response = await fetch('/api/storefront-data');
                 if (!response.ok) throw new Error('Failed to fetch from /api/storefront-data');
-                
                 const data = await response.json();
-                
-                // Merge DB flavors with static descriptions from cookieFlavors
-                const mergedFlavors = (data.flavors && data.flavors.length > 0) ? data.flavors.map((dbFlav: any) => {
-                    const staticMatch = cookieFlavors.find(sf => sf.id === dbFlav.id);
-                    return { ...staticMatch, ...dbFlav };
-                }) : cookieFlavors;
 
-                setLiveFlavors(mergedFlavors);
-
-                if (data.locations && data.locations.length > 0) {
-                    setLiveLocations(data.locations);
-                } else {
-                    setLiveLocations(pickupLocations);
-                }
+                setLiveCookies(data.cookies?.length > 0 ? data.cookies : cookieFlavors);
+                setLiveBreads(data.breads?.length > 0 ? data.breads : breadFlavors);
+                setLiveLocations(data.locations?.length > 0 ? data.locations : pickupLocations);
             } catch (error) {
                 console.error("Failed to load DB data, using fallbacks:", error);
-                setLiveFlavors(cookieFlavors);
+                setLiveCookies(cookieFlavors);
+                setLiveBreads(breadFlavors);
                 setLiveLocations(pickupLocations);
             } finally {
                 setIsLoading(false);
@@ -66,9 +55,16 @@ export const CheckoutFlow: React.FC = () => {
         loadData();
     }, []);
 
+    // All products combined for summary/order purposes
+    const allLiveProducts = [...liveCookies, ...liveBreads];
+
     const totalCookies = Object.values(cart).reduce((a: number, b: number) => a + b, 0);
     const isBoxFull = boxSize !== null && totalCookies === boxSize;
-    const totalAmount = boxSize ? calculateCookiePrice(boxSize) : 0;
+    // Calculate total based on actual item prices
+    const totalAmount = Object.entries(cart).reduce((sum, [id, qty]) => {
+        const item = allLiveProducts.find((p: any) => p.id === id);
+        return sum + ((item?.price || 12) * (qty as number));
+    }, 0);
 
     const handleAddCookie = (id: string) => {
         if (boxSize && totalCookies < boxSize) {
@@ -217,9 +213,15 @@ export const CheckoutFlow: React.FC = () => {
                         ))}
                     </div>
 
+                    {/* Category Tabs */}
+                    <div className="flex gap-3 mb-6">
+                        <button onClick={() => setMenuTab('cookies')} className={`flex-1 py-2 rounded-xl font-bold text-sm transition-all ${menuTab === 'cookies' ? 'bg-primary text-white' : 'bg-bg text-gray-500'}`}>🍪 Galletas</button>
+                        <button onClick={() => setMenuTab('breads')} className={`flex-1 py-2 rounded-xl font-bold text-sm transition-all ${menuTab === 'breads' ? 'bg-primary text-white' : 'bg-bg text-gray-500'}`}>🍞 Pan de Masa Madre</button>
+                    </div>
+
                     {boxSize && (
                         <div className="mb-10 space-y-4 max-h-[400px] overflow-y-auto px-2">
-                            {liveFlavors.map((flavor: any) => (
+                            {(menuTab === 'cookies' ? liveCookies : liveBreads).map((flavor: any) => (
                                 <div key={flavor.id} className="flex flex-col bg-bg/5 p-4 rounded-xl border border-bg">
                                     <div className="flex justify-between items-start mb-2">
                                         <div>
@@ -327,8 +329,8 @@ export const CheckoutFlow: React.FC = () => {
                         <ul className="space-y-2 text-sm italic mb-4">
                             {Object.entries(cart).map(([id, qty]: [string, number]) => (
                                 <li key={id} className="flex justify-between border-b border-bg/20 pb-1">
-                                    <span>{qty}x {liveFlavors.find((f: any) => f.id === id)?.name}</span>
-                                    <span>${((liveFlavors.find((f: any) => f.id === id)?.price || 12) * qty).toFixed(2)}</span>
+                                    <span>{qty}x {allLiveProducts.find((f: any) => f.id === id)?.name}</span>
+                                    <span>${((allLiveProducts.find((f: any) => f.id === id)?.price || 12) * qty).toFixed(2)}</span>
                                 </li>
                             ))}
                         </ul>

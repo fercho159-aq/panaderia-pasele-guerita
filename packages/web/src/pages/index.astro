@@ -3,21 +3,21 @@ import Layout from '../layouts/Layout.astro';
 import { Button } from '@pasele-guerita/ui';
 import { Card } from '@pasele-guerita/ui';
 import { Badge } from '@pasele-guerita/ui';
-import { cookieFlavors, monthlySpecial } from '@pasele-guerita/core';
+import { cookieFlavors, breadFlavors, monthlySpecial } from '@pasele-guerita/core';
 
-// Fetch live flavors from the database at render time
-let displayFlavors = cookieFlavors; // fallback to static
+// Fetch live products from the database at render time
+let displayCookies: any[] = cookieFlavors;
+let displayBreads: any[] = breadFlavors;
 try {
     const origin = Astro.url.origin;
     const res = await fetch(`${origin}/api/storefront-data`);
     if (res.ok) {
         const data = await res.json();
-        if (data.flavors && data.flavors.length > 0) {
-            displayFlavors = data.flavors;
-        }
+        if (data.cookies?.length > 0) displayCookies = data.cookies;
+        if (data.breads?.length > 0) displayBreads = data.breads;
     }
 } catch (e) {
-    console.error("Could not fetch live flavors for homepage, using fallback:", e);
+    console.error("Could not fetch live products for homepage, using fallback:", e);
 }
 ---
 
@@ -84,7 +84,7 @@ try {
 		</div>
 	</section>
 
-	<!-- Offer & Response (Flavors Section) -->
+	<!-- Offer & Response (Products Section) -->
 	<section id="menu" class="py-24 max-w-7xl mx-auto px-6">
 		<div class="text-center mb-16">
 			<h2 class="font-serif text-5xl md:text-6xl text-primary mb-6 italic">Asegura tu pedido</h2>
@@ -93,12 +93,30 @@ try {
 			<a href="/checkout"><Button variant="primary" className="text-xl px-12 h-16 shadow-xl hover:scale-105 transition-transform duration-300">Hacer Pedido Ahora</Button></a>
 		</div>
 		
-		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-16">
-			{displayFlavors.map((flavor: any) => (
-				<Card title={flavor.name} price={12.00} description="Set de 3 galletas artesanales horneadas con masa madre.">
-					<a href="/checkout"><Button variant="accent" className="w-full">Agregar al Carrito</Button></a>
-				</Card>
-			))}
+		{/* Galletas */}
+		<div class="mb-16">
+			<h3 class="font-serif text-3xl text-primary italic mb-2">🍪 Galletas Artesanales</h3>
+			<p class="text-gray-500 mb-8 text-sm">Set de 3 galletas por caja &bull; Horneadas con masa madre</p>
+			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+				{displayCookies.map((flavor: any) => (
+					<Card title={flavor.name} price={flavor.price || 12} description={flavor.description || 'Galleta artesanal horneada con masa madre.'}>
+						<a href="/checkout"><Button variant="accent" className="w-full">Agregar al Carrito</Button></a>
+					</Card>
+				))}
+			</div>
+		</div>
+
+		{/* Pan de Masa Madre */}
+		<div>
+			<h3 class="font-serif text-3xl text-primary italic mb-2">🍞 Pan de Masa Madre</h3>
+			<p class="text-gray-500 mb-8 text-sm">Hogaza entera &bull; Fermentación lenta 48 horas</p>
+			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+				{displayBreads.map((bread: any) => (
+					<Card title={bread.name} price={bread.price || 18} description={bread.description || 'Pan artesanal de masa madre.'}>
+						<a href="/checkout"><Button variant="accent" className="w-full">Agregar al Carrito</Button></a>
+					</Card>
+				))}
+			</div>
 		</div>
 	</section>
 </Layout>

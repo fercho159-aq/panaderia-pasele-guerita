@@ -3,7 +3,7 @@ import { Button } from './Button';
 
 interface Flavor { id: string; name: string; active: boolean; stock: number; }
 interface Location { id: string; name: string; days: string[]; is_sold_out: boolean; type: string; }
-interface Order { id: string; customer_name: string; box_size: number; total_price: number; created_at: string; status: string; }
+interface Order { id: string; customer_name: string; box_size: number; total_price: number; created_at: string; status: string; flavors_selected: Record<string, number>; }
 
 export const AdminDashboard: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'inventory' | 'orders'>('inventory');
@@ -143,9 +143,9 @@ export const AdminDashboard: React.FC = () => {
                             <table className="w-full text-left">
                                 <thead>
                                     <tr className="text-gray-400 text-sm uppercase">
-                                        <th className="pb-4 font-normal">Cliente</th>
-                                        <th className="pb-4 font-normal">Fecha</th>
-                                        <th className="pb-4 font-normal">Caja</th>
+                                        <th className="pb-4 font-normal min-w-[150px]">Cliente</th>
+                                        <th className="pb-4 font-normal min-w-[100px]">Fecha</th>
+                                        <th className="pb-4 font-normal min-w-[200px]">Caja</th>
                                         <th className="pb-4 font-normal">Total</th>
                                         <th className="pb-4 font-normal">Estado</th>
                                     </tr>
@@ -158,7 +158,18 @@ export const AdminDashboard: React.FC = () => {
                                             <tr key={order.id} className="border-t border-gray-50">
                                                 <td className="py-4 font-bold">{order.customer_name}</td>
                                                 <td className="py-4 text-gray-500">{new Date(order.created_at).toLocaleDateString()}</td>
-                                                <td className="py-4">{order.box_size} Galletas</td>
+                                                <td className="py-4">
+                                                    <div className="font-bold mb-1">{order.box_size} Galletas</div>
+                                                    <div className="text-xs text-gray-500 leading-tight">
+                                                        {order.flavors_selected ? 
+                                                            Object.entries(order.flavors_selected).map(([f_id, qty]) => {
+                                                                const fName = flavors.find(f => f.id === f_id)?.name || f_id;
+                                                                return `${qty}x ${fName}`;
+                                                            }).join(', ') 
+                                                            : 'Sin detalles'
+                                                        }
+                                                    </div>
+                                                </td>
                                                 <td className="py-4 font-bold text-primary">${order.total_price}</td>
                                                 <td className="py-4">
                                                     <select

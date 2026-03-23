@@ -36,19 +36,22 @@ export const CheckoutFlow: React.FC = () => {
     useEffect(() => {
         async function loadData() {
             try {
-                const [flavors, locations] = await Promise.all([
-                    fetchActiveFlavors(),
-                    fetchLocations()
-                ]);
+                // Fetch from our new server-side endpoint to bypass Astro's client env limitations
+                const response = await fetch('/api/storefront-data');
+                if (!response.ok) throw new Error('Failed to fetch from /api/storefront-data');
                 
-                if (flavors && flavors.length > 0) {
-                    setLiveFlavors(flavors);
-                } else {
-                    setLiveFlavors(cookieFlavors);
-                }
+                const data = await response.json();
+                
+                // Merge DB flavors with static descriptions from cookieFlavors
+                const mergedFlavors = (data.flavors && data.flavors.length > 0) ? data.flavors.map((dbFlav: any) => {
+                    const staticMatch = cookieFlavors.find(sf => sf.id === dbFlav.id);
+                    return { ...staticMatch, ...dbFlav };
+                }) : cookieFlavors;
 
-                if (locations && locations.length > 0) {
-                    setLiveLocations(locations);
+                setLiveFlavors(mergedFlavors);
+
+                if (data.locations && data.locations.length > 0) {
+                    setLiveLocations(data.locations);
                 } else {
                     setLiveLocations(pickupLocations);
                 }
@@ -215,15 +218,29 @@ export const CheckoutFlow: React.FC = () => {
                     </div>
 
                     {boxSize && (
-                        <div className="mb-10 space-y-3 max-h-[300px] overflow-y-auto px-2">
+                        <div className="mb-10 space-y-4 max-h-[400px] overflow-y-auto px-2">
                             {liveFlavors.map((flavor: any) => (
-                                <div key={flavor.id} className="flex justify-between items-center bg-bg/5 p-4 rounded-xl border border-bg">
-                                    <span className="font-serif text-lg italic text-primary">{flavor.name}</span>
-                                    <div className="flex items-center gap-3">
-                                        <button onClick={() => handleRemoveCookie(flavor.id)} className="w-8 h-8 rounded-full bg-white border border-bg text-primary font-bold disabled:opacity-30" disabled={!cart[flavor.id]}>-</button>
-                                        <span className="w-4 text-center font-bold">{cart[flavor.id] || 0}</span>
-                                        <button onClick={() => handleAddCookie(flavor.id)} className="w-8 h-8 rounded-full bg-primary text-white font-bold disabled:opacity-30" disabled={totalCookies >= boxSize}>+</button>
+                                <div key={flavor.id} className="flex flex-col bg-bg/5 p-4 rounded-xl border border-bg">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div>
+                                            <span className="font-serif text-lg italic text-primary">{flavor.name}</span>
+                                            <div className="flex gap-2 mt-1">
+                                                {flavor.is_sourdough && <span className="text-[9px] uppercase tracking-wider bg-transparent border border-accent text-primary px-2 py-0.5 rounded-full">Sourdough</span>}
+                                                {flavor.is_gluten_free && <span className="text-[9px] uppercase tracking-wider bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Gluten Free</span>}
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <button onClick={() => handleRemoveCookie(flavor.id)} className="w-8 h-8 rounded-full bg-white border border-bg text-primary font-bold disabled:opacity-30 flex items-center justify-center pb-1" disabled={!cart[flavor.id]}>-</button>
+                                            <span className="w-4 text-center font-bold">{cart[flavor.id] || 0}</span>
+                                            <button onClick={() => handleAddCookie(flavor.id)} className="w-8 h-8 rounded-full bg-primary text-white font-bold disabled:opacity-30 flex items-center justify-center pb-1" disabled={totalCookies >= boxSize}>+</button>
+                                        </div>
                                     </div>
+                                    {flavor.description && (
+                                        <p className="text-sm text-gray-600 mb-1">{flavor.description}</p>
+                                    )}
+                                    {flavor.ingredients && (
+                                        <p className="text-[10px] text-gray-400 italic">Ingredientes: {flavor.ingredients}</p>
+                                    )}
                                 </div>
                             ))}
                         </div>

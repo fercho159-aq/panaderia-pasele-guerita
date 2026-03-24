@@ -268,8 +268,8 @@ export const CheckoutFlow: React.FC = () => {
                                 <div className="flex justify-between items-start mb-2">
                                     <div>
                                         <div className="flex items-center gap-2">
-                                            <span className="font-serif text-lg italic text-primary">{item.name}</span>
-                                            {item.price && <span className="text-sm font-bold text-primary">${item.price}</span>}
+                                            <span className="font-serif text-2xl italic text-primary">{item.name}</span>
+                                            {item.price && <span className="text-lg font-bold text-primary">${item.price}</span>}
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3">
@@ -282,8 +282,8 @@ export const CheckoutFlow: React.FC = () => {
                                         >+</button>
                                     </div>
                                 </div>
-                                {item.description && <p className="text-sm text-gray-600 mb-1 font-serif line-clamp-1">{item.description}</p>}
-                                {item.ingredients && <p className="text-[10px] text-gray-400 italic">Ingredientes: {item.ingredients}</p>}
+                                {item.description && <p className="text-base text-gray-700 mt-2 font-serif leading-relaxed">{item.description}</p>}
+                                {item.ingredients && <p className="text-xs text-gray-500 italic mt-1 font-serif">Ingredientes: {item.ingredients}</p>}
                             </div>
                         ))}
                     </div>

@@ -268,7 +268,7 @@ export const CheckoutFlow: React.FC = () => {
                     {/* Cookie box size selector (only for cookie tab) */}
                     {menuTab === 'cookies' && (
                         <div className="mb-6">
-                            <p className="text-gray-600 mb-4 text-sm font-serif">Elige el tamaño de tu caja ({totalCookies}/{boxSize ?? '?'})</p>
+                            <p className="text-primary mb-6 text-2xl font-serif font-bold italic border-b border-primary/10 pb-4">Elige el tamaño de tu caja ({totalCookies}/{boxSize ?? '?'})</p>
                             <div className="flex gap-4 justify-center">
                                 {[3, 6, 9].map(size => (
                                     <button
@@ -318,7 +318,7 @@ export const CheckoutFlow: React.FC = () => {
                                 {item.category === 'bread' && cart[item.id] > 0 && (
                                     <div className="mt-4 p-3 bg-bg/30 rounded-xl flex items-center justify-between">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-xs font-bold text-primary uppercase tracking-wider">¿Rebanar pan? (+$1 c/u)</span>
+                                            <span className="text-sm font-bold text-primary uppercase tracking-wider">¿Rebanar pan? (+$1 c/u)</span>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <button 
@@ -355,39 +355,42 @@ export const CheckoutFlow: React.FC = () => {
             {/* Step 4: Tus Datos */}
             {step === 4 && (
                 <div className="animate-fade-in flex-1">
-                    <h2 className="font-serif text-4xl text-primary mb-2 italic">4. Tus Datos</h2>
-                    <p className="text-gray-600 mb-10 font-serif">Información para la entrega y contacto.</p>
+                    <h2 className="font-serif text-5xl md:text-6xl text-primary mb-2 italic">4. Tus Datos</h2>
+                    <p className="text-xl text-primary/70 mb-10 font-serif">Información para la entrega y contacto.</p>
 
-                    <div className="space-y-6 mb-10">
+                    <div className="space-y-6 flex-1 text-lg mb-10">
                         <input 
                             type="text" placeholder="Nombre completo"
-                            className="w-full p-4 rounded-xl border border-bg focus:ring-2 focus:ring-accent outline-none font-serif"
+                            className="w-full p-6 rounded-2xl border-2 border-bg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none text-xl bg-bg/10 font-serif shadow-sm transition-all"
                             value={customer.name}
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCustomer({...customer, name: e.target.value})}
                         />
                         <div className="grid gap-4 md:grid-cols-2">
                             <input 
                                 type="tel" placeholder="Teléfono"
-                                className="w-full p-4 rounded-xl border border-bg focus:ring-2 focus:ring-accent outline-none font-serif"
+                                className="w-full p-6 rounded-2xl border-2 border-bg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none text-xl bg-bg/10 font-serif shadow-sm transition-all"
                                 value={customer.phone}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCustomer({...customer, phone: e.target.value})}
                             />
                             <input 
                                 type="email" placeholder="Email"
-                                className="w-full p-4 rounded-xl border border-bg focus:ring-2 focus:ring-accent outline-none font-serif"
+                                className="w-full p-6 rounded-2xl border-2 border-bg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none text-xl bg-bg/10 font-serif shadow-sm transition-all"
                                 value={customer.email}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCustomer({...customer, email: e.target.value})}
                             />
                         </div>
 
-                        <div className="pt-6 border-t border-bg">
-                            <label className="flex items-center gap-2 cursor-pointer font-serif">
-                                <input type="checkbox" className="w-5 h-5 accent-primary" checked={gift.is_gift} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGift({...gift, is_gift: e.target.checked})} />
-                                <span className="italic text-primary">¿Es un regalo? 🎁</span>
+                        <div className="pt-8 mt-8 border-t border-bg">
+                            <label className="flex items-center gap-3 cursor-pointer mb-6 group">
+                                <div className={`w-8 h-8 rounded-lg border-2 flex items-center justify-center transition-colors ${gift.is_gift ? 'bg-primary border-primary text-white' : 'border-bg/50 group-hover:border-primary/50'}`}>
+                                    {gift.is_gift && <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>}
+                                </div>
+                                <input type="checkbox" className="hidden" checked={gift.is_gift} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGift({...gift, is_gift: e.target.checked})} />
+                                <span className="font-serif text-3xl italic text-primary">¿Es un regalo? 🎁</span>
                             </label>
                             {gift.is_gift && (
                                 <textarea 
-                                    className="w-full mt-4 p-4 rounded-xl border border-bg focus:ring-2 focus:ring-accent outline-none h-24 italic font-serif"
+                                    className="w-full p-6 rounded-2xl border-2 border-bg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none text-xl h-40 bg-bg/10 font-serif shadow-sm transition-all italic"
                                     placeholder="Escribe tu mensaje..."
                                     value={gift.message}
                                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setGift({...gift, message: e.target.value})}
@@ -452,8 +455,9 @@ export const CheckoutFlow: React.FC = () => {
                             disabled={!paymentMethod}
                             onClick={async () => {
                                 try {
+                                    const finalNotes = gift.is_gift ? `[REGALO] Mensajero: ${gift.message} | Notas: ${remarks}`.trim() : remarks.trim();
                                     await createOrder({
-                                        customer_name: customer.name,
+                                        customer_name: finalNotes ? `${customer.name} | 📝 ${finalNotes}` : customer.name,
                                         customer_phone: customer.phone,
                                         customer_email: customer.email,
                                         location_id: locationId, 
@@ -462,11 +466,11 @@ export const CheckoutFlow: React.FC = () => {
                                         flavors_selected: cart,
                                         sliced_breads: slicedBreads,
                                         total_price: totalAmount,
-                                        notes: gift.is_gift ? `[REGALO] De: ${customer.name}\nMensaje: ${gift.message}\nNotas: ${remarks}` : remarks,
                                         status: 'Pendiente'
                                     } as any);
                                     setStep(6);
                                 } catch (e) {
+
                                     console.error("Order failed:", e);
                                     setStep(6); 
                                 }
@@ -487,10 +491,10 @@ export const CheckoutFlow: React.FC = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                         </svg>
                     </div>
-                    <h2 className="font-serif text-4xl text-primary mb-4 italic">¡Pedido Recibido!</h2>
-                    <p className="text-gray-600 mb-8 max-w-md mx-auto font-serif">
-                        Gracias <strong>{customer.name.split(' ')[0]}</strong>, hemos registrado tu pedido.
-                    </p>
+                    <h2 className="font-serif text-5xl md:text-6xl text-primary mb-6 italic leading-tight">
+                        Gracias <span className="font-bold underline decoration-accent">{customer.name.split(' |')[0].split(' ')[0]}</span>, hemos registrado tu pedido.
+                    </h2>
+                    <p className="text-xl text-gray-600 mb-10 max-w-lg mx-auto leading-relaxed">Solo falta un paso para confirmar la magia. Envíanos tu información de pago para garantizar tu pedido.</p>
 
                     {paymentMethod === 'transfer' ? (
                         <div className="bg-bg/20 p-8 rounded-3xl border border-primary/20 mb-10 max-w-sm mx-auto font-serif">

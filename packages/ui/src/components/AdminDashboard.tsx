@@ -184,7 +184,7 @@ export const AdminDashboard: React.FC = () => {
                         </div>
                         
                         <div className="overflow-x-auto custom-scrollbar pb-6 rounded-xl border border-gray-100">
-                            <table className="w-full text-left border-collapse text-xs min-w-[1200px]">
+                            <table className="w-full text-left border-collapse text-sm min-w-[1200px]">
                                 <thead>
                                     <tr className="text-gray-500 uppercase font-bold tracking-widest bg-gray-50 border-b border-gray-200">
                                         <th className="p-3 w-32 sticky left-0 bg-gray-50 z-10 border-r border-gray-200">Ubicación</th>
@@ -217,11 +217,11 @@ export const AdminDashboard: React.FC = () => {
                                                     <td className="p-3 font-bold text-gray-800 sticky left-32 bg-white z-10 border-r border-gray-100">
                                                         <div className="flex flex-col">
                                                             {order.customer_name}
-                                                            {order.notes && <span className="text-[9px] text-amber-600 font-normal italic mt-1 leading-tight line-clamp-2" title={order.notes}>📝 {order.notes}</span>}
+                                                            {order.notes && <span className="text-xs text-amber-600 font-normal italic mt-1 leading-tight line-clamp-2" title={order.notes}>📝 {order.notes}</span>}
                                                             <select
                                                                 value={order.status}
                                                                 onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                                                                className={`mt-1 font-bold outline-none cursor-pointer appearance-none bg-transparent w-full text-[9px] uppercase ${order.status === 'Pendiente' ? 'text-yellow-600' :
+                                                                className={`mt-1 font-bold outline-none cursor-pointer appearance-none bg-transparent w-full text-xs uppercase ${order.status === 'Pendiente' ? 'text-yellow-600' :
                                                                     order.status === 'Confirmado' ? 'text-blue-600' : 'text-green-600'
                                                                     }`}
                                                             >
@@ -256,7 +256,7 @@ export const AdminDashboard: React.FC = () => {
                                                     ))}
                                                     
                                                     <td className="p-3 text-center font-bold text-primary border-r border-gray-100 bg-bg/20">${order.total_price}</td>
-                                                    <td className="p-3 text-center font-mono text-[9px] text-gray-300">#{order.id.slice(0,6)}</td>
+                                                    <td className="p-3 text-center font-mono text-xs text-gray-300">#{order.id.slice(0,6)}</td>
                                                 </tr>
                                             );
                                         })

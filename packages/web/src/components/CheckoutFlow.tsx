@@ -32,6 +32,8 @@ export const CheckoutFlow: React.FC = () => {
     const [remarks, setRemarks] = useState('');
     const [paymentMethod, setPaymentMethod] = useState<'transfer' | 'cash' | null>(null);
     const [slicedBreads, setSlicedBreads] = useState<Record<string, number>>({});
+    const [receiptFile, setReceiptFile] = useState<File | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
 
     const earliestDate = getEarliestAvailableDate();
 
@@ -449,13 +451,66 @@ export const CheckoutFlow: React.FC = () => {
                         </button>
                     </div>
 
+                    {paymentMethod === 'transfer' && (
+                        <div className="bg-bg/20 p-8 rounded-3xl border border-primary/20 mb-10 max-w-sm mx-auto font-serif animate-fade-in">
+                            <h4 className="italic text-xl text-primary mb-4 text-center">Datos para Transferencia</h4>
+                            <div className="space-y-4 text-left text-sm mb-6 font-serif">
+                                <div className="flex justify-between border-b border-primary/10 pb-2">
+                                    <span className="opacity-60 font-serif">Zelle/Apple Pay:</span>
+                                    <span className="font-bold">430 324 2593</span>
+                                </div>
+                                <div className="flex justify-between border-b border-primary/10 pb-2">
+                                    <span className="opacity-60 font-serif">Nombre:</span>
+                                    <span className="font-bold">Maria Soto</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="opacity-60 font-serif">Total a Pagar:</span>
+                                    <span className="font-bold text-lg text-primary">${totalAmount.toFixed(2)}</span>
+                                </div>
+                            </div>
+                            
+                            {/* Zelle QR Code */}
+                            <div className="bg-white p-2 rounded-2xl w-48 h-48 mx-auto flex items-center justify-center border border-primary/5 shadow-md overflow-hidden">
+                                <img src="/imagenes/zelle.png" alt="Zelle QR Code" className="w-full h-full object-contain" />
+                            </div>
+                            <p className="text-[10px] mt-4 uppercase tracking-wider text-primary/60 italic font-bold text-center mb-8">Escanea para pagar con Zelle</p>
+
+                            <div className="pt-6 border-t border-primary/10">
+                                <label className="block text-sm font-bold text-primary mb-3">Sube tu comprobante de pago *</label>
+                                <input 
+                                    type="file" 
+                                    accept="image/*" 
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setReceiptFile(e.target.files?.[0] || null)}
+                                    className="w-full text-sm font-serif file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-primary file:text-white hover:file:bg-primary/90 cursor-pointer"
+                                />
+                            </div>
+                        </div>
+                    )}
+
                     <div className="flex gap-4 mt-auto">
                         <Button variant="outline" onClick={() => setStep(4)} className="w-1/3 border-gray-300">Atrás</Button>
                         <Button
-                            disabled={!paymentMethod}
+                            disabled={!paymentMethod || (paymentMethod === 'transfer' && !receiptFile) || isUploading}
                             onClick={async () => {
                                 try {
-                                    const finalNotes = gift.is_gift ? `[REGALO] Mensajero: ${gift.message} | Notas: ${remarks}`.trim() : remarks.trim();
+                                    setIsUploading(true);
+                                    let receiptUrl = '';
+                                    if (paymentMethod === 'transfer' && receiptFile) {
+                                        const formData = new FormData();
+                                        formData.append('receipt', receiptFile);
+                                        formData.append('customer_name', customer.name);
+                                        const res = await fetch('/api/upload-receipt', { method: 'POST', body: formData });
+                                        if (res.ok) {
+                                            const data = await res.json();
+                                            receiptUrl = data.url;
+                                        }
+                                    }
+
+                                    let finalNotes = gift.is_gift ? `[REGALO] Mensajero: ${gift.message} | Notas: ${remarks}`.trim() : remarks.trim();
+                                    if (receiptUrl) {
+                                        finalNotes = (finalNotes ? finalNotes + ' | ' : '') + `📎 Comprobante adjunto (${receiptUrl})`;
+                                    }
+
                                     await createOrder({
                                         customer_name: finalNotes ? `${customer.name} | 📝 ${finalNotes}` : customer.name,
                                         customer_phone: customer.phone,
@@ -470,14 +525,16 @@ export const CheckoutFlow: React.FC = () => {
                                     } as any);
                                     setStep(6);
                                 } catch (e) {
-
                                     console.error("Order failed:", e);
+                                    // Ensure we still update the UI or show an alert if needed
                                     setStep(6); 
+                                } finally {
+                                    setIsUploading(false);
                                 }
                             }}
                             className="w-2/3 h-16 text-xl"
                         >
-                            Confirmar (${totalAmount.toFixed(2)})
+                            {isUploading ? 'Procesando...' : `Confirmar ($${totalAmount.toFixed(2)})`}
                         </Button>
                     </div>
                 </div>
@@ -498,27 +555,13 @@ export const CheckoutFlow: React.FC = () => {
 
                     {paymentMethod === 'transfer' ? (
                         <div className="bg-bg/20 p-8 rounded-3xl border border-primary/20 mb-10 max-w-sm mx-auto font-serif">
-                            <h4 className="italic text-xl text-primary mb-4">Datos para Transferencia</h4>
-                            <div className="space-y-4 text-left text-sm mb-6 font-serif">
-                                <div className="flex justify-between border-b border-primary/10 pb-2">
-                                    <span className="opacity-60 font-serif">Zelle/Apple Pay:</span>
-                                    <span className="font-bold">430 324 2593</span>
-                                </div>
-                                <div className="flex justify-between border-b border-primary/10 pb-2">
-                                    <span className="opacity-60 font-serif">Nombre:</span>
-                                    <span className="font-bold">Maria Soto</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="opacity-60 font-serif">Total:</span>
-                                    <span className="font-bold text-lg text-primary">${totalAmount.toFixed(2)}</span>
-                                </div>
-                            </div>
-                            
-                            {/* Zelle QR Code */}
-                            <div className="bg-white p-2 rounded-2xl w-48 h-48 mx-auto flex items-center justify-center border border-primary/5 shadow-md overflow-hidden">
-                                <img src="/imagenes/zelle.png" alt="Zelle QR Code" className="w-full h-full object-contain" />
-                            </div>
-                            <p className="text-[10px] mt-4 uppercase tracking-wider text-primary/60 italic font-bold">Escanea para pagar con Zelle</p>
+                            <h4 className="italic text-xl text-primary mb-4">Comprobante Recibido ✅</h4>
+                            <p className="text-gray-600 mb-6 font-serif">
+                                Tu pago por transferencia fue registrado y tu lugar en el horno está asegurado. ¡Prepárate para disfrutar!
+                            </p>
+                            <a href="https://wa.me/14303242593" target="_blank" rel="noopener noreferrer">
+                                <Button className="w-full text-lg shadow-sm">Contactar por WhatsApp</Button>
+                            </a>
                         </div>
                     ) : (
                         <div className="bg-bg/20 p-8 rounded-3xl border border-primary/20 mb-10 max-w-sm mx-auto font-serif">

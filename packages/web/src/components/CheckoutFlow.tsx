@@ -31,6 +31,7 @@ export const CheckoutFlow: React.FC = () => {
     const [gift, setGift] = useState({ is_gift: false, message: '' });
     const [remarks, setRemarks] = useState('');
     const [paymentMethod, setPaymentMethod] = useState<'transfer' | 'cash' | null>(null);
+    const [slicedBreads, setSlicedBreads] = useState<Record<string, number>>({});
 
     const earliestDate = getEarliestAvailableDate();
 
@@ -90,8 +91,16 @@ export const CheckoutFlow: React.FC = () => {
     const totalAmount = Object.entries(cart).reduce((sum, [id, qty]) => {
         const item = allLiveProducts.find((p: any) => p.id === id);
         if (!item) return sum;
-        if (item.category === 'bread') return sum + (item.price * (qty as number));
-        if (item.id === 'sugar-free-3pack') return sum + (13.50 * (qty as number));
+        let itemTotal = 0;
+        if (item.category === 'bread') {
+            itemTotal = (item.price * (qty as number));
+            // Add $1 per sliced loaf
+            if (slicedBreads[id]) {
+                itemTotal += slicedBreads[id] * 1;
+            }
+            return sum + itemTotal;
+        }
+        if (item.id === 'sugar-free-platano') return sum + (13.50 * (qty as number));
         
         // Tiered regular cookie pricing
         const cookiePrice = boxSize === 9 ? 3.5 : 4;
@@ -296,7 +305,28 @@ export const CheckoutFlow: React.FC = () => {
                                     </div>
                                 </div>
                                 {item.description && <p className="text-base text-gray-700 mt-2 font-serif leading-relaxed">{item.description}</p>}
-                                {item.ingredients && <p className="text-xs text-gray-500 italic mt-1 font-serif">Ingredientes: {item.ingredients}</p>}
+                                {item.ingredients && <p className="text-xs text-gray-500 italic mt-1 font-serif">{item.ingredients}</p>}
+                                
+                                {item.category === 'bread' && cart[item.id] > 0 && (
+                                    <div className="mt-4 p-3 bg-bg/30 rounded-xl flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs font-bold text-primary uppercase tracking-wider">¿Rebanar pan? (+$1 c/u)</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <button 
+                                                onClick={() => setSlicedBreads({...slicedBreads, [item.id]: Math.max(0, (slicedBreads[item.id] || 0) - 1)})}
+                                                className="w-6 h-6 rounded-full border border-primary/20 flex items-center justify-center text-primary disabled:opacity-30"
+                                                disabled={!(slicedBreads[item.id] > 0)}
+                                            >-</button>
+                                            <span className="text-sm font-bold w-4 text-center">{slicedBreads[item.id] || 0}</span>
+                                            <button 
+                                                onClick={() => setSlicedBreads({...slicedBreads, [item.id]: Math.min(cart[item.id], (slicedBreads[item.id] || 0) + 1)})}
+                                                className="w-6 h-6 rounded-full border border-primary/20 flex items-center justify-center text-primary disabled:opacity-30"
+                                                disabled={slicedBreads[item.id] >= cart[item.id]}
+                                            >+</button>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>

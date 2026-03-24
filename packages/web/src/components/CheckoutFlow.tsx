@@ -47,7 +47,7 @@ export const CheckoutFlow: React.FC = () => {
                 setLiveCookies(data.cookies?.length > 0 
                     ? data.cookies.map((c: any) => {
                         const s = cookieFlavors.find((sf: any) => sf.id === c.id) || {};
-                        return { ...s, ...c, description: c.description ?? (s as any).description, ingredients: c.ingredients ?? (s as any).ingredients };
+                        return { ...s, ...c, image: c.image || (s as any).image, description: c.description ?? (s as any).description, ingredients: c.ingredients ?? (s as any).ingredients };
                     }) 
                     : cookieFlavors);
                 setLiveBreads(data.breads?.length > 0 ? data.breads : breadFlavors);
@@ -145,8 +145,8 @@ export const CheckoutFlow: React.FC = () => {
             {/* Step 1: Logística */}
             {step === 1 && (
                 <div className="animate-fade-in flex-1">
-                    <h2 className="font-serif text-4xl text-primary mb-2 italic">1. Punto de Entrega</h2>
-                    <p className="text-gray-600 mb-8 font-serif">Elige dónde recogerás tu pedido. <span className="text-accent italic">Solo entregamos Miércoles y Sábados.</span></p>
+                    <h2 className="font-serif text-5xl md:text-6xl text-primary mb-2 italic">1. Punto de Entrega</h2>
+                    <p className="text-xl text-primary/70 mb-8 font-serif">Elige dónde recogerás tu pedido. <span className="text-accent italic">Solo entregamos Miércoles y Sábados.</span></p>
 
                     {liveLocations.length === 0 ? (
                         <p className="text-gray-400 italic text-center py-10">Cargando ubicaciones de Dallas...</p>
@@ -363,20 +363,20 @@ export const CheckoutFlow: React.FC = () => {
                     <div className="space-y-6 flex-1 text-lg mb-10">
                         <input 
                             type="text" placeholder="Nombre completo"
-                            className="w-full p-6 rounded-2xl border-2 border-bg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none text-xl bg-bg/10 font-serif shadow-sm transition-all"
+                            className="w-full p-6 rounded-2xl border-2 border-bg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none text-2xl font-bold bg-bg/10 font-serif shadow-sm transition-all"
                             value={customer.name}
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCustomer({...customer, name: e.target.value})}
                         />
                         <div className="grid gap-4 md:grid-cols-2">
                             <input 
                                 type="tel" placeholder="Teléfono"
-                                className="w-full p-6 rounded-2xl border-2 border-bg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none text-xl bg-bg/10 font-serif shadow-sm transition-all"
+                                className="w-full p-6 rounded-2xl border-2 border-bg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none text-2xl font-bold bg-bg/10 font-serif shadow-sm transition-all"
                                 value={customer.phone}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCustomer({...customer, phone: e.target.value})}
                             />
                             <input 
                                 type="email" placeholder="Email"
-                                className="w-full p-6 rounded-2xl border-2 border-bg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none text-xl bg-bg/10 font-serif shadow-sm transition-all"
+                                className="w-full p-6 rounded-2xl border-2 border-bg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none text-2xl font-bold bg-bg/10 font-serif shadow-sm transition-all"
                                 value={customer.email}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCustomer({...customer, email: e.target.value})}
                             />
@@ -511,6 +511,11 @@ export const CheckoutFlow: React.FC = () => {
                                         finalNotes = (finalNotes ? finalNotes + ' | ' : '') + `📎 Comprobante adjunto (${receiptUrl})`;
                                     }
 
+                                    if (Object.keys(slicedBreads).length > 0) {
+                                        const slices = Object.entries(slicedBreads).map(([id, q]) => `${q}x ${allLiveProducts.find((f:any)=>f.id===id)?.name}`).join(', ');
+                                        finalNotes = (finalNotes ? finalNotes + ' | ' : '') + `🍞 Rebanar: ${slices}`;
+                                    }
+
                                     const encodedName = `${customer.name} | 📞 ${customer.phone} | ✉️ ${customer.email}`;
 
                                     await createOrder({
@@ -519,7 +524,6 @@ export const CheckoutFlow: React.FC = () => {
                                         pickup_day: selectedDate,
                                         box_size: boxSize ?? totalCookies,
                                         flavors_selected: cart,
-                                        sliced_breads: slicedBreads,
                                         total_price: totalAmount,
                                         status: 'Pendiente'
                                     } as any);

@@ -73,9 +73,10 @@ const { title, description = "Artisanal Sourdough Dallas, Handmade Cookies" } = 
                         <a href="https://facebook.com/paselegueritatx" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-all hover:-translate-y-1" title="Facebook">👥</a>
                     </div>
 
-                    <div class="font-sans flex flex-wrap justify-center gap-x-8 gap-y-4 text-lg font-bold opacity-90 uppercase tracking-widest text-sm">
+                    <div class="font-sans flex flex-wrap justify-center gap-x-8 gap-y-4 text-lg font-bold opacity-90 uppercase tracking-widest text-sm text-bg/90">
                         <a href="/" class="hover:text-accent transition-colors underline underline-offset-8 decoration-accent/30">Inicio</a>
                         <a href="/about" class="hover:text-accent transition-colors underline underline-offset-8 decoration-accent/30">Historia</a>
+                        <a href="/policies" class="hover:text-accent transition-colors underline underline-offset-8 decoration-accent/30 text-accent font-black">Políticas</a>
                         <a href="/legal" class="hover:text-accent transition-colors underline underline-offset-8 decoration-accent/30">Aviso Legal</a>
                     </div>
                 </div>
@@ -87,5 +88,25 @@ const { title, description = "Artisanal Sourdough Dallas, Handmade Cookies" } = 
                 </div>
 			</div>
 		</footer>
+        <!-- Floating WhatsApp Button -->
+        <a 
+            href="https://wa.me/14303242593" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="fixed bottom-8 right-8 z-[100] bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform active:scale-95 group focus:outline-none focus:ring-4 focus:ring-[#25D366]/50"
+            aria-label="Contactar por WhatsApp"
+        >
+            <div class="relative">
+                <span class="text-4xl">💬</span>
+                <span class="absolute -top-1 -right-1 flex h-3 w-3">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-white shadow-sm"></span>
+                </span>
+            </div>
+            {/* Tooltip */}
+            <span class="absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-white text-primary px-4 py-2 rounded-xl text-sm font-bold shadow-xl border border-accent/10 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                ¿En qué podemos ayudarte?
+            </span>
+        </a>
 	</body>
 </html>

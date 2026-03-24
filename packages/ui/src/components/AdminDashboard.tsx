@@ -3,7 +3,7 @@ import { Button } from './Button';
 
 interface Flavor { id: string; name: string; active: boolean; stock: number; }
 interface Location { id: string; name: string; days: string[]; is_sold_out: boolean; type: string; }
-interface Order { id: string; customer_name: string; box_size: number; total_price: number; created_at: string; status: string; flavors_selected: Record<string, number>; sliced_breads?: Record<string, number>; notes?: string; }
+interface Order { id: string; customer_name: string; customer_email?: string; customer_phone?: string; box_size: number; total_price: number; created_at: string; status: string; flavors_selected: Record<string, number>; sliced_breads?: Record<string, number>; notes?: string; }
 
 export const AdminDashboard: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'inventory' | 'orders'>('inventory');
@@ -216,7 +216,9 @@ export const AdminDashboard: React.FC = () => {
                                                     </td>
                                                     <td className="p-3 font-bold text-gray-800 sticky left-32 bg-white z-10 border-r border-gray-100">
                                                         <div className="flex flex-col">
-                                                            {order.customer_name}
+                                                            <span className="text-sm">{order.customer_name}</span>
+                                                            {order.customer_email && <a href={`mailto:${order.customer_email}`} className="text-[10px] text-gray-500 hover:text-primary transition-colors">{order.customer_email}</a>}
+                                                            {order.customer_phone && <a href={`tel:${order.customer_phone}`} className="text-[10px] text-gray-500 hover:text-primary transition-colors">{order.customer_phone}</a>}
                                                             {order.notes && <span className="text-xs text-amber-600 font-normal italic mt-1 leading-tight line-clamp-2" title={order.notes}>📝 {order.notes}</span>}
                                                             <select
                                                                 value={order.status}

@@ -42,6 +42,18 @@ export const cookieFlavors = [
         ingredients: 'Masa madre pura, mantequilla artesanal, azúcar de caña.',
         is_sourdough: true,
         is_gluten_free: false
+    },
+    { 
+        id: 'sugar-free-3pack', 
+        name: 'Sugar Free Package (3)', 
+        active: true,
+        category: 'cookie',
+        price: 13.50,
+        description: 'Deliciosas galletas sin azúcar, perfectas para un antojo consciente. Paquete de 3 unidades.',
+        ingredients: 'Masa madre, edulcorante natural, harina integral, chispas sin azúcar.',
+        is_sourdough: true,
+        is_gluten_free: false,
+        is_sugar_free: true
     }
 ];
 

@@ -79,10 +79,23 @@ export const CheckoutFlow: React.FC = () => {
     // All products combined for summary/order purposes
     const allLiveProducts = [...liveCookies, ...liveBreads];
 
-    const totalCookies = Object.values(cart).reduce((a: number, b: number) => a + b, 0);
+    const totalCookies = Object.entries(cart).reduce((sum, [id, qty]) => {
+        const item = allLiveProducts.find((p: any) => p.id === id);
+        if (item?.category === 'cookie') {
+            return sum + (qty as number) * (item.id === 'sugar-free-3pack' ? 3 : 1);
+        }
+        return sum;
+    }, 0);
+
     const totalAmount = Object.entries(cart).reduce((sum, [id, qty]) => {
         const item = allLiveProducts.find((p: any) => p.id === id);
-        return sum + ((item?.price || 12) * (qty as number));
+        if (!item) return sum;
+        if (item.category === 'bread') return sum + (item.price * (qty as number));
+        if (item.id === 'sugar-free-3pack') return sum + (13.50 * (qty as number));
+        
+        // Tiered regular cookie pricing
+        const cookiePrice = boxSize === 9 ? 3.5 : 4;
+        return sum + (cookiePrice * (qty as number));
     }, 0);
 
     const handleAddCookie = (id: string) => {
@@ -278,7 +291,7 @@ export const CheckoutFlow: React.FC = () => {
                                         <button
                                             onClick={() => handleAddCookie(item.id)}
                                             className="w-8 h-8 rounded-full bg-primary text-white font-bold disabled:opacity-30 flex items-center justify-center"
-                                            disabled={menuTab === 'cookies' && !!boxSize && totalCookies >= boxSize}
+                                            disabled={menuTab === 'cookies' && !!boxSize && (totalCookies >= boxSize || (item.id === 'sugar-free-3pack' && totalCookies + 3 > boxSize))}
                                         >+</button>
                                     </div>
                                 </div>
@@ -444,19 +457,24 @@ export const CheckoutFlow: React.FC = () => {
                             <h4 className="italic text-xl text-primary mb-4">Datos para Transferencia</h4>
                             <div className="space-y-4 text-left text-sm mb-6 font-serif">
                                 <div className="flex justify-between border-b border-primary/10 pb-2">
-                                    <span className="opacity-60 font-serif">Zelle/Phone:</span>
-                                    <span className="font-bold">469-835-5197</span>
+                                    <span className="opacity-60 font-serif">Zelle/Apple Pay:</span>
+                                    <span className="font-bold">430 324 2593</span>
                                 </div>
                                 <div className="flex justify-between border-b border-primary/10 pb-2">
-                                    <span className="opacity-60 font-serif">Name:</span>
-                                    <span className="font-bold">Claudia Hernandez</span>
+                                    <span className="opacity-60 font-serif">Nombre:</span>
+                                    <span className="font-bold">Maria Soto</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="opacity-60 font-serif">Total:</span>
                                     <span className="font-bold text-lg text-primary">${totalAmount.toFixed(2)}</span>
                                 </div>
                             </div>
-                            <p className="text-[10px] mt-4 uppercase tracking-wider text-primary/60 italic font-bold">Por favor envía comprobante por WhatsApp</p>
+                            
+                            {/* Zelle QR Code */}
+                            <div className="bg-white p-2 rounded-2xl w-48 h-48 mx-auto flex items-center justify-center border border-primary/5 shadow-md overflow-hidden">
+                                <img src="/imagenes/zelle.png" alt="Zelle QR Code" className="w-full h-full object-contain" />
+                            </div>
+                            <p className="text-[10px] mt-4 uppercase tracking-wider text-primary/60 italic font-bold">Escanea para pagar con Zelle</p>
                         </div>
                     ) : (
                         <div className="bg-bg/20 p-8 rounded-3xl border border-primary/20 mb-10 max-w-sm mx-auto font-serif">

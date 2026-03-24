@@ -516,10 +516,10 @@ export const CheckoutFlow: React.FC = () => {
                                         finalNotes = (finalNotes ? finalNotes + ' | ' : '') + `🍞 Rebanar: ${slices}`;
                                     }
 
-                                    const encodedName = `${customer.name} | 📞 ${customer.phone} | ✉️ ${customer.email}`;
-
                                     await createOrder({
-                                        customer_name: finalNotes ? `${encodedName} | 📝 ${finalNotes}` : encodedName,
+                                        customer_name: finalNotes ? `${customer.name} | 📝 ${finalNotes}` : customer.name,
+                                        customer_phone: customer.phone,
+                                        customer_email: customer.email,
                                         location_id: locationId, 
                                         pickup_day: selectedDate,
                                         box_size: boxSize ?? totalCookies,

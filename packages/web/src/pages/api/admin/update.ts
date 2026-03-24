@@ -34,6 +34,9 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         if (type === 'flavor') {
             const { error } = await supabaseAdmin.from('flavors').update({ active: status }).eq('id', id);
             if (error) throw error;
+        } else if (type === 'stock') {
+            const { error } = await supabaseAdmin.from('flavors').update({ stock: body.value }).eq('id', id);
+            if (error) throw error;
         } else if (type === 'location') {
             const { error } = await supabaseAdmin.from('locations').update({ is_sold_out: status }).eq('id', id);
             if (error) throw error;

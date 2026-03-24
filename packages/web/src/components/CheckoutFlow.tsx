@@ -286,7 +286,15 @@ export const CheckoutFlow: React.FC = () => {
                     {/* Product list */}
                     <div className="mb-10 space-y-4 max-h-[380px] overflow-y-auto px-2">
                         {(menuTab === 'cookies' ? (boxSize ? liveCookies : []) : liveBreads).map((item: any) => (
-                            <div key={item.id} className="flex flex-col bg-bg/5 p-4 rounded-xl border border-bg">
+                            <div key={item.id} className="flex flex-col bg-bg/5 p-4 rounded-xl border border-bg relative overflow-hidden group">
+                                {item.is_sugar_free && (
+                                    <div className="absolute top-2 right-2 bg-blue-100 text-blue-700 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded shadow-sm z-10 border border-blue-200">Sugar Free</div>
+                                )}
+                                {item.image && (
+                                    <div className="w-full h-40 mb-4 rounded-lg overflow-hidden shadow-sm border border-primary/10">
+                                        <img src={item.image} alt={item.name} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
+                                    </div>
+                                )}
                                 <div className="flex justify-between items-start mb-2">
                                     <div>
                                         <div className="flex items-center gap-2">
@@ -454,6 +462,7 @@ export const CheckoutFlow: React.FC = () => {
                                         flavors_selected: cart,
                                         sliced_breads: slicedBreads,
                                         total_price: totalAmount,
+                                        notes: gift.is_gift ? `[REGALO] De: ${customer.name}\nMensaje: ${gift.message}\nNotas: ${remarks}` : remarks,
                                         status: 'Pendiente'
                                     } as any);
                                     setStep(6);

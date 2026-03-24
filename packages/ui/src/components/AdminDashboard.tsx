@@ -3,7 +3,7 @@ import { Button } from './Button';
 
 interface Flavor { id: string; name: string; active: boolean; stock: number; }
 interface Location { id: string; name: string; days: string[]; is_sold_out: boolean; type: string; }
-interface Order { id: string; customer_name: string; box_size: number; total_price: number; created_at: string; status: string; flavors_selected: Record<string, number>; sliced_breads?: Record<string, number>; }
+interface Order { id: string; customer_name: string; box_size: number; total_price: number; created_at: string; status: string; flavors_selected: Record<string, number>; sliced_breads?: Record<string, number>; notes?: string; }
 
 export const AdminDashboard: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'inventory' | 'orders'>('inventory');
@@ -60,6 +60,15 @@ export const AdminDashboard: React.FC = () => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ type: 'order', id, status: newStatus })
+        });
+    };
+
+    const updateStock = async (id: string, value: number) => {
+        setFlavors(flavors.map(f => f.id === id ? { ...f, stock: value } : f));
+        await fetch('/api/admin/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type: 'stock', id, value })
         });
     };
 
@@ -168,87 +177,180 @@ export const AdminDashboard: React.FC = () => {
                 )}
 
                 {activeTab === 'orders' && (
-                    <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-                        <h2 className="font-serif text-2xl text-primary mb-6 border-b border-gray-100 pb-4">Últimos Pedidos</h2>
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left">
+                    <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+                            <h2 className="font-serif text-2xl text-primary">Ventas y Producción</h2>
+                            <p className="text-xs text-gray-400">Vista de control tipo Excel</p>
+                        </div>
+                        
+                        <div className="overflow-x-auto custom-scrollbar pb-6 rounded-xl border border-gray-100">
+                            <table className="w-full text-left border-collapse text-xs min-w-[1200px]">
                                 <thead>
-                                    <tr className="text-gray-400 text-sm uppercase">
-                                        <th className="pb-4 font-normal min-w-[150px]">Cliente</th>
-                                        <th className="pb-4 font-normal min-w-[120px]">Pedido</th>
-                                        <th className="pb-4 font-normal min-w-[120px]">Entrega</th>
-                                        <th className="pb-4 font-normal min-w-[250px]">Detalle de Productos</th>
-                                        <th className="pb-4 font-normal">Total</th>
-                                        <th className="pb-4 font-normal">Estado</th>
+                                    <tr className="text-gray-500 uppercase font-bold tracking-widest bg-gray-50 border-b border-gray-200">
+                                        <th className="p-3 w-32 sticky left-0 bg-gray-50 z-10 border-r border-gray-200">Ubicación</th>
+                                        <th className="p-3 w-40 sticky left-32 bg-gray-50 z-10 border-r border-gray-200">Cliente</th>
+                                        <th className="p-3 text-center border-r border-gray-200 bg-pink-50/50 w-20">Tot. Galletas</th>
+                                        {flavors.filter(f => !f.id.includes('hogaza') && !f.id.includes('pan-') && !f.id.includes('multigrano')).map(f => (
+                                            <th key={f.id} className="p-3 text-center border-r border-gray-200 whitespace-nowrap overflow-hidden text-ellipsis max-w-[80px]" title={f.name}>{f.name.split(' ')[0]}</th>
+                                        ))}
+                                        <th className="p-3 text-center border-r border-gray-200 bg-amber-50/50 w-20">Tot. Panes</th>
+                                        {flavors.filter(f => f.id.includes('hogaza') || f.id.includes('pan-') || f.id.includes('multigrano')).map(f => (
+                                            <th key={f.id} className="p-3 text-center border-r border-gray-200 whitespace-nowrap overflow-hidden text-ellipsis max-w-[80px]" title={f.name}>{f.name.split(' ')[0]}</th>
+                                        ))}
+                                        <th className="p-3 text-center border-r border-gray-200 bg-gray-50">Total $</th>
+                                        <th className="p-3 text-center bg-gray-50">#ID</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {orders.length === 0 ? (
-                                        <tr><td colSpan={6} className="py-8 text-center text-gray-400 italic">Aún no hay pedidos en la base de datos.</td></tr>
+                                        <tr><td colSpan={20} className="py-8 text-center text-gray-400 italic">No hay pedidos registrados.</td></tr>
                                     ) : (
-                                        orders.map(order => (
-                                            <tr key={order.id} className="border-t border-gray-50 align-top">
-                                                <td className="py-4 pr-4">
-                                                    <div className="font-bold">{order.customer_name}</div>
-                                                    <div className="text-[10px] text-gray-400 font-mono">#{order.id.slice(0, 8)}</div>
-                                                </td>
-                                                <td className="py-4 text-gray-500 text-sm">
-                                                    {new Date(order.created_at).toLocaleDateString()}
-                                                </td>
-                                                <td className="py-4">
-                                                    <div className="bg-primary/5 text-primary font-bold px-3 py-1 rounded-lg inline-block border border-primary/10">
+                                        orders.map(order => {
+                                            const cookieCount = Object.entries(order.flavors_selected || {}).reduce((sum, [id, q]) => sum + (!id.includes('hogaza') && !id.includes('pan-') && !id.includes('multigrano') ? q : 0), 0);
+                                            const breadCount = Object.entries(order.flavors_selected || {}).reduce((sum, [id, q]) => sum + (id.includes('hogaza') || id.includes('pan-') || id.includes('multigrano') ? q : 0), 0);
+                                            
+                                            return (
+                                                <tr key={order.id} className={`border-b border-gray-100 hover:bg-gray-50/50 transition-colors ${order.status==='Cancelado' ? 'opacity-30' : ''}`}>
+                                                    <td className="p-3 font-medium text-gray-600 sticky left-0 bg-white z-10 border-r border-gray-100">
                                                         {(order as any).pickup_day || 'N/A'}
-                                                    </div>
+                                                    </td>
+                                                    <td className="p-3 font-bold text-gray-800 sticky left-32 bg-white z-10 border-r border-gray-100">
+                                                        <div className="flex flex-col">
+                                                            {order.customer_name}
+                                                            {order.notes && <span className="text-[9px] text-amber-600 font-normal italic mt-1 leading-tight line-clamp-2" title={order.notes}>📝 {order.notes}</span>}
+                                                            <select
+                                                                value={order.status}
+                                                                onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                                                                className={`mt-1 font-bold outline-none cursor-pointer appearance-none bg-transparent w-full text-[9px] uppercase ${order.status === 'Pendiente' ? 'text-yellow-600' :
+                                                                    order.status === 'Confirmado' ? 'text-blue-600' : 'text-green-600'
+                                                                    }`}
+                                                            >
+                                                                <option value="Pendiente">Pendiente</option>
+                                                                <option value="Confirmado">Confirmado</option>
+                                                                <option value="Cancelado">Cancelado</option>
+                                                            </select>
+                                                        </div>
+                                                    </td>
+                                                    
+                                                    <td className="p-3 text-center font-bold text-pink-600 border-r border-gray-100 bg-pink-50/10">{cookieCount > 0 ? cookieCount : '-'}</td>
+                                                    
+                                                    {/* Cookie Columns */}
+                                                    {flavors.filter(f => !f.id.includes('hogaza') && !f.id.includes('pan-') && !f.id.includes('multigrano')).map(flavor => (
+                                                        <td key={flavor.id} className="p-3 text-center font-mono border-r border-gray-100 text-gray-500">
+                                                            {order.flavors_selected?.[flavor.id] || ''}
+                                                        </td>
+                                                    ))}
+                                                    
+                                                    <td className="p-3 text-center font-bold text-amber-600 border-r border-gray-100 bg-amber-50/10">{breadCount > 0 ? breadCount : '-'}</td>
+                                                    
+                                                    {/* Bread Columns */}
+                                                    {flavors.filter(f => f.id.includes('hogaza') || f.id.includes('pan-') || f.id.includes('multigrano')).map(flavor => (
+                                                        <td key={flavor.id} className="p-3 text-center font-mono border-r border-gray-100 text-gray-500">
+                                                            <div className="flex flex-col items-center">
+                                                                <span>{order.flavors_selected?.[flavor.id] || ''}</span>
+                                                                {order.sliced_breads?.[flavor.id] ? (
+                                                                    <span className="text-[8px] font-black uppercase text-amber-600 mt-0.5" title={`${order.sliced_breads[flavor.id]} rebanados`}>✂️</span>
+                                                                ) : null}
+                                                            </div>
+                                                        </td>
+                                                    ))}
+                                                    
+                                                    <td className="p-3 text-center font-bold text-primary border-r border-gray-100 bg-bg/20">${order.total_price}</td>
+                                                    <td className="p-3 text-center font-mono text-[9px] text-gray-300">#{order.id.slice(0,6)}</td>
+                                                </tr>
+                                            );
+                                        })
+                                    )}
+                                    
+                                    {/* --- SUMMARIES --- */}
+                                    {orders.length > 0 && (
+                                        <>
+                                            {/* TOTAL VENDIDO */}
+                                            <tr className="bg-gray-800 text-white font-bold border-t-2 border-primary">
+                                                <td colSpan={2} className="p-3 text-right sticky left-0 z-10 bg-gray-800 border-r border-gray-700">TOTAL VENDIDO</td>
+                                                
+                                                <td className="p-3 text-center bg-pink-900 border-r border-gray-700">
+                                                    {orders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + Object.entries(o.flavors_selected||{}).reduce((s, [id, q])=> s + (!id.includes('hogaza')&&!id.includes('pan-')&&!id.includes('multigrano') ? q : 0), 0), 0)}
                                                 </td>
-                                                <td className="py-4 pr-4">
-                                                    <div className="flex flex-wrap gap-2">
-                                                        {order.flavors_selected ? 
-                                                            Object.entries(order.flavors_selected).map(([f_id, qty]) => {
-                                                                const flavor = flavors.find(f => f.id === f_id);
-                                                                const isBread = f_id.includes('hogaza') || f_id.includes('pan-') || f_id.includes('multigrano');
-                                                                return (
-                                                                    <div key={f_id} className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border ${isBread ? 'bg-amber-50 border-amber-200 text-amber-800' : 'bg-pink-50 border-pink-100 text-pink-700'}`}>
-                                                                        <span className="font-black text-xs bg-white/50 w-5 h-5 flex items-center justify-center rounded-full shadow-sm">{qty}</span>
-                                                                        <div className="flex flex-col">
-                                                                            <span className="text-xs font-bold whitespace-nowrap">{flavor?.name || f_id}</span>
-                                                                            {order.sliced_breads?.[f_id] ? (
-                                                                                <span className="text-[8px] font-black uppercase text-amber-600 leading-none mt-0.5">✂️ Rebanar ({order.sliced_breads[f_id]})</span>
-                                                                            ) : null}
-                                                                        </div>
-                                                                    </div>
-                                                                );
-                                                            }) 
-                                                            : <span className="text-gray-400 italic text-sm">Sin detalles</span>
-                                                        }
-                                                    </div>
-                                                    <div className="mt-2 text-[10px] font-bold uppercase tracking-widest opacity-30">
-                                                        {(() => {
-                                                            const ids = Object.keys(order.flavors_selected || {});
-                                                            const breadIds = flavors.filter(f => f.id.includes('hogaza') || f.id.includes('pan-') || f.id.includes('multigrano')).map(f => f.id);
-                                                            const anyBread = ids.some(id => breadIds.includes(id));
-                                                            const anyCookie = ids.some(id => !breadIds.includes(id));
-                                                            if (anyBread && anyCookie) return 'Mixto';
-                                                            if (anyBread) return 'Solo Pan';
-                                                            return `${order.box_size} Galletas`;
-                                                        })()}
-                                                    </div>
+                                                
+                                                {flavors.filter(f => !f.id.includes('hogaza') && !f.id.includes('pan-') && !f.id.includes('multigrano')).map(flavor => {
+                                                    const total = orders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + (o.flavors_selected?.[flavor.id] || 0), 0);
+                                                    return <td key={flavor.id} className="p-3 text-center border-r border-gray-700">{total}</td>;
+                                                })}
+                                                
+                                                <td className="p-3 text-center bg-amber-900 border-r border-gray-700">
+                                                    {orders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + Object.entries(o.flavors_selected||{}).reduce((s, [id, q])=> s + (id.includes('hogaza')||id.includes('pan-')||id.includes('multigrano') ? q : 0), 0), 0)}
                                                 </td>
-                                                <td className="py-4 font-bold text-primary">${order.total_price}</td>
-                                                <td className="py-4">
-                                                    <select
-                                                        value={order.status}
-                                                        onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                                                        className={`font-bold outline-none cursor-pointer appearance-none bg-transparent ${order.status === 'Pendiente' ? 'text-yellow-600' :
-                                                            order.status === 'Confirmado' ? 'text-blue-600' : 'text-green-600'
-                                                            }`}
-                                                    >
-                                                        <option value="Pendiente">Pendiente</option>
-                                                        <option value="Confirmado">Confirmado</option>
-                                                        <option value="Enviado">Enviado</option>
-                                                    </select>
-                                                </td>
+                                                
+                                                {flavors.filter(f => f.id.includes('hogaza') || f.id.includes('pan-') || f.id.includes('multigrano')).map(flavor => {
+                                                    const total = orders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + (o.flavors_selected?.[flavor.id] || 0), 0);
+                                                    return <td key={flavor.id} className="p-3 text-center border-r border-gray-700">{total}</td>;
+                                                })}
+                                                
+                                                <td className="p-3 text-center">${orders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + o.total_price, 0).toFixed(2)}</td>
+                                                <td className="p-3"></td>
                                             </tr>
-                                        ))
+                                            
+                                            {/* PRODUCCION */}
+                                            <tr className="bg-yellow-100 text-yellow-900 font-bold border-b border-yellow-200">
+                                                <td colSpan={2} className="p-3 text-right sticky left-0 z-10 bg-yellow-100 border-r border-yellow-200">PRODUCCIÓN A REALIZAR</td>
+                                                <td className="p-3 border-r border-yellow-200"></td>
+                                                
+                                                {flavors.filter(f => !f.id.includes('hogaza') && !f.id.includes('pan-') && !f.id.includes('multigrano')).map(flavor => (
+                                                    <td key={flavor.id} className="p-2 text-center border-r border-yellow-200">
+                                                        <input 
+                                                            type="number" 
+                                                            value={flavor.stock || ''} 
+                                                            onChange={(e) => updateStock(flavor.id, parseInt(e.target.value) || 0)}
+                                                            className="w-full bg-white/60 text-center border border-yellow-300 rounded focus:outline-none focus:ring-1 focus:ring-primary py-1 px-0"
+                                                        />
+                                                    </td>
+                                                ))}
+                                                
+                                                <td className="p-3 border-r border-yellow-200"></td>
+                                                
+                                                {flavors.filter(f => f.id.includes('hogaza') || f.id.includes('pan-') || f.id.includes('multigrano')).map(flavor => (
+                                                    <td key={flavor.id} className="p-2 text-center border-r border-yellow-200">
+                                                        <input 
+                                                            type="number" 
+                                                            value={flavor.stock || ''} 
+                                                            onChange={(e) => updateStock(flavor.id, parseInt(e.target.value) || 0)}
+                                                            className="w-full bg-white/60 text-center border border-yellow-300 rounded focus:outline-none focus:ring-1 focus:ring-primary py-1 px-0"
+                                                        />
+                                                    </td>
+                                                ))}
+                                                <td colSpan={2}></td>
+                                            </tr>
+                                            
+                                            {/* DIFERENCIA */}
+                                            <tr className="bg-gray-100 text-gray-800 font-bold border-b-2 border-gray-200">
+                                                <td colSpan={2} className="p-3 text-right sticky left-0 z-10 bg-gray-100 border-r border-gray-200 text-xs">DIFERENCIA (Faltante / Sobrante)</td>
+                                                <td className="p-3 border-r border-gray-200"></td>
+                                                
+                                                {flavors.filter(f => !f.id.includes('hogaza') && !f.id.includes('pan-') && !f.id.includes('multigrano')).map(flavor => {
+                                                    const total = orders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + (o.flavors_selected?.[flavor.id] || 0), 0);
+                                                    const diff = (flavor.stock || 0) - total;
+                                                    return (
+                                                        <td key={flavor.id} className={`p-3 text-center border-r border-gray-200 ${diff < 0 ? 'text-red-600 bg-red-50/50' : diff > 0 ? 'text-green-600 bg-green-50/50' : 'text-gray-400'}`}>
+                                                            {diff}
+                                                        </td>
+                                                    );
+                                                })}
+                                                
+                                                <td className="p-3 border-r border-gray-200"></td>
+                                                
+                                                {flavors.filter(f => f.id.includes('hogaza') || f.id.includes('pan-') || f.id.includes('multigrano')).map(flavor => {
+                                                    const total = orders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + (o.flavors_selected?.[flavor.id] || 0), 0);
+                                                    const diff = (flavor.stock || 0) - total;
+                                                    return (
+                                                        <td key={flavor.id} className={`p-3 text-center border-r border-gray-200 ${diff < 0 ? 'text-red-600 bg-red-50/50' : diff > 0 ? 'text-green-600 bg-green-50/50' : 'text-gray-400'}`}>
+                                                            {diff}
+                                                        </td>
+                                                    );
+                                                })}
+                                                <td colSpan={2}></td>
+                                            </tr>
+                                        </>
                                     )}
                                 </tbody>
                             </table>

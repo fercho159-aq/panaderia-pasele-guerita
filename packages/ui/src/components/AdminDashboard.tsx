@@ -69,9 +69,12 @@ export const AdminDashboard: React.FC = () => {
         <div className="min-h-screen bg-bg p-6 md:p-12">
             <div className="max-w-6xl mx-auto">
                 <div className="flex justify-between items-center mb-10">
-                    <div>
-                        <h1 className="font-serif text-4xl text-primary italic">Panel de Control</h1>
-                        <p className="text-gray-500 mt-2">Pásele Güerita - Centro de Operaciones</p>
+                    <div className="flex items-center gap-4">
+                        <img src="/logo.png" alt="Logo" className="h-14 md:h-16 w-auto drop-shadow-sm" />
+                        <div>
+                            <h1 className="font-serif text-3xl md:text-4xl text-primary italic">Panel de Control</h1>
+                            <p className="text-gray-500 mt-1 text-sm md:text-base">Pásele Güerita - Centro de Operaciones</p>
+                        </div>
                     </div>
                     <Button variant="outline" onClick={() => { document.cookie = "admin_token=; path=/; max-age=0"; window.location.href = "/admin/login"; }}>
                         Cerrar Sesión

@@ -3,7 +3,7 @@ import { Button } from './Button';
 
 interface Flavor { id: string; name: string; active: boolean; stock: number; }
 interface Location { id: string; name: string; days: string[]; is_sold_out: boolean; type: string; }
-interface Order { id: string; customer_name: string; box_size: number; total_price: number; created_at: string; status: string; flavors_selected: Record<string, number>; }
+interface Order { id: string; customer_name: string; box_size: number; total_price: number; created_at: string; status: string; flavors_selected: Record<string, number>; sliced_breads?: Record<string, number>; }
 
 export const AdminDashboard: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'inventory' | 'orders'>('inventory');
@@ -209,7 +209,12 @@ export const AdminDashboard: React.FC = () => {
                                                                 return (
                                                                     <div key={f_id} className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border ${isBread ? 'bg-amber-50 border-amber-200 text-amber-800' : 'bg-pink-50 border-pink-100 text-pink-700'}`}>
                                                                         <span className="font-black text-xs bg-white/50 w-5 h-5 flex items-center justify-center rounded-full shadow-sm">{qty}</span>
-                                                                        <span className="text-xs font-bold whitespace-nowrap">{flavor?.name || f_id}</span>
+                                                                        <div className="flex flex-col">
+                                                                            <span className="text-xs font-bold whitespace-nowrap">{flavor?.name || f_id}</span>
+                                                                            {order.sliced_breads?.[f_id] ? (
+                                                                                <span className="text-[8px] font-black uppercase text-amber-600 leading-none mt-0.5">✂️ Rebanar ({order.sliced_breads[f_id]})</span>
+                                                                            ) : null}
+                                                                        </div>
                                                                     </div>
                                                                 );
                                                             }) 
@@ -219,7 +224,7 @@ export const AdminDashboard: React.FC = () => {
                                                     <div className="mt-2 text-[10px] font-bold uppercase tracking-widest opacity-30">
                                                         {(() => {
                                                             const ids = Object.keys(order.flavors_selected || {});
-                                                            const breadIds = ['hogaza-clasica', 'pan-centeno', 'multigrano'];
+                                                            const breadIds = flavors.filter(f => f.id.includes('hogaza') || f.id.includes('pan-') || f.id.includes('multigrano')).map(f => f.id);
                                                             const anyBread = ids.some(id => breadIds.includes(id));
                                                             const anyCookie = ids.some(id => !breadIds.includes(id));
                                                             if (anyBread && anyCookie) return 'Mixto';

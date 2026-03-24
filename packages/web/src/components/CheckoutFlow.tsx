@@ -452,8 +452,9 @@ export const CheckoutFlow: React.FC = () => {
                                         pickup_day: selectedDate,
                                         box_size: boxSize ?? totalCookies,
                                         flavors_selected: cart,
+                                        sliced_breads: slicedBreads,
                                         total_price: totalAmount,
-                                        status: 'Pending'
+                                        status: 'Pendiente'
                                     } as any);
                                     setStep(6);
                                 } catch (e) {

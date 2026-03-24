@@ -6,7 +6,8 @@ import {
     getEarliestAvailableDate,
     cookieFlavors,
     breadFlavors,
-    pickupLocations
+    pickupLocations,
+    isWednesdayOrSaturday
 } from '@pasele-guerita/core';
 import { Button } from '@pasele-guerita/ui';
 
@@ -42,14 +43,8 @@ export const CheckoutFlow: React.FC = () => {
 
                 setLiveCookies(data.cookies?.length > 0 
                     ? data.cookies.map((c: any) => {
-                        // Merge DB with static — keep static values when DB has null
                         const s = cookieFlavors.find((sf: any) => sf.id === c.id) || {};
-                        return {
-                            ...s,
-                            ...c,
-                            description: c.description ?? (s as any).description,
-                            ingredients: c.ingredients ?? (s as any).ingredients,
-                        };
+                        return { ...s, ...c, description: c.description ?? (s as any).description, ingredients: c.ingredients ?? (s as any).ingredients };
                     }) 
                     : cookieFlavors);
                 setLiveBreads(data.breads?.length > 0 ? data.breads : breadFlavors);
@@ -66,12 +61,25 @@ export const CheckoutFlow: React.FC = () => {
         loadData();
     }, []);
 
+    // Date Logic helpers
+    const isDateValid = isWednesdayOrSaturday(selectedDate);
+    const selectedDayName = selectedDate ? new Date(selectedDate.replace(/-/g, '/')).toLocaleDateString('en-US', { weekday: 'long' }) : '';
+
+    const doesDateMatchLocation = (dateStr: string, locId: string) => {
+        const loc = liveLocations.find(l => l.id === locId);
+        if (!loc || !dateStr) return true;
+        // Capitalize first letter to match locations.ts (e.g. "Wednesday")
+        const day = new Date(dateStr.replace(/-/g, '/')).toLocaleDateString('en-US', { weekday: 'long' });
+        const capitalizedDay = day.charAt(0).toUpperCase() + day.slice(1);
+        return (loc.days as string[]).includes(capitalizedDay);
+    };
+
+    const isStep2Valid = selectedDate && (locationId === 'special-coordination' || (isDateValid && doesDateMatchLocation(selectedDate, locationId)));
+
     // All products combined for summary/order purposes
     const allLiveProducts = [...liveCookies, ...liveBreads];
 
     const totalCookies = Object.values(cart).reduce((a: number, b: number) => a + b, 0);
-    const isBoxFull = boxSize !== null && totalCookies === boxSize;
-    // Calculate total based on actual item prices
     const totalAmount = Object.entries(cart).reduce((sum, [id, qty]) => {
         const item = allLiveProducts.find((p: any) => p.id === id);
         return sum + ((item?.price || 12) * (qty as number));
@@ -79,7 +87,6 @@ export const CheckoutFlow: React.FC = () => {
 
     const handleAddCookie = (id: string) => {
         const isBread = liveBreads.some((b: any) => b.id === id);
-        // Breads: unlimited quantity. Cookies: limited by boxSize.
         if (isBread || (boxSize && totalCookies < boxSize)) {
             setCart({ ...cart, [id]: (cart[id] || 0) + 1 });
         }
@@ -111,32 +118,45 @@ export const CheckoutFlow: React.FC = () => {
                 ))}
             </div>
 
-            {/* Step 1: Logística — Select a location from the live DB */}
+            {/* Step 1: Logística */}
             {step === 1 && (
                 <div className="animate-fade-in flex-1">
                     <h2 className="font-serif text-4xl text-primary mb-2 italic">1. Punto de Entrega</h2>
-                    <p className="text-gray-600 mb-8">Elige dónde recogerás tu pedido. Las ubicaciones se actualizan en tiempo real.</p>
+                    <p className="text-gray-600 mb-8 font-serif">Elige dónde recogerás tu pedido. <span className="text-accent italic">Solo entregamos Miércoles y Sábados.</span></p>
 
                     {liveLocations.length === 0 ? (
-                        <p className="text-gray-400 italic text-center py-10">Cargando ubicaciones...</p>
+                        <p className="text-gray-400 italic text-center py-10">Cargando ubicaciones de Dallas...</p>
                     ) : (
-                        <div className="space-y-6 mb-10 max-h-[380px] overflow-y-auto pr-1">
-                            {(['pos', 'pickup', 'delivery'] as const).map(type => {
+                        <div className="space-y-6 mb-10 max-h-[420px] overflow-y-auto pr-1">
+                            {(['pickup', 'delivery'] as const).map(type => {
                                 const group = liveLocations.filter(l => l.type === type && !l.isSoldOut);
                                 if (group.length === 0) return null;
-                                const labels: Record<string, string> = { pos: '🛍️ Puntos de Venta', pickup: '📦 Pickup', delivery: '🚚 Puntos de Entrega' };
+                                const labels: Record<string, string> = { pickup: '📦 Puntos de Pickup (Recogida)', delivery: '🚚 Puntos de Entrega (Sábado)' };
                                 return (
                                     <div key={type}>
-                                        <p className="text-[10px] uppercase font-bold tracking-widest text-primary mb-2">{labels[type]}</p>
-                                        <div className="grid gap-3">
+                                        <p className="text-[10px] uppercase font-bold tracking-widest text-primary mb-3 border-b border-bg pb-1">{labels[type]}</p>
+                                        <div className="grid gap-4">
                                             {group.map(l => (
                                                 <button
                                                     key={l.id}
                                                     onClick={() => { setLocationId(l.id); setLogistics(type === 'delivery' ? 'delivery' : 'pickup'); }}
-                                                    className={`p-4 rounded-xl border-2 text-left transition-all ${locationId === l.id ? 'border-primary bg-primary/5' : 'border-bg hover:border-accent'}`}
+                                                    className={`p-5 rounded-2xl border-2 text-left transition-all relative overflow-hidden group ${locationId === l.id ? 'border-primary bg-primary/5' : 'border-bg hover:border-accent'}`}
                                                 >
-                                                    <h4 className="font-serif text-primary italic">{l.name}</h4>
-                                                    <p className="text-[10px] text-gray-500">{l.address} · {Array.isArray(l.days) ? l.days.join(' & ') : l.days} · {l.hours}</p>
+                                                    <div className="relative z-10">
+                                                        <div className="flex justify-between items-start mb-1">
+                                                            <h4 className="font-serif text-xl text-primary italic font-bold">{l.name}</h4>
+                                                            {l.id === 'special-coordination' && <span className="bg-accent/20 text-primary text-[8px] font-bold px-2 py-0.5 rounded-full uppercase">Especial</span>}
+                                                        </div>
+                                                        <p className="text-xs text-gray-600 mb-2 leading-tight">{l.address}</p>
+                                                        <div className="flex gap-4">
+                                                            <p className="text-[10px] font-bold text-primary flex items-center gap-1">
+                                                                <span className="opacity-50">📅</span> {l.days.join(' & ')}
+                                                            </p>
+                                                            <p className="text-[10px] text-gray-400 flex items-center gap-1">
+                                                                <span className="opacity-50">⏰</span> {l.hours}
+                                                            </p>
+                                                        </div>
+                                                    </div>
                                                 </button>
                                             ))}
                                         </div>
@@ -152,7 +172,7 @@ export const CheckoutFlow: React.FC = () => {
                             onClick={() => setStep(2)}
                             className="w-full h-16 text-xl"
                         >
-                            Siguiente: Calendario
+                            Siguiente: Seleccionar Fecha
                         </Button>
                     </div>
                 </div>
@@ -162,44 +182,51 @@ export const CheckoutFlow: React.FC = () => {
             {step === 2 && (
                 <div className="animate-fade-in flex-1">
                     <h2 className="font-serif text-4xl text-primary mb-2 italic">2. Horarios</h2>
-                    <p className="text-gray-600 mb-10">Requerimos 48 horas para fermentar tu pan artesanal.</p>
+                    <p className="text-gray-600 mb-10 font-serif">Entregamos los <strong>Miércoles y Sábados</strong>. Requerimos 48h de preparación.</p>
 
-                    <div className="mb-10">
-                        <label className="block text-sm font-bold text-primary mb-2">Selecciona el día</label>
+                    <div className="mb-8">
+                        <label className="block text-sm font-bold text-primary mb-2">Selecciona un Miércoles o Sábado</label>
                         <input 
                             type="date"
                             min={earliestDate.toISOString().split('T')[0]}
-                            className="w-full p-4 rounded-xl border border-bg text-lg font-serif outline-none focus:ring-2 focus:ring-accent"
+                            className={`w-full p-5 rounded-2xl border-2 text-xl font-serif outline-none transition-all ${selectedDate && !isStep2Valid ? 'border-red-300 bg-red-50 text-red-900' : 'border-bg focus:ring-2 focus:ring-accent'}`}
                             value={selectedDate}
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedDate(e.target.value)}
                         />
+                        {selectedDate && !isDateValid && (
+                            <p className="text-red-600 text-[10px] mt-2 font-bold uppercase tracking-widest animate-bounce">⚠️ Solo entregamos los miércoles y sábados.</p>
+                        )}
+                        {selectedDate && isDateValid && !doesDateMatchLocation(selectedDate, locationId) && (
+                            <p className="text-red-500 text-[10px] mt-2 font-bold uppercase tracking-widest italic">
+                                📍 Esta ubicación no abre los {selectedDayName}s. Por favor elige otro día.
+                            </p>
+                        )}
                     </div>
 
-                    {logistics === 'pickup' && (
-                        <div className="mb-10">
-                            <label className="block text-sm font-bold text-primary mb-4">Elige tu punto de entrega</label>
-                            <div className="grid gap-3">
-                                {liveLocations.filter(l => l.type === 'pickup').map(l => (
-                                    <button 
-                                        key={l.id}
-                                        onClick={() => setLocationId(l.id)}
-                                        className={`p-4 rounded-xl border-2 text-left transition-all ${locationId === l.id ? 'border-primary bg-primary/5' : 'border-bg'}`}>
-                                        <h4 className="font-serif text-primary italic">{l.name}</h4>
-                                        <p className="text-[10px] text-gray-500">{l.address}</p>
-                                    </button>
-                                ))}
+                    <div className="bg-primary/5 p-6 rounded-3xl border border-primary/10 mb-10">
+                        <h4 className="text-[10px] uppercase font-bold tracking-widest text-primary mb-2">Resumen de Logística</h4>
+                        <div className="flex gap-4">
+                            <div className="flex-1">
+                                <p className="text-[9px] text-gray-400 uppercase">Ubicación</p>
+                                <p className="text-sm font-bold text-primary">{liveLocations.find(l => l.id === locationId)?.name}</p>
+                            </div>
+                            <div className="flex-1 text-right">
+                                <p className="text-[9px] text-gray-400 uppercase">Horario Estimado</p>
+                                <p className="text-sm font-bold text-primary italic">
+                                    {liveLocations.find(l => l.id === locationId)?.hours.split(',').find(h => h.includes(selectedDayName.substring(0,3))) || liveLocations.find(l => l.id === locationId)?.hours}
+                                </p>
                             </div>
                         </div>
-                    )}
+                    </div>
 
                     <div className="flex gap-4 mt-auto">
-                        <Button variant="outline" onClick={() => setStep(1)} className="w-1/3 border-gray-300">Atrás</Button>
+                        <Button variant="outline" onClick={() => setStep(1)} className="w-1/3 border-gray-300 hover:bg-bg">Atrás</Button>
                         <Button
-                            disabled={!selectedDate}
+                            disabled={!isStep2Valid}
                             onClick={() => setStep(3)}
                             className="w-2/3 h-16"
                         >
-                            Elegir Productos
+                            Confirmar Fecha
                         </Button>
                     </div>
                 </div>
@@ -219,7 +246,7 @@ export const CheckoutFlow: React.FC = () => {
                     {/* Cookie box size selector (only for cookie tab) */}
                     {menuTab === 'cookies' && (
                         <div className="mb-6">
-                            <p className="text-gray-600 mb-4 text-sm">Elige el tamaño de tu caja ({totalCookies}/{boxSize ?? '?'})</p>
+                            <p className="text-gray-600 mb-4 text-sm font-serif">Elige el tamaño de tu caja ({totalCookies}/{boxSize ?? '?'})</p>
                             <div className="flex gap-4 justify-center">
                                 {[3, 6, 9].map(size => (
                                     <button
@@ -244,14 +271,10 @@ export const CheckoutFlow: React.FC = () => {
                                             <span className="font-serif text-lg italic text-primary">{item.name}</span>
                                             {item.price && <span className="text-sm font-bold text-primary">${item.price}</span>}
                                         </div>
-                                        <div className="flex gap-2 mt-1">
-                                            {item.is_sourdough && <span className="text-[9px] uppercase tracking-wider border border-accent text-primary px-2 py-0.5 rounded-full">Sourdough</span>}
-                                            {item.is_gluten_free && <span className="text-[9px] uppercase tracking-wider bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Gluten Free</span>}
-                                        </div>
                                     </div>
                                     <div className="flex items-center gap-3">
                                         <button onClick={() => handleRemoveCookie(item.id)} className="w-8 h-8 rounded-full bg-white border border-bg text-primary font-bold disabled:opacity-30 flex items-center justify-center" disabled={!cart[item.id]}>-</button>
-                                        <span className="w-4 text-center font-bold">{cart[item.id] || 0}</span>
+                                        <span className="w-4 text-center font-bold font-serif">{cart[item.id] || 0}</span>
                                         <button
                                             onClick={() => handleAddCookie(item.id)}
                                             className="w-8 h-8 rounded-full bg-primary text-white font-bold disabled:opacity-30 flex items-center justify-center"
@@ -259,13 +282,10 @@ export const CheckoutFlow: React.FC = () => {
                                         >+</button>
                                     </div>
                                 </div>
-                                {item.description && <p className="text-sm text-gray-600 mb-1">{item.description}</p>}
+                                {item.description && <p className="text-sm text-gray-600 mb-1 font-serif line-clamp-1">{item.description}</p>}
                                 {item.ingredients && <p className="text-[10px] text-gray-400 italic">Ingredientes: {item.ingredients}</p>}
                             </div>
                         ))}
-                        {menuTab === 'cookies' && !boxSize && (
-                            <p className="text-center text-gray-400 italic py-6">Selecciona el tamaño de tu caja primero.</p>
-                        )}
                     </div>
 
                     <div className="flex gap-4 mt-auto">
@@ -285,38 +305,38 @@ export const CheckoutFlow: React.FC = () => {
             {step === 4 && (
                 <div className="animate-fade-in flex-1">
                     <h2 className="font-serif text-4xl text-primary mb-2 italic">4. Tus Datos</h2>
-                    <p className="text-gray-600 mb-10">Información para la entrega y contacto.</p>
+                    <p className="text-gray-600 mb-10 font-serif">Información para la entrega y contacto.</p>
 
                     <div className="space-y-6 mb-10">
                         <input 
                             type="text" placeholder="Nombre completo"
-                            className="w-full p-4 rounded-xl border border-bg focus:ring-2 focus:ring-accent outline-none"
+                            className="w-full p-4 rounded-xl border border-bg focus:ring-2 focus:ring-accent outline-none font-serif"
                             value={customer.name}
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCustomer({...customer, name: e.target.value})}
                         />
                         <div className="grid gap-4 md:grid-cols-2">
                             <input 
-                                type="tel" placeholder="Teléfono (832-000-0000)"
-                                className="w-full p-4 rounded-xl border border-bg focus:ring-2 focus:ring-accent outline-none"
+                                type="tel" placeholder="Teléfono"
+                                className="w-full p-4 rounded-xl border border-bg focus:ring-2 focus:ring-accent outline-none font-serif"
                                 value={customer.phone}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCustomer({...customer, phone: e.target.value})}
                             />
                             <input 
                                 type="email" placeholder="Email"
-                                className="w-full p-4 rounded-xl border border-bg focus:ring-2 focus:ring-accent outline-none"
+                                className="w-full p-4 rounded-xl border border-bg focus:ring-2 focus:ring-accent outline-none font-serif"
                                 value={customer.email}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCustomer({...customer, email: e.target.value})}
                             />
                         </div>
 
                         <div className="pt-6 border-t border-bg">
-                            <label className="flex items-center gap-2 cursor-pointer">
+                            <label className="flex items-center gap-2 cursor-pointer font-serif">
                                 <input type="checkbox" className="w-5 h-5 accent-primary" checked={gift.is_gift} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGift({...gift, is_gift: e.target.checked})} />
-                                <span className="font-serif italic text-primary">¿Es un regalo? 🎁</span>
+                                <span className="italic text-primary">¿Es un regalo? 🎁</span>
                             </label>
                             {gift.is_gift && (
                                 <textarea 
-                                    className="w-full mt-4 p-4 rounded-xl border border-bg focus:ring-2 focus:ring-accent outline-none h-24 italic"
+                                    className="w-full mt-4 p-4 rounded-xl border border-bg focus:ring-2 focus:ring-accent outline-none h-24 italic font-serif"
                                     placeholder="Escribe tu mensaje..."
                                     value={gift.message}
                                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setGift({...gift, message: e.target.value})}
@@ -342,12 +362,12 @@ export const CheckoutFlow: React.FC = () => {
             {step === 5 && (
                 <div className="animate-fade-in flex-1">
                     <h2 className="font-serif text-4xl text-primary mb-2 italic">5. Confirmación</h2>
-                    <p className="text-gray-600 mb-10">Revisa tu resumen y elige el método de pago.</p>
+                    <p className="text-gray-600 mb-10 font-serif">Revisa tu resumen y elige el método de pago.</p>
 
                     <div className="bg-bg/10 p-6 rounded-3xl border border-bg mb-8">
                         <h4 className="text-[10px] uppercase font-bold tracking-widest text-primary mb-4">Resumen de Compra</h4>
-                        <ul className="space-y-2 text-sm italic mb-4">
-                            {Object.entries(cart).map(([id, qty]: [string, number]) => (
+                        <ul className="space-y-2 text-sm italic mb-4 font-serif text-gray-700">
+                            {Object.entries(cart).map(([id, qty]) => (
                                 <li key={id} className="flex justify-between border-b border-bg/20 pb-1">
                                     <span>{qty}x {allLiveProducts.find((f: any) => f.id === id)?.name}</span>
                                     <span>${((allLiveProducts.find((f: any) => f.id === id)?.price || 12) * qty).toFixed(2)}</span>
@@ -364,13 +384,13 @@ export const CheckoutFlow: React.FC = () => {
                         <button 
                             onClick={() => setPaymentMethod('transfer')}
                             className={`p-6 rounded-2xl border-2 text-left transition-all ${paymentMethod === 'transfer' ? 'border-primary bg-primary/5' : 'border-bg'}`}>
-                            <h5 className="font-serif italic font-bold text-primary">Transferencia</h5>
+                            <h5 className="font-serif italic font-bold text-primary text-lg">Transferencia</h5>
                             <p className="text-[10px] uppercase tracking-tighter opacity-60">Zelle / Venmo</p>
                         </button>
                         <button 
                             onClick={() => setPaymentMethod('cash')}
                             className={`p-6 rounded-2xl border-2 text-left transition-all ${paymentMethod === 'cash' ? 'border-primary bg-primary/5' : 'border-bg'}`}>
-                            <h5 className="font-serif italic font-bold text-primary">Efectivo</h5>
+                            <h5 className="font-serif italic font-bold text-primary text-lg">Efectivo</h5>
                             <p className="text-[10px] uppercase tracking-tighter opacity-60">Pago al recibir</p>
                         </button>
                     </div>
@@ -381,24 +401,20 @@ export const CheckoutFlow: React.FC = () => {
                             disabled={!paymentMethod}
                             onClick={async () => {
                                 try {
-                                    // Let's try to save to DB but with only the fields that exist in schema.sql
-                                    // to avoid errors.
                                     await createOrder({
                                         customer_name: customer.name,
                                         customer_phone: customer.phone,
                                         customer_email: customer.email,
-                                        location_id: locationId || 'del-1', 
+                                        location_id: locationId, 
                                         pickup_day: selectedDate,
-                                        // For bread orders boxSize is null — use total item count instead
                                         box_size: boxSize ?? totalCookies,
                                         flavors_selected: cart,
                                         total_price: totalAmount,
                                         status: 'Pending'
                                     } as any);
-                                    
                                     setStep(6);
                                 } catch (e) {
-                                    console.error("DB Save failed, proceeding to Step 6 anyway:", e);
+                                    console.error("Order failed:", e);
                                     setStep(6); 
                                 }
                             }}
@@ -419,43 +435,32 @@ export const CheckoutFlow: React.FC = () => {
                         </svg>
                     </div>
                     <h2 className="font-serif text-4xl text-primary mb-4 italic">¡Pedido Recibido!</h2>
-                    <p className="text-gray-600 mb-8 max-w-md mx-auto">
+                    <p className="text-gray-600 mb-8 max-w-md mx-auto font-serif">
                         Gracias <strong>{customer.name.split(' ')[0]}</strong>, hemos registrado tu pedido.
-                        Tu número de confirmación es <strong>#HOU-{Math.floor(1000 + Math.random() * 9000)}</strong>.
                     </p>
 
                     {paymentMethod === 'transfer' ? (
-                        <div className="bg-bg/20 p-8 rounded-3xl border border-primary/20 mb-10 max-w-sm mx-auto">
-                            <h4 className="font-serif italic text-xl text-primary mb-4">Datos para Transferencia</h4>
-                            <div className="space-y-4 text-left text-sm mb-6">
+                        <div className="bg-bg/20 p-8 rounded-3xl border border-primary/20 mb-10 max-w-sm mx-auto font-serif">
+                            <h4 className="italic text-xl text-primary mb-4">Datos para Transferencia</h4>
+                            <div className="space-y-4 text-left text-sm mb-6 font-serif">
                                 <div className="flex justify-between border-b border-primary/10 pb-2">
-                                    <span className="opacity-60">Zelle:</span>
-                                    <span className="font-bold">houston@paselguerita.com</span>
+                                    <span className="opacity-60 font-serif">Zelle/Phone:</span>
+                                    <span className="font-bold">469-835-5197</span>
                                 </div>
                                 <div className="flex justify-between border-b border-primary/10 pb-2">
-                                    <span className="opacity-60">Venmo:</span>
-                                    <span className="font-bold">@paselguerita</span>
+                                    <span className="opacity-60 font-serif">Name:</span>
+                                    <span className="font-bold">Claudia Hernandez</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="opacity-60">Total a pagar:</span>
+                                    <span className="opacity-60 font-serif">Total:</span>
                                     <span className="font-bold text-lg text-primary">${totalAmount.toFixed(2)}</span>
                                 </div>
                             </div>
-                            
-                            {/* Placeholder QR */}
-                            <div className="bg-white p-4 rounded-2xl w-40 h-40 mx-auto flex items-center justify-center border border-primary/5 shadow-inner">
-                                <div className="grid grid-cols-4 gap-1 opacity-20">
-                                    {Array.from({length: 16}).map((_, i) => (
-                                        <div key={i} className={`w-6 h-6 ${Math.random() > 0.5 ? 'bg-primary' : 'bg-transparent'}`}></div>
-                                    ))}
-                                </div>
-                                <span className="absolute text-[8px] uppercase tracking-widest font-bold text-primary/40">QR CODE</span>
-                            </div>
-                            <p className="text-[10px] mt-4 uppercase tracking-wider text-primary/60">Escanea para pagar</p>
+                            <p className="text-[10px] mt-4 uppercase tracking-wider text-primary/60 italic font-bold">Por favor envía comprobante por WhatsApp</p>
                         </div>
                     ) : (
-                        <div className="bg-bg/20 p-8 rounded-3xl border border-primary/20 mb-10 max-w-sm mx-auto">
-                            <h4 className="font-serif italic text-xl text-primary mb-4">Pago en Efectivo</h4>
+                        <div className="bg-bg/20 p-8 rounded-3xl border border-primary/20 mb-10 max-w-sm mx-auto font-serif">
+                            <h4 className="italic text-xl text-primary mb-4">Pago en Efectivo</h4>
                             <p className="text-sm italic text-gray-600">
                                 Recuerda tener listos <strong>${totalAmount.toFixed(2)}</strong> al momento de la entrega o recolección.
                             </p>

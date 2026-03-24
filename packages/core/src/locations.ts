@@ -1,75 +1,75 @@
 import { PickupLocation } from './types';
 
 // Total: 2 POS, 2 Pickup, 4 Delivery
+// Total: 2 Pickup, 6 Delivery/Special
 export const pickupLocations: PickupLocation[] = [
-    // --- Points of Sale (POS) ---
-    {
-        id: 'pos-1',
-        name: 'Bishop Arts District (POS)',
-        address: '400 N Bishop Ave, Dallas, TX',
-        days: ['Saturday'],
-        hours: '9:00 AM - 1:00 PM',
-        type: 'pos'
-    },
-    {
-        id: 'pos-2',
-        name: 'Deep Ellum Market (POS)',
-        address: '2800 Main St, Dallas, TX',
-        days: ['Wednesday'],
-        hours: '10:00 AM - 2:00 PM',
-        type: 'pos',
-        isSoldOut: true // For UX testing
-    },
-
     // --- Pickups ---
     {
-        id: 'pickup-1',
-        name: 'White Rock Lake (Pickup)',
-        address: '8300 E Lawther Dr, Dallas, TX',
-        days: ['Saturday'],
-        hours: '8:30 AM - 12:30 PM',
+        id: 'pickup-dallas',
+        name: 'Dallas: Huitzizilin Café (Pick-up)',
+        address: '1836 W Jefferson Blvd #120, Dallas, TX 75208',
+        days: ['Wednesday', 'Saturday'],
+        hours: 'Wed 7am-4pm, Sat 7am-3pm',
         type: 'pickup'
     },
     {
-        id: 'pickup-2',
-        name: 'Victory Park (Pickup)',
-        address: '2500 Victory Ave, Dallas, TX',
-        days: ['Wednesday', 'Saturday'],
-        hours: '11:00 AM - 3:00 PM',
+        id: 'pickup-hurst',
+        name: 'Hurst Tx: Tutti Frutti (Pick-up)',
+        address: '394 E Pipeline Rd, Hurst, TX 76053',
+        days: ['Wednesday'],
+        hours: 'Wed 2pm-8pm',
         type: 'pickup'
     },
 
-    // --- Deliveries ---
+    // --- Deliveries (Saturday Only) ---
     {
-        id: 'del-1',
-        name: 'Uptown Area (Delivery)',
-        address: 'Zip Codes: 75204, 75201',
-        days: ['Wednesday'],
-        hours: '3:00 PM - 6:00 PM',
-        type: 'delivery'
-    },
-    {
-        id: 'del-2',
-        name: 'Oak Lawn (Delivery)',
-        address: 'Zip Codes: 75219',
-        days: ['Wednesday'],
-        hours: '1:00 PM - 4:00 PM',
-        type: 'delivery'
-    },
-    {
-        id: 'del-3',
-        name: 'Highland Park (Delivery)',
-        address: 'Zip Codes: 75205',
+        id: 'del-dallas',
+        name: 'Dallas: Huitzizilin Café (Delivery)',
+        address: '1836 W Jefferson Blvd #120, Dallas, TX 75208',
         days: ['Saturday'],
-        hours: '2:00 PM - 5:00 PM',
+        hours: '10:00 AM',
         type: 'delivery'
     },
     {
-        id: 'del-4',
-        name: 'Preston Hollow (Delivery)',
-        address: 'Zip Codes: 75225',
+        id: 'del-irving',
+        name: 'Irving (Delivery Point)',
+        address: '6440 N MacArthur Blvd, Irving, TX 75039',
         days: ['Saturday'],
-        hours: '10:00 AM - 2:00 PM',
+        hours: '10:50 AM',
+        type: 'delivery'
+    },
+    {
+        id: 'del-carrollton',
+        name: 'Carrollton (Delivery Point)',
+        address: '2150 N Josey Ln, Carrollton, TX 75006',
+        days: ['Saturday'],
+        hours: '11:20 AM',
+        type: 'delivery'
+    },
+    {
+        id: 'del-plano',
+        name: 'Plano (Delivery Point)',
+        address: '1001 14th St, Plano, TX 75074',
+        days: ['Saturday'],
+        hours: '12:10 PM',
+        type: 'delivery'
+    },
+    {
+        id: 'del-garland',
+        name: 'Garland (Delivery Point)',
+        address: '500 W Miller Rd, Garland, TX 75041',
+        days: ['Saturday'],
+        hours: '1:00 PM',
+        type: 'delivery'
+    },
+
+    // --- Special ---
+    {
+        id: 'special-coordination',
+        name: 'Lavon, Princeton, Wylie',
+        address: 'Si eres de Lavon, Princeton o Wylie, selecciona esta opción para coordinar tu entrega.',
+        days: ['Wednesday', 'Saturday'],
+        hours: 'Coordinación personalizada',
         type: 'delivery'
     }
 ];

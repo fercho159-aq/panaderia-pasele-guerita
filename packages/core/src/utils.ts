@@ -11,3 +11,12 @@ export const getEarliestAvailableDate = () => {
     date.setDate(date.getDate() + 2); // 48h lead time
     return date;
 };
+
+export const isWednesdayOrSaturday = (dateStr: string) => {
+    if (!dateStr) return false;
+    // Parse the YYYY-MM-DD string as a local date to avoid timezone shifts
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
+    const dayOfWeek = date.getDay(); // 0: Sunday, 3: Wednesday, 6: Saturday
+    return dayOfWeek === 3 || dayOfWeek === 6;
+};

@@ -65,12 +65,26 @@ const { title, description = "Artisanal Sourdough Dallas, Handmade Cookies" } = 
 					<img src="/logo.png" alt="Pásele Güerita" class="h-16 md:h-20 w-auto mx-auto" />
 				</div>
 				<h2 class="font-serif text-4xl md:text-5xl font-bold mb-6 italic">Hecho con masa madre y mucho amor.</h2>
-				<div class="font-sans flex justify-center gap-6 mb-8 text-lg font-bold opacity-90">
-                    <a href="/" class="hover:text-accent transition-colors">Inicio</a>
-                    <a href="/about" class="hover:text-accent transition-colors">Historia</a>
-                    <a href="/legal" class="hover:text-accent transition-colors">Aviso Legal</a>
+				
+                <div class="flex flex-col items-center gap-6 mb-10">
+                    <div class="flex gap-10 text-3xl">
+                        <a href="https://instagram.com/paselegueritatx" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-all hover:-translate-y-1" title="Instagram">📸</a>
+                        <a href="https://tiktok.com/@paselegueritatx" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-all hover:-translate-y-1" title="TikTok">🎵</a>
+                        <a href="https://facebook.com/paselegueritatx" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-all hover:-translate-y-1" title="Facebook">👥</a>
+                    </div>
+
+                    <div class="font-sans flex flex-wrap justify-center gap-x-8 gap-y-4 text-lg font-bold opacity-90 uppercase tracking-widest text-sm">
+                        <a href="/" class="hover:text-accent transition-colors underline underline-offset-8 decoration-accent/30">Inicio</a>
+                        <a href="/about" class="hover:text-accent transition-colors underline underline-offset-8 decoration-accent/30">Historia</a>
+                        <a href="/legal" class="hover:text-accent transition-colors underline underline-offset-8 decoration-accent/30">Aviso Legal</a>
+                    </div>
                 </div>
-                <p class="font-sans text-bg/60 text-sm">Dallas, Texas | Artisanal Bakery</p>
+
+                <div class="font-sans text-bg/50 text-xs uppercase tracking-[0.2em] space-y-2">
+                    <p>Dallas TX &bull; Farmersville TX</p>
+                    <p>+1 430 324 2593 | @paselegueritatx</p>
+                    <p class="mt-8 opacity-30">&copy; {new Date().getFullYear()} Pásele Güerita. All rights reserved.</p>
+                </div>
 			</div>
 		</footer>
 	</body>

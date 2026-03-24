@@ -511,10 +511,10 @@ export const CheckoutFlow: React.FC = () => {
                                         finalNotes = (finalNotes ? finalNotes + ' | ' : '') + `📎 Comprobante adjunto (${receiptUrl})`;
                                     }
 
+                                    const encodedName = `${customer.name} | 📞 ${customer.phone} | ✉️ ${customer.email}`;
+
                                     await createOrder({
-                                        customer_name: finalNotes ? `${customer.name} | 📝 ${finalNotes}` : customer.name,
-                                        customer_phone: customer.phone,
-                                        customer_email: customer.email,
+                                        customer_name: finalNotes ? `${encodedName} | 📝 ${finalNotes}` : encodedName,
                                         location_id: locationId, 
                                         pickup_day: selectedDate,
                                         box_size: boxSize ?? totalCookies,
@@ -524,10 +524,10 @@ export const CheckoutFlow: React.FC = () => {
                                         status: 'Pendiente'
                                     } as any);
                                     setStep(6);
-                                } catch (e) {
+                                } catch (e: any) {
                                     console.error("Order failed:", e);
-                                    // Ensure we still update the UI or show an alert if needed
-                                    setStep(6); 
+                                    alert(`Hubo un error crítico al procesar tu orden: ${e?.message || 'Error del servidor'}. Por favor toma captura a tu resumen y envíanosla por WhatsApp para no perder el pedido.`);
+                                    // Remove setStep(6) from the catch block so the user can literally see it failed.
                                 } finally {
                                     setIsUploading(false);
                                 }

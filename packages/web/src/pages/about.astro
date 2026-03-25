@@ -78,11 +78,10 @@ const galleryImages = [
         <!-- Photo Gallery Grid -->
         <div class="mb-16">
             <h2 class="font-serif text-4xl text-primary italic text-center mb-10">Del horno a tu mesa</h2>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {galleryImages.map((img, i) => (
-                    <div class={`overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 hover:scale-[1.03] cursor-pointer ${i === 0 || i === 5 ? 'row-span-2 md:row-span-2' : ''}`}
-                         style={i === 0 || i === 5 ? 'grid-row: span 2;' : ''}>
-                        <img src={img.src} alt={img.alt} class="w-full h-full object-cover" style="min-height: 180px;" loading="lazy" />
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {galleryImages.map((img) => (
+                    <div class="aspect-square overflow-hidden rounded-2xl shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer">
+                        <img src={img.src} alt={img.alt} class="w-full h-full object-cover" loading="lazy" decoding="async" />
                     </div>
                 ))}
             </div>

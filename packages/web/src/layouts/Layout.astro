@@ -75,15 +75,18 @@ const { title, description = "Artisanal Sourdough Dallas, Handmade Cookies" } = 
 			</div>
 		</div>
 		<style>
-			.layout-marquee-wrap { contain: strict; height: 5.5rem; }
+			.layout-marquee-wrap { height: 5.5rem; overflow: hidden; position: relative; }
 			.layout-marquee-inner {
+				position: absolute;
+				display: flex;
+				gap: 0.75rem;
+				width: max-content;
 				will-change: transform;
-				animation: layout-scroll 35s linear infinite;
-				transform: translate3d(0, 0, 0);
+				animation: layout-scroll 30s linear infinite;
 			}
 			@keyframes layout-scroll {
-				from { transform: translate3d(0, 0, 0); }
-				to   { transform: translate3d(-50%, 0, 0); }
+				from { transform: translateX(0); }
+				to   { transform: translateX(-50%); }
 			}
 		</style>
 		<footer class="bg-primary text-bg py-12">

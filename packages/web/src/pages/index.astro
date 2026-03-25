@@ -272,19 +272,22 @@ const breadHoverPool = [
 </Layout>
 
 <style>
-/* GPU-accelerated marquee — no layout thrash */
-.pg-marquee-wrap { contain: strict; height: 7rem; }
+/* GPU marquee — proper infinite loop */
+.pg-marquee-wrap { height: 7rem; overflow: hidden; position: relative; background: var(--color-primary, #2d5a4e); }
 .pg-marquee-inner {
+	position: absolute;
+	display: flex;
+	gap: 0.75rem;
+	width: max-content;
 	will-change: transform;
-	animation: pg-scroll 30s linear infinite;
-	transform: translate3d(0, 0, 0);
+	animation: pg-scroll 28s linear infinite;
 }
 @keyframes pg-scroll {
-	from { transform: translate3d(0, 0, 0); }
-	to   { transform: translate3d(-50%, 0, 0); }
+	from { transform: translateX(0); }
+	to   { transform: translateX(-50%); }
 }
 
-/* Product card hover image swap — JS-powered for reliability */
+/* Product card hover image swap */
 .product-card { transition: box-shadow 0.2s, transform 0.2s; }
 .product-card:hover { box-shadow: 0 20px 50px rgba(0,0,0,.12); transform: translateY(-4px); }
 .product-img-main, .product-img-hover { transition: opacity 0.25s ease; }

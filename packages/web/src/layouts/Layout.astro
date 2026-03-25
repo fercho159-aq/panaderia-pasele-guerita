@@ -59,7 +59,30 @@ const { title, description = "Artisanal Sourdough Dallas, Handmade Cookies" } = 
 		<main>
 			<slot />
 		</main>
-		<footer class="bg-primary text-bg py-12 mt-20">
+		<!-- Global Photo Marquee above footer -->
+		<div class="overflow-hidden bg-bg py-4 border-t border-b border-bg mt-20">
+			<div class="flex gap-3" style="animation: marquee-rev 50s linear infinite; width: max-content;">
+				{[
+					'/imagenes/IMG_6657.webp', '/imagenes/IMG_6703.webp', '/imagenes/IMG_6360.webp',
+					'/imagenes/IMG_6758.webp', '/imagenes/IMG_6749.webp', '/imagenes/IMG_6189.webp',
+					'/imagenes/IMG_6760.webp', '/imagenes/IMG_6751.webp', '/imagenes/IMG_6750.webp',
+					'/imagenes/IMG_6657.webp', '/imagenes/IMG_6703.webp', '/imagenes/IMG_6360.webp',
+					'/imagenes/IMG_6758.webp', '/imagenes/IMG_6749.webp', '/imagenes/IMG_6189.webp',
+					'/imagenes/IMG_6760.webp', '/imagenes/IMG_6751.webp', '/imagenes/IMG_6750.webp',
+				].map((src) => (
+					<div class="flex-shrink-0 w-24 h-24 md:w-32 md:h-32 rounded-xl overflow-hidden hover:scale-105 transition-transform duration-300 shadow-sm border border-white">
+						<img src={src} alt="Pásele Güerita" class="w-full h-full object-cover" loading="lazy" />
+					</div>
+				))}
+			</div>
+		</div>
+		<style>
+			@keyframes marquee-rev {
+				from { transform: translateX(0); }
+				to   { transform: translateX(-50%); }
+			}
+		</style>
+		<footer class="bg-primary text-bg py-12">
 			<div class="max-w-7xl mx-auto px-6 text-center">
 				<div class="bg-white p-3 rounded-2xl md:rounded-3xl inline-block mb-8 shadow-sm">
 					<img src="/logo.png" alt="Pásele Güerita" class="h-16 md:h-20 w-auto mx-auto" />

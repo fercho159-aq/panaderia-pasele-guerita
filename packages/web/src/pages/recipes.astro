@@ -2,53 +2,100 @@
 import Layout from '../layouts/Layout.astro';
 import { Button } from '@pasele-guerita/ui';
 
-// Mock recipes for now
 const recipes = [
     {
         title: "Guía: Inicia tu propia Masa Madre",
         description: "Un PDF paso a paso para crear, alimentar y mantener tu Sourdough Starter desde cero hasta tu primer pan.",
         pdf: "/dummy-recipe.pdf",
-        tag: "Básico"
+        tag: "Básico",
+        image: "/imagenes/IMG_6703.webp",
     },
     {
         title: "Receta: Classic Sourdough Cookies",
         description: "Nuestra receta secreta base para que intentes hornear nuestras famosas galletas en casa.",
         pdf: "/dummy-recipe.pdf",
-        tag: "Intermedio"
+        tag: "Intermedio",
+        image: "/imagenes/IMG_6657.webp",
     },
     {
         title: "Tips de Horneado y Tiempos Largos",
         description: "Información valiosa sobre fermentación en frío, autolisis y desarrollo de sabor para panaderos caseros.",
         pdf: "/dummy-recipe.pdf",
-        tag: "Avanzado"
+        tag: "Avanzado",
+        image: "/imagenes/IMG_6751.webp",
     }
+];
+
+const inspirationImages = [
+    '/imagenes/IMG_6658.webp',
+    '/imagenes/IMG_6662.webp',
+    '/imagenes/IMG_6750.webp',
+    '/imagenes/IMG_6753.webp',
+    '/imagenes/IMG_6755.webp',
+    '/imagenes/IMG_6756.webp',
 ];
 ---
 
 <Layout title="Recetas y Guías">
-    <div class="max-w-6xl mx-auto px-6 py-20 animate-fade-in">
-        <div class="text-center max-w-2xl mx-auto mb-16">
-            <h1 class="font-serif text-7xl text-primary mb-6 italic">Recetario Digital</h1>
-            <p class="text-xl text-gray-600 font-sans">Comparte nuestra pasión por la masa madre. Descarga gratis nuestras guías y recetas oficiales listas para imprimir.</p>
+    <!-- Hero Banner with overlapping text -->
+    <div class="relative w-full h-64 md:h-80 overflow-hidden mb-0">
+        <img src="/imagenes/IMG_6749.webp" alt="Recetario Pásele Güerita" class="w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/40 to-bg"></div>
+        <div class="absolute inset-0 flex items-center justify-center">
+            <div class="text-center">
+                <h1 class="font-serif text-6xl md:text-8xl text-white italic drop-shadow-2xl">Recetario Digital</h1>
+                <p class="text-white/80 mt-3 text-lg font-serif italic">Comparte nuestra pasión por la masa madre</p>
+            </div>
         </div>
+    </div>
 
-        <div class="grid md:grid-cols-3 gap-8">
+    <div class="max-w-6xl mx-auto px-6 py-16 animate-fade-in">
+        <p class="text-xl text-gray-600 font-sans text-center mb-16 max-w-2xl mx-auto">
+            Descarga gratis nuestras guías y recetas oficiales listas para imprimir. Lleva el sabor de Pásele Güerita a tu propia cocina.
+        </p>
+
+        <!-- Recipe Cards with Background Images -->
+        <div class="grid md:grid-cols-3 gap-8 mb-20">
             {recipes.map((recipe) => (
-                <div class="bg-white rounded-[2rem] p-8 border hover:border-accent transition-all hover:shadow-xl flex flex-col justify-between h-full relative overflow-hidden group">
-                    <div class="absolute top-0 left-0 w-full h-2 bg-accent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div>
-                        <span class="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-bold uppercase rounded-full mb-4 font-sans tracking-wide">
+                <div class="group relative rounded-[2rem] overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col min-h-[480px]">
+                    <!-- Background Image -->
+                    <div class="absolute inset-0">
+                        <img src={recipe.image} alt={recipe.title} class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/60 to-primary/20"></div>
+                    </div>
+
+                    <!-- Content overlaid -->
+                    <div class="relative z-10 flex flex-col flex-1 p-8 justify-end">
+                        <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-xs font-bold uppercase rounded-full mb-4 font-sans tracking-wide w-max border border-white/30">
                             {recipe.tag}
                         </span>
-                        <h2 class="font-serif text-3xl text-primary font-bold mb-4">{recipe.title}</h2>
-                        <p class="text-gray-600 mb-8 font-sans text-lg">{recipe.description}</p>
+                        <h2 class="font-serif text-3xl text-white font-bold mb-4 leading-tight">{recipe.title}</h2>
+                        <p class="text-white/80 mb-8 font-sans text-base leading-relaxed">{recipe.description}</p>
+                        <a href={recipe.pdf} download>
+                            <Button className="w-full h-14 font-serif text-xl bg-white/20 backdrop-blur-sm border border-white/40 text-white hover:bg-white hover:text-primary transition-all">Descargar PDF →</Button>
+                        </a>
                     </div>
-                    
-                    <a href={recipe.pdf} download>
-                        <Button className="w-full h-14 font-serif text-xl">Descargar PDF →</Button>
-                    </a>
                 </div>
             ))}
+        </div>
+
+        <!-- Inspiration Gallery -->
+        <div class="mb-16">
+            <h2 class="font-serif text-4xl text-primary italic text-center mb-10">Inspiración del horno</h2>
+            <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
+                {inspirationImages.map((src) => (
+                    <div class="aspect-square rounded-2xl overflow-hidden shadow-md hover:shadow-xl hover:scale-105 transition-all duration-500 cursor-pointer">
+                        <img src={src} alt="Producto artesanal" class="w-full h-full object-cover" loading="lazy" />
+                    </div>
+                ))}
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="text-center bg-accent/10 rounded-3xl p-12 border border-accent/20">
+            <h2 class="font-serif text-4xl text-primary italic mb-4">¿Prefieres que lo hagamos nosotros?</h2>
+            <p class="text-gray-600 text-xl mb-8 font-serif">Olvídate de las recetas y déjanos hornear por ti. Pedidos frescos, semanal.</p>
+            <a href="/checkout"><Button variant="primary" className="h-14 px-12 text-xl shadow-xl hover:scale-105 transition-transform">Hacer mi Pedido</Button></a>
         </div>
     </div>
 </Layout>

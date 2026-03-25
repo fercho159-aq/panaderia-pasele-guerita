@@ -1,7 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { Button } from '@pasele-guerita/ui';
-import { Card } from '@pasele-guerita/ui';
 import { Badge } from '@pasele-guerita/ui';
 import { cookieFlavors, breadFlavors, monthlySpecial } from '@pasele-guerita/core';
 
@@ -13,62 +12,119 @@ try {
     const res = await fetch(`${origin}/api/storefront-data`);
     if (res.ok) {
         const data = await res.json();
-        if (data.cookies?.length > 0) displayCookies = data.cookies;
-        if (data.breads?.length > 0) displayBreads = data.breads;
+        if (data.cookies?.length > 0) displayCookies = data.cookies.map((c: any) => {
+            const s = cookieFlavors.find((sf: any) => sf.id === c.id) || {};
+            return { ...s, ...c, image: c.image || (s as any).image };
+        });
+        if (data.breads?.length > 0) displayBreads = data.breads.map((b: any) => {
+            const s = breadFlavors.find((sf: any) => sf.id === b.id) || {};
+            return { ...s, ...b, image: b.image || (s as any).image };
+        });
     }
 } catch (e) {
     console.error("Could not fetch live products for homepage, using fallback:", e);
 }
+
+// All real product images for gallery/marquee
+const allImages = [
+    { src: '/imagenes/IMG_6657.webp', alt: 'Choco Nuts cookie' },
+    { src: '/imagenes/IMG_6758.webp', alt: 'Fresa y Coco cookie' },
+    { src: '/imagenes/IMG_6360.webp', alt: 'Mango y Coco cookie' },
+    { src: '/imagenes/IMG_6757.webp', alt: 'Chocolate Abuelita cookie' },
+    { src: '/imagenes/IMG_6189.webp', alt: 'Matcha cookie' },
+    { src: '/imagenes/IMG_6760.webp', alt: 'Dragon cookie' },
+    { src: '/imagenes/IMG_6759.webp', alt: 'Sugar Free cookie' },
+    { src: '/imagenes/IMG_6703.webp', alt: 'Hogaza Natural' },
+    { src: '/imagenes/IMG_6749.webp', alt: 'Pan Centeno' },
+    { src: '/imagenes/IMG_6751.webp', alt: 'Pan Semillas' },
+    { src: '/imagenes/IMG_6532.webp', alt: 'Pan Cacao' },
+    { src: '/imagenes/IMG_6654.webp', alt: 'Galletas artesanales' },
+    { src: '/imagenes/IMG_6658.webp', alt: 'Variedad de galletas' },
+    { src: '/imagenes/IMG_6662.webp', alt: 'Galletas recién horneadas' },
+    { src: '/imagenes/IMG_6750.webp', alt: 'Pan de masa madre' },
+    { src: '/imagenes/IMG_6753.webp', alt: 'Colección de panes' },
+    { src: '/imagenes/IMG_6755.webp', alt: 'Detalle de galleta' },
+    { src: '/imagenes/IMG_6756.webp', alt: 'Galleta con nuez' },
+];
+
+const heroSlides = [
+    { src: '/imagenes/IMG_6657.webp', alt: 'Choco Nuts cookie', caption: 'Galletas de Masa Madre' },
+    { src: '/imagenes/IMG_6703.webp', alt: 'Hogaza Natural', caption: 'Pan Artesanal' },
+    { src: '/imagenes/IMG_6360.webp', alt: 'Mango Coco cookie', caption: 'Sabores Únicos' },
+    { src: '/imagenes/IMG_6750.webp', alt: 'Panes variados', caption: 'Hecho con Amor' },
+];
 ---
 
 <Layout title="Home">
-	<!-- Announcement Bar for Scarcity -->
+	<!-- Announcement Bar -->
 	<div class="bg-accent text-primary text-center py-3 font-bold text-sm tracking-wide">
 		Próxima entrega: Sábado 18 de Noviembre. ¡Quedan pocos lugares!
 	</div>
 
-	<!-- Hero Section (Problem & Solution Intro) -->
-	<section class="py-20 bg-white border-b border-bg relative overflow-hidden">
-		<div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
-			<div>
+	<!-- Hero Section with Carousel -->
+	<section class="relative overflow-hidden min-h-[85vh] flex items-center" id="hero-section">
+		<!-- Carousel Background -->
+		<div class="absolute inset-0 z-0" id="hero-carousel">
+			{heroSlides.map((slide, i) => (
+				<div class={`hero-slide absolute inset-0 transition-opacity duration-1000 ${i === 0 ? 'opacity-100' : 'opacity-0'}`} data-index={i}>
+					<img src={slide.src} alt={slide.alt} class="w-full h-full object-cover scale-105 hero-img" style="transform-origin: center; animation: kenBurns 8s ease-in-out infinite alternate;" />
+					<div class="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-white/20"></div>
+				</div>
+			))}
+		</div>
+
+		<!-- Dots Navigation -->
+		<div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+			{heroSlides.map((_, i) => (
+				<button class={`hero-dot w-3 h-3 rounded-full transition-all duration-300 ${i === 0 ? 'bg-primary w-8' : 'bg-primary/30'}`} data-dot={i} aria-label={`Slide ${i+1}`}></button>
+			))}
+		</div>
+
+		<!-- Hero Content -->
+		<div class="relative z-10 max-w-7xl mx-auto px-6 py-20 w-full">
+			<div class="max-w-2xl">
 				<Badge variant="accent" className="mb-6">Lotes Pequeños</Badge>
-				<h1 class="text-5xl md:text-6xl font-serif font-bold text-primary mb-6 leading-tight">
+				<h1 class="text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-primary mb-6 leading-tight">
 					Pan y galletas naturales, sin conservadores y con ingredientes de verdad.
 				</h1>
 				<p class="text-xl text-gray-700 font-bold mb-8 max-w-lg leading-relaxed font-serif italic">
 					<strong>En Dallas</strong>, encontrar pan artesanal de calidad y postres hechos con ingredientes reales es todo un reto… hasta que llegó <strong>nuestra Güerita</strong>.
 				</p>
 				<p class="text-lg text-gray-700 mb-6 max-w-lg leading-relaxed">
-					Nuestras galletas, elaboradas con masa madre, tienen una <strong>complejidad y profundidad de sabor</strong> que las hace únicas, con aromas que no encontrarás en ningún otro lugar. Nuestros panes rústicos pasan por una <strong>fermentación natural de más de 20 horas</strong>, logrando un sabor intenso y una textura espectacular.
-				</p>
-				<p class="text-lg text-gray-700 mb-10 max-w-lg leading-relaxed">
-					Como orgullosa <strong>chef mexicana</strong>, me encanta compartir los sabores de México en cada creación, <strong>hechos con mucho amor y directo del corazón. 💛</strong>
+					Nuestras galletas, elaboradas con masa madre, tienen una <strong>complejidad y profundidad de sabor</strong> que las hace únicas. Nuestros panes rústicos pasan por una <strong>fermentación natural de más de 20 horas</strong>.
 				</p>
 				<div class="flex flex-col sm:flex-row gap-4">
 					<a href="#menu"><Button variant="outline" className="w-full sm:w-auto text-lg h-14 px-8">Ver Menú</Button></a>
 					<a href="/checkout"><Button variant="primary" className="w-full sm:w-auto text-lg h-14 px-8 shadow-lg">Reservar Ahora</Button></a>
 				</div>
 			</div>
-			<div class="relative mt-10 md:mt-0">
-				<div class="aspect-square rounded-full bg-accent/20 absolute -top-10 -left-10 w-64 h-64 -z-10 animate-pulse"></div>
-				<img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?q=80&w=1000" alt="Sourdough Cookies" class="rounded-3xl shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500 w-full object-cover" />
-			</div>
 		</div>
 	</section>
 
-	<!-- Agitation (Scarcity & Urgency) -->
+	<!-- Photo Strip: Film Roll -->
+	<section class="py-4 bg-primary overflow-hidden">
+		<div class="flex gap-4 animate-marquee-slow" style="width: max-content;">
+			{[...allImages, ...allImages].map((img, i) => (
+				<div class="flex-shrink-0 w-32 h-32 md:w-44 md:h-44 rounded-2xl overflow-hidden shadow-lg border-2 border-white/10 hover:scale-105 transition-transform duration-300 cursor-pointer">
+					<img src={img.src} alt={img.alt} class="w-full h-full object-cover" loading="lazy" />
+				</div>
+			))}
+		</div>
+	</section>
+
+	<!-- Scarcity -->
 	<section class="py-24 bg-bg">
 		<div class="max-w-4xl mx-auto px-6 text-center">
 			<h2 class="font-serif text-4xl md:text-5xl text-primary mb-8 leading-tight">Nuestra producción es limitada.</h2>
 			<p class="text-xl text-gray-700 leading-relaxed mb-10 max-w-2xl mx-auto">
-				Horneamos lotes pequeños para garantizar la calidad. Solo abrimos pedidos una vez al mes. 
+				Horneamos lotes pequeños para garantizar la calidad. Solo abrimos pedidos una vez al mes.
 				<strong class="text-primary block mt-4 text-2xl italic font-serif">Si parpadeas, te quedas sin tu Sourdough.</strong>
 			</p>
 			<Badge variant="error" className="text-sm md:text-base px-6 py-3">Cupos limitados por punto de entrega</Badge>
 		</div>
 	</section>
 
-	<!-- Testimonials (Authority) -->
+	<!-- Testimonials -->
 	<section class="py-24 bg-white border-y border-bg">
 		<div class="max-w-7xl mx-auto px-6">
 			<h2 class="font-serif text-3xl md:text-4xl text-center text-primary mb-16 italic font-medium">"Hecho en Dallas para los que extrañan el sabor real de casa."</h2>
@@ -87,7 +143,7 @@ try {
 		</div>
 	</section>
 
-	<!-- Offer & Response (Products Section) -->
+	<!-- Products Section -->
 	<section id="menu" class="py-24 max-w-7xl mx-auto px-6">
 		<div class="text-center mb-16">
 			<h2 class="font-serif text-5xl md:text-6xl text-primary mb-6 italic">Asegura tu pedido</h2>
@@ -95,91 +151,202 @@ try {
 			<p class="text-3xl font-bold text-gray-500 font-serif italic mb-10">Especial del mes: {monthlySpecial.name}</p>
 			<a href="/checkout"><Button variant="primary" className="text-xl px-12 h-16 shadow-xl hover:scale-105 transition-transform duration-300">Hacer Pedido Ahora</Button></a>
 		</div>
-		
-		{/* Galletas */}
-		<div class="mb-16">
+
+		<!-- Galletas -->
+		<div class="mb-20">
 			<h3 class="font-serif text-3xl text-primary italic mb-2">🍪 Galletas Artesanales</h3>
 			<p class="text-gray-500 mb-8 text-sm">Set de 3 galletas por caja &bull; Horneadas con masa madre</p>
-			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-				{displayCookies.map((flavor: any) => (
-					<Card title={flavor.name} price={flavor.price || 12} description={flavor.description || 'Galleta artesanal horneada con masa madre.'}>
-						<a href="/checkout"><Button variant="accent" className="w-full">Agregar al Carrito</Button></a>
-					</Card>
+			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+				{displayCookies.map((flavor: any, i: number) => {
+					const hoverImages = allImages.filter((img: any) => !img.src.includes(flavor.image?.split('/').pop()?.split('.')[0]));
+					const hoverSrc = hoverImages[i % hoverImages.length]?.src || '/imagenes/IMG_6658.webp';
+					return (
+						<a href="/checkout" class="group relative bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-bg flex flex-col">
+							<!-- Image with hover swap -->
+							<div class="relative w-full h-56 overflow-hidden">
+								<img
+									src={flavor.image || '/imagenes/IMG_6657.webp'}
+									alt={flavor.name}
+									class="w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-0 absolute inset-0"
+									loading="lazy"
+								/>
+								<img
+									src={hoverSrc}
+									alt={flavor.name + ' detalle'}
+									class="w-full h-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100 absolute inset-0 scale-110 group-hover:scale-100 transition-transform duration-700"
+									loading="lazy"
+								/>
+								{flavor.is_sugar_free && (
+									<div class="absolute top-3 right-3 bg-blue-100 text-blue-700 text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded shadow border border-blue-200">Sugar Free</div>
+								)}
+								<div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white/90 to-transparent"></div>
+							</div>
+							<!-- Content -->
+							<div class="p-5 flex flex-col flex-1">
+								<div class="flex justify-between items-start mb-2">
+									<h4 class="font-serif text-xl text-primary font-bold italic leading-tight">{flavor.name}</h4>
+									<span class="font-black text-primary text-lg ml-2 shrink-0">${flavor.price || 12}</span>
+								</div>
+								<p class="text-gray-600 text-sm mb-1 leading-relaxed">{flavor.description || 'Galleta artesanal horneada con masa madre.'}</p>
+								{flavor.ingredients && <p class="text-[10px] text-gray-400 italic mb-4">{flavor.ingredients}</p>}
+								<div class="mt-auto pt-3 border-t border-bg">
+									<span class="block w-full text-center text-sm font-bold text-primary group-hover:text-accent transition-colors">Agregar al pedido →</span>
+								</div>
+							</div>
+						</a>
+					);
+				})}
+			</div>
+		</div>
+
+		<!-- Masonry Gallery Between Products -->
+		<div class="mb-20">
+			<h3 class="font-serif text-2xl text-primary italic mb-8 text-center opacity-60">Del horno al corazón 🫶</h3>
+			<div class="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
+				{[...allImages].slice(0, 12).map((img: any, i: number) => (
+					<div class={`break-inside-avoid rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 hover:scale-[1.02] cursor-pointer ${i % 3 === 0 ? 'aspect-square' : i % 3 === 1 ? 'aspect-[3/4]' : 'aspect-[4/3]'}`}>
+						<img src={img.src} alt={img.alt} class="w-full h-full object-cover" loading="lazy" />
+					</div>
 				))}
 			</div>
 		</div>
 
-		{/* Pan de Masa Madre */}
+		<!-- Pan de Masa Madre -->
 		<div>
 			<h3 class="font-serif text-3xl text-primary italic mb-2">🍞 Pan de Masa Madre</h3>
 			<p class="text-gray-500 mb-8 text-sm">Hogaza entera &bull; Fermentación lenta 48 horas</p>
-			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-				{displayBreads.map((bread: any) => (
-					<Card title={bread.name} price={bread.price || 18} description={bread.description || 'Pan artesanal de masa madre.'}>
-						<a href="/checkout"><Button variant="accent" className="w-full">Agregar al Carrito</Button></a>
-					</Card>
-				))}
+			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+				{displayBreads.map((bread: any, i: number) => {
+					const hoverSrc = allImages[(i + 7) % allImages.length]?.src || '/imagenes/IMG_6750.webp';
+					return (
+						<a href="/checkout" class="group relative bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-bg flex flex-col">
+							<div class="relative w-full h-56 overflow-hidden">
+								<img
+									src={bread.image || '/imagenes/IMG_6703.webp'}
+									alt={bread.name}
+									class="w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-0 absolute inset-0"
+									loading="lazy"
+								/>
+								<img
+									src={hoverSrc}
+									alt={bread.name + ' detalle'}
+									class="w-full h-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100 absolute inset-0 scale-110 group-hover:scale-100 transition-transform duration-700"
+									loading="lazy"
+								/>
+								<div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white/90 to-transparent"></div>
+							</div>
+							<div class="p-5 flex flex-col flex-1">
+								<div class="flex justify-between items-start mb-2">
+									<h4 class="font-serif text-xl text-primary font-bold italic leading-tight">{bread.name}</h4>
+									<span class="font-black text-primary text-lg ml-2 shrink-0">${bread.price || 10}</span>
+								</div>
+								<p class="text-gray-600 text-sm mb-1 leading-relaxed">{bread.description || 'Pan artesanal de masa madre.'}</p>
+								{bread.ingredients && <p class="text-[10px] text-gray-400 italic mb-4">{bread.ingredients}</p>}
+								<div class="mt-auto pt-3 border-t border-bg">
+									<span class="block w-full text-center text-sm font-bold text-primary group-hover:text-accent transition-colors">Agregar al pedido →</span>
+								</div>
+							</div>
+						</a>
+					);
+				})}
 			</div>
 		</div>
-		{/* Contact Section */}
-		<section class="py-24 bg-accent/5 overflow-hidden">
-			<div class="max-w-7xl mx-auto px-6 font-sans text-gray-900">
-				<div class="bg-white rounded-[3rem] md:rounded-[4rem] p-10 md:p-20 shadow-xl border border-accent/10 relative overflow-hidden">
-                    {/* Background deco */}
-                    <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-accent/10 rounded-full mix-blend-multiply blur-[100px]"></div>
-                    <div class="absolute -top-20 -left-20 w-60 h-60 bg-primary/5 rounded-full mix-blend-multiply blur-[80px]"></div>
 
-                    <div class="grid md:grid-cols-2 gap-16 lg:gap-24 mb-16 relative z-10 text-pretty">
-                        <div>
-                            <div class="flex items-center gap-3 mb-6">
-                                <h2 class="font-serif text-4xl lg:text-5xl text-primary italic font-bold">Escríbenos Pásele Güerita</h2>
-                                <span class="text-4xl animate-pulse">❤️</span>
-                            </div>
-                            <p class="text-xl lg:text-2xl text-gray-700 leading-relaxed font-serif italic max-w-xl mb-12">
-                                En nuestro horno creemos que las mejores decisiones son las que alimentan el alma. Si tienes dudas o quieres consentirte sin complicaciones, ¡estamos aquí para ti!
-                            </p>
-                            <a href="https://wa.me/14303242593" target="_blank" rel="noopener noreferrer">
-                                <Button variant="outline" className="h-16 px-12 text-2xl font-serif hover:bg-primary hover:text-white transition-all transform hover:-translate-y-1 shadow-md">Contáctanos</Button>
-                            </a>
-                        </div>
-                        
-                        <div class="flex flex-col justify-center border-t md:border-t-0 md:border-l border-accent/20 pt-12 md:pt-0 md:pl-16 lg:pl-24">
-                            <div class="bg-accent/5 p-8 rounded-[2rem] border border-accent/10 mb-2 relative group hover:bg-accent/10 transition-colors">
-                                <p class="font-bold text-primary text-xl mb-3 flex items-center gap-3">
-                                    <span class="text-3xl">🍞</span> Suscripciones Semanales
-                                </p>
-                                <p class="text-gray-600 text-lg leading-relaxed">
-                                    Pregunta por nuestras suscripciones: te entregamos tu pan rebanado sin costo adicional. ¡Menos vueltas, más sabor!
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-12 border-t border-accent/20 relative z-10 font-sans">
-                        <div class="flex items-center gap-4 bg-white p-6 rounded-2xl border border-accent/5 shadow-sm hover:shadow-md transition-shadow">
-                            <span class="text-3xl grayscale group-hover:grayscale-0 transition-all">📞</span>
-                            <div>
-                                <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-black mb-1">WhatsApp</p>
-                                <p class="font-bold text-primary text-2xl tracking-tight">+1 430 324 2593</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4 bg-white p-6 rounded-2xl border border-accent/5 shadow-sm hover:shadow-md transition-shadow">
-                            <span class="text-3xl grayscale group-hover:grayscale-0 transition-all">📍</span>
-                            <div>
-                                <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-black mb-1">Ubicación</p>
-                                <p class="font-bold text-primary text-xl tracking-tight uppercase">Dallas - Farmersville TX</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4 bg-white p-6 rounded-2xl border border-accent/5 shadow-sm hover:shadow-md transition-shadow">
-                            <span class="text-3xl grayscale group-hover:grayscale-0 transition-all">📲</span>
-                            <div>
-                                <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-black mb-1">Redes</p>
-                                <p class="font-bold text-primary text-xl italic tracking-tight">@paselegueritatx</p>
-                            </div>
-                        </div>
-                    </div>
+		<!-- Contact Section -->
+		<section class="py-24 bg-accent/5 overflow-hidden mt-20 -mx-6 px-6 rounded-3xl">
+			<div class="max-w-7xl mx-auto font-sans text-gray-900">
+				<div class="bg-white rounded-[3rem] md:rounded-[4rem] p-10 md:p-20 shadow-xl border border-accent/10 relative overflow-hidden">
+					<div class="absolute -bottom-20 -right-20 w-80 h-80 bg-accent/10 rounded-full mix-blend-multiply blur-[100px]"></div>
+					<div class="absolute -top-20 -left-20 w-60 h-60 bg-primary/5 rounded-full mix-blend-multiply blur-[80px]"></div>
+
+					<div class="grid md:grid-cols-2 gap-16 lg:gap-24 mb-16 relative z-10 text-pretty">
+						<div>
+							<div class="flex items-center gap-3 mb-6">
+								<h2 class="font-serif text-4xl lg:text-5xl text-primary italic font-bold">Escríbenos Pásele Güerita</h2>
+								<span class="text-4xl animate-pulse">❤️</span>
+							</div>
+							<p class="text-xl lg:text-2xl text-gray-700 leading-relaxed font-serif italic max-w-xl mb-12">
+								En nuestro horno creemos que las mejores decisiones son las que alimentan el alma. ¡Estamos aquí para ti!
+							</p>
+							<a href="https://wa.me/14303242593" target="_blank" rel="noopener noreferrer">
+								<Button variant="outline" className="h-16 px-12 text-2xl font-serif hover:bg-primary hover:text-white transition-all transform hover:-translate-y-1 shadow-md">Contáctanos</Button>
+							</a>
+						</div>
+
+						<div class="flex flex-col justify-center border-t md:border-t-0 md:border-l border-accent/20 pt-12 md:pt-0 md:pl-16 lg:pl-24">
+							<div class="bg-accent/5 p-8 rounded-[2rem] border border-accent/10 mb-2 relative group hover:bg-accent/10 transition-colors">
+								<p class="font-bold text-primary text-xl mb-3 flex items-center gap-3">
+									<span class="text-3xl">🍞</span> Suscripciones Semanales
+								</p>
+								<p class="text-gray-600 text-lg leading-relaxed">
+									Pregunta por nuestras suscripciones: te entregamos tu pan rebanado sin costo adicional.
+								</p>
+							</div>
+						</div>
+					</div>
+
+					<div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-12 border-t border-accent/20 relative z-10 font-sans">
+						<div class="flex items-center gap-4 bg-white p-6 rounded-2xl border border-accent/5 shadow-sm hover:shadow-md transition-shadow">
+							<span class="text-3xl">📞</span>
+							<div>
+								<p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-black mb-1">WhatsApp</p>
+								<p class="font-bold text-primary text-2xl tracking-tight">+1 430 324 2593</p>
+							</div>
+						</div>
+						<div class="flex items-center gap-4 bg-white p-6 rounded-2xl border border-accent/5 shadow-sm hover:shadow-md transition-shadow">
+							<span class="text-3xl">📍</span>
+							<div>
+								<p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-black mb-1">Ubicación</p>
+								<p class="font-bold text-primary text-xl tracking-tight uppercase">Dallas - Farmersville TX</p>
+							</div>
+						</div>
+						<div class="flex items-center gap-4 bg-white p-6 rounded-2xl border border-accent/5 shadow-sm hover:shadow-md transition-shadow">
+							<span class="text-3xl">📲</span>
+							<div>
+								<p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-black mb-1">Redes</p>
+								<p class="font-bold text-primary text-xl italic tracking-tight">@paselegueritatx</p>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</section>
 	</section>
 </Layout>
+
+<style>
+@keyframes kenBurns {
+	from { transform: scale(1.05) translate(0, 0); }
+	to   { transform: scale(1.12) translate(-1%, -1%); }
+}
+@keyframes marquee-slow {
+	from { transform: translateX(0); }
+	to   { transform: translateX(-50%); }
+}
+.animate-marquee-slow {
+	animation: marquee-slow 40s linear infinite;
+}
+.hero-img {
+	animation: kenBurns 10s ease-in-out infinite alternate;
+}
+</style>
+
+<script>
+// Auto-advancing hero carousel
+const slides = document.querySelectorAll('.hero-slide');
+const dots = document.querySelectorAll('.hero-dot');
+let current = 0;
+
+function goTo(n: number) {
+	slides[current].classList.replace('opacity-100', 'opacity-0');
+	dots[current].classList.remove('bg-primary', 'w-8');
+	dots[current].classList.add('bg-primary/30');
+	current = n;
+	slides[current].classList.replace('opacity-0', 'opacity-100');
+	dots[current].classList.add('bg-primary', 'w-8');
+	dots[current].classList.remove('bg-primary/30');
+}
+
+dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
+setInterval(() => goTo((current + 1) % slides.length), 5000);
+</script>

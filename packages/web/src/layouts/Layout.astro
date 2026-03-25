@@ -59,27 +59,31 @@ const { title, description = "Artisanal Sourdough Dallas, Handmade Cookies" } = 
 		<main>
 			<slot />
 		</main>
-		<!-- Global Photo Marquee above footer -->
-		<div class="overflow-hidden bg-bg py-4 border-t border-b border-bg mt-20">
-			<div class="flex gap-3" style="animation: marquee-rev 50s linear infinite; width: max-content;">
+		<!-- Global Photo Marquee – GPU optimized -->
+		<div class="layout-marquee-wrap overflow-hidden bg-bg py-3 border-t border-b border-bg/30">
+			<div class="layout-marquee-inner flex gap-3" aria-hidden="true">
 				{[
-					'/imagenes/IMG_6657.webp', '/imagenes/IMG_6703.webp', '/imagenes/IMG_6360.webp',
-					'/imagenes/IMG_6758.webp', '/imagenes/IMG_6749.webp', '/imagenes/IMG_6189.webp',
-					'/imagenes/IMG_6760.webp', '/imagenes/IMG_6751.webp', '/imagenes/IMG_6750.webp',
-					'/imagenes/IMG_6657.webp', '/imagenes/IMG_6703.webp', '/imagenes/IMG_6360.webp',
-					'/imagenes/IMG_6758.webp', '/imagenes/IMG_6749.webp', '/imagenes/IMG_6189.webp',
-					'/imagenes/IMG_6760.webp', '/imagenes/IMG_6751.webp', '/imagenes/IMG_6750.webp',
+					'/imagenes/IMG_6657.webp','/imagenes/IMG_6749.webp','/imagenes/IMG_6189.webp',
+					'/imagenes/IMG_6760.webp','/imagenes/IMG_6532.webp','/imagenes/IMG_6758.webp',
+					'/imagenes/IMG_6657.webp','/imagenes/IMG_6749.webp','/imagenes/IMG_6189.webp',
+					'/imagenes/IMG_6760.webp','/imagenes/IMG_6532.webp','/imagenes/IMG_6758.webp',
 				].map((src) => (
-					<div class="flex-shrink-0 w-24 h-24 md:w-32 md:h-32 rounded-xl overflow-hidden hover:scale-105 transition-transform duration-300 shadow-sm border border-white">
-						<img src={src} alt="Pásele Güerita" class="w-full h-full object-cover" loading="lazy" />
+					<div class="flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border border-white/20">
+						<img src={src} alt="" class="w-full h-full object-cover" loading="lazy" decoding="async" />
 					</div>
 				))}
 			</div>
 		</div>
 		<style>
-			@keyframes marquee-rev {
-				from { transform: translateX(0); }
-				to   { transform: translateX(-50%); }
+			.layout-marquee-wrap { contain: strict; height: 5.5rem; }
+			.layout-marquee-inner {
+				will-change: transform;
+				animation: layout-scroll 35s linear infinite;
+				transform: translate3d(0, 0, 0);
+			}
+			@keyframes layout-scroll {
+				from { transform: translate3d(0, 0, 0); }
+				to   { transform: translate3d(-50%, 0, 0); }
 			}
 		</style>
 		<footer class="bg-primary text-bg py-12">

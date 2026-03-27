@@ -263,82 +263,94 @@ export const CheckoutFlow: React.FC = () => {
 
                     {/* Category Tabs */}
                     <div className="flex gap-3 mb-6">
-                        <button onClick={() => { setMenuTab('cookies'); }} className={`flex-1 py-2 rounded-xl font-bold text-sm transition-all ${menuTab === 'cookies' ? 'bg-primary text-white' : 'bg-bg text-gray-500'}`}>🍪 Galletas</button>
-                        <button onClick={() => { setMenuTab('breads'); }} className={`flex-1 py-2 rounded-xl font-bold text-sm transition-all ${menuTab === 'breads' ? 'bg-primary text-white' : 'bg-bg text-gray-500'}`}>🍞 Pan de Masa Madre</button>
+                        <button onClick={() => { setMenuTab('cookies'); }} className={`flex-1 py-2 rounded-xl font-bold text-sm transition-all shadow-sm ${menuTab === 'cookies' ? 'bg-primary text-white' : 'bg-bg text-gray-500'}`}>🍪 Galletas</button>
+                        <button onClick={() => { setMenuTab('breads'); }} className={`flex-1 py-2 rounded-xl font-bold text-sm transition-all shadow-sm ${menuTab === 'breads' ? 'bg-primary text-white' : 'bg-bg text-gray-500'}`}>🍞 Pan de Masa Madre</button>
                     </div>
 
-                    {/* Cookie box size selector (only for cookie tab) */}
+                    {/* Cookie box size selector */}
                     {menuTab === 'cookies' && (
-                        <div className="mb-6">
-                            <p className="text-primary mb-6 text-2xl font-serif font-bold italic border-b border-primary/10 pb-4">Elige el tamaño de tu caja ({totalCookies}/{boxSize ?? '?'})</p>
-                            <div className="flex gap-4 justify-center">
+                        <div className="mb-8">
+                            <p className="text-primary mb-4 text-xl font-serif font-bold italic text-center">Elige el tamaño de tu caja</p>
+                            <div className="flex gap-3 justify-center">
                                 {[3, 6, 9].map(size => (
                                     <button
                                         key={size}
-                                        onClick={() => { setBoxSize(size); setCart(prev => { const next: Record<string, number> = {}; Object.entries(prev).filter(([id]) => liveBreads.some((b: any) => b.id === id)).forEach(([id, q]) => { next[id] = q as number; }); return next; }); }}
-                                        className={`px-6 py-3 rounded-xl border-2 font-bold transition-all ${boxSize === size ? 'border-primary bg-primary/10 text-primary' : 'border-bg hover:border-accent text-gray-500'}`}
+                                        onClick={() => { setBoxSize(size); setCart({}); }}
+                                        className={`px-5 py-2.5 rounded-xl border-2 font-bold transition-all text-sm ${boxSize === size ? 'border-primary bg-primary/10 text-primary' : 'border-bg hover:border-accent text-gray-400'}`}
                                     >
                                         {size} Galletas
                                     </button>
                                 ))}
                             </div>
+                            <div className="mt-4 bg-bg/20 rounded-full h-2 max-w-xs mx-auto overflow-hidden">
+                                <div className={`h-full bg-primary transition-all duration-500 ${boxSize ? '' : 'opacity-0'}`} style={{ width: `${(totalCookies / (boxSize || 1)) * 100}%` }}></div>
+                            </div>
+                            <p className="text-center text-[10px] uppercase font-black text-primary/40 mt-2 tracking-widest">{totalCookies} de {boxSize || '?'} seleccionadas</p>
                         </div>
                     )}
 
-                    {/* Product list */}
-                    <div className="mb-10 space-y-4 max-h-[380px] overflow-y-auto px-2">
-                        {(menuTab === 'cookies' ? (boxSize ? liveCookies : []) : liveBreads).map((item: any) => (
-                            <div key={item.id} className="flex flex-col bg-bg/5 p-4 rounded-xl border border-bg relative overflow-hidden group">
-                                {item.is_sugar_free && (
-                                    <div className="absolute top-2 right-2 bg-blue-100 text-blue-700 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded shadow-sm z-10 border border-blue-200">Sugar Free</div>
-                                )}
-                                {item.image && (
-                                    <div className="w-full h-40 mb-4 rounded-lg overflow-hidden shadow-sm border border-primary/10">
-                                        <img src={item.image} alt={item.name} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
-                                    </div>
-                                )}
-                                <div className="flex justify-between items-start mb-2">
-                                    <div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="font-serif text-2xl italic text-primary">{item.name}</span>
-                                            {item.price && <span className="text-lg font-bold text-primary">${item.price}</span>}
+                    {/* Product Grid */}
+                    <div className="mb-10 grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[450px] overflow-y-auto px-2 pb-4">
+                        {(menuTab === 'cookies' ? (boxSize ? liveCookies : []) : liveBreads).map((item: any) => {
+                            const hoverPool = item.category === 'bread' 
+                                ? ['/imagenes/IMG_6753.webp', '/imagenes/IMG_6755.webp'] 
+                                : ['/imagenes/IMG_6654.webp', '/imagenes/IMG_6662.webp', '/imagenes/IMG_6756.webp'];
+                            const hoverImg = hoverPool[Math.abs(item.id.length) % hoverPool.length];
+                            
+                            return (
+                                <div key={item.id} className="checkout-product-card group bg-white rounded-2xl overflow-hidden border border-bg shadow-sm hover:shadow-md transition-all flex flex-col relative">
+                                    <div className="relative w-full h-44 overflow-hidden bg-gray-50">
+                                        <img src={item.image} alt={item.name} className="img-main absolute inset-0 w-full h-full object-cover transition-opacity duration-300" />
+                                        <img src={hoverImg} alt={`${item.name} vista`} className="img-hover absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                        
+                                        {item.is_sugar_free && (
+                                            <div className="absolute top-2 right-2 bg-blue-100/90 backdrop-blur-sm text-blue-700 text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded shadow-sm z-10 border border-blue-200">Sugar Free</div>
+                                        )}
+                                        
+                                        {/* Quick Add Overlay on Card */}
+                                        <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/20 to-transparent flex justify-center translate-y-full group-hover:translate-y-0 transition-transform">
+                                            <div className="bg-white/95 backdrop-blur-md rounded-full px-4 py-1.5 flex items-center gap-4 shadow-lg scale-90">
+                                                <button onClick={() => handleRemoveCookie(item.id)} className="text-primary font-black px-2">-</button>
+                                                <span className="font-serif font-black text-primary">{cart[item.id] || 0}</span>
+                                                <button 
+                                                    onClick={() => handleAddCookie(item.id)} 
+                                                    className="text-primary font-black px-2 disabled:opacity-20"
+                                                    disabled={menuTab === 'cookies' && !!boxSize && (totalCookies >= boxSize || (item.id === 'sugar-free-3pack' && totalCookies + 3 > boxSize))}
+                                                >+</button>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                        <button onClick={() => handleRemoveCookie(item.id)} className="w-8 h-8 rounded-full bg-white border border-bg text-primary font-bold disabled:opacity-30 flex items-center justify-center" disabled={!cart[item.id]}>-</button>
-                                        <span className="w-4 text-center font-bold font-serif">{cart[item.id] || 0}</span>
-                                        <button
-                                            onClick={() => handleAddCookie(item.id)}
-                                            className="w-8 h-8 rounded-full bg-primary text-white font-bold disabled:opacity-30 flex items-center justify-center"
-                                            disabled={menuTab === 'cookies' && !!boxSize && (totalCookies >= boxSize || (item.id === 'sugar-free-3pack' && totalCookies + 3 > boxSize))}
-                                        >+</button>
+                                    
+                                    <div className="p-4 flex flex-col flex-1">
+                                        <div className="flex justify-between items-start mb-1">
+                                            <h4 className="font-serif text-lg text-primary font-bold italic leading-tight">{item.name}</h4>
+                                            {item.price && <span className="text-sm font-black text-primary/60">${item.price}</span>}
+                                        </div>
+                                        <p className="text-[10px] text-gray-500 line-clamp-2 font-serif italic mb-3">{item.description}</p>
+                                        
+                                        {/* Mobile visible controls if no group-hover */}
+                                        <div className="mt-auto flex justify-between items-center sm:hidden">
+                                            <div className="flex items-center gap-2">
+                                                <button onClick={() => handleRemoveCookie(item.id)} className="w-6 h-6 rounded-full border border-bg flex items-center justify-center text-xs">-</button>
+                                                <span className="text-xs font-bold">{cart[item.id] || 0}</span>
+                                                <button onClick={() => handleAddCookie(item.id)} className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs">+</button>
+                                            </div>
+                                        </div>
+
+                                        {item.category === 'bread' && cart[item.id] > 0 && (
+                                            <div className="mt-3 pt-3 border-t border-bg flex items-center justify-between">
+                                                <span className="text-[9px] font-black uppercase tracking-widest text-primary/40">¿Rebanar? (+$1)</span>
+                                                <div className="flex items-center gap-2">
+                                                    <button onClick={() => setSlicedBreads({...slicedBreads, [item.id]: Math.max(0, (slicedBreads[item.id] || 0) - 1)})} className="w-5 h-5 rounded-full border border-bg flex items-center justify-center text-[10px]">-</button>
+                                                    <span className="text-[10px] font-bold">{slicedBreads[item.id] || 0}</span>
+                                                    <button onClick={() => setSlicedBreads({...slicedBreads, [item.id]: Math.min(cart[item.id], (slicedBreads[item.id] || 0) + 1)})} className="w-5 h-5 rounded-full border border-bg flex items-center justify-center text-[10px]">+</button>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
-                                {item.description && <p className="text-base text-gray-700 mt-2 font-serif leading-relaxed">{item.description}</p>}
-                                {item.ingredients && <p className="text-xs text-gray-500 italic mt-1 font-serif">{item.ingredients}</p>}
-                                
-                                {item.category === 'bread' && cart[item.id] > 0 && (
-                                    <div className="mt-4 p-3 bg-bg/30 rounded-xl flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-sm font-bold text-primary uppercase tracking-wider">¿Rebanar pan? (+$1 c/u)</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <button 
-                                                onClick={() => setSlicedBreads({...slicedBreads, [item.id]: Math.max(0, (slicedBreads[item.id] || 0) - 1)})}
-                                                className="w-6 h-6 rounded-full border border-primary/20 flex items-center justify-center text-primary disabled:opacity-30"
-                                                disabled={!(slicedBreads[item.id] > 0)}
-                                            >-</button>
-                                            <span className="text-sm font-bold w-4 text-center">{slicedBreads[item.id] || 0}</span>
-                                            <button 
-                                                onClick={() => setSlicedBreads({...slicedBreads, [item.id]: Math.min(cart[item.id], (slicedBreads[item.id] || 0) + 1)})}
-                                                className="w-6 h-6 rounded-full border border-primary/20 flex items-center justify-center text-primary disabled:opacity-30"
-                                                disabled={slicedBreads[item.id] >= cart[item.id]}
-                                            >+</button>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
 
                     <div className="flex gap-4 mt-auto">
@@ -346,9 +358,9 @@ export const CheckoutFlow: React.FC = () => {
                         <Button
                             disabled={totalCookies === 0 || (menuTab === 'cookies' && boxSize !== null && totalCookies !== boxSize)}
                             onClick={() => setStep(4)}
-                            className="w-2/3 h-16"
+                            className="w-2/3 h-16 shadow-lg"
                         >
-                            Ver Tus Datos (${totalAmount.toFixed(2)})
+                            Siguiente: Tus Datos (${totalAmount.toFixed(2)})
                         </Button>
                     </div>
                 </div>
@@ -382,8 +394,8 @@ export const CheckoutFlow: React.FC = () => {
                             />
                         </div>
 
-                        <div className="pt-8 mt-8 border-t border-bg">
-                            <label className="flex items-center gap-3 cursor-pointer mb-6 group">
+                        <div className="pt-8 mt-8 border-t border-bg text-center">
+                            <label className="flex items-center gap-3 cursor-pointer mb-6 group justify-center">
                                 <div className={`w-8 h-8 rounded-lg border-2 flex items-center justify-center transition-colors ${gift.is_gift ? 'bg-primary border-primary text-white' : 'border-bg/50 group-hover:border-primary/50'}`}>
                                     {gift.is_gift && <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>}
                                 </div>
@@ -406,7 +418,7 @@ export const CheckoutFlow: React.FC = () => {
                         <Button
                             disabled={!customer.name || !customer.phone}
                             onClick={() => setStep(5)}
-                            className="w-2/3 h-16"
+                            className="w-2/3 h-16 shadow-lg"
                         >
                             Finalizar Pedido
                         </Button>
@@ -420,69 +432,70 @@ export const CheckoutFlow: React.FC = () => {
                     <h2 className="font-serif text-4xl text-primary mb-2 italic">5. Confirmación</h2>
                     <p className="text-gray-600 mb-10 font-serif">Revisa tu resumen y elige el método de pago.</p>
 
-                    <div className="bg-bg/10 p-6 rounded-3xl border border-bg mb-8">
-                        <h4 className="text-[10px] uppercase font-bold tracking-widest text-primary mb-4">Resumen de Compra</h4>
-                        <ul className="space-y-2 text-sm italic mb-4 font-serif text-gray-700">
+                    <div className="bg-bg/10 p-8 rounded-[2rem] border border-bg mb-8 shadow-inner">
+                        <h4 className="text-[10px] uppercase font-black tracking-[0.2em] text-primary/40 mb-6 text-center">Detalle de tu Recibo</h4>
+                        <ul className="space-y-3 font-serif text-lg italic mb-6 text-primary">
                             {Object.entries(cart).map(([id, qty]) => (
-                                <li key={id} className="flex justify-between border-b border-bg/20 pb-1">
-                                    <span>{qty}x {allLiveProducts.find((f: any) => f.id === id)?.name}</span>
-                                    <span>${((allLiveProducts.find((f: any) => f.id === id)?.price || 12) * qty).toFixed(2)}</span>
+                                <li key={id} className="flex justify-between items-center border-b border-primary/5 pb-2">
+                                    <span className="flex items-center gap-2">
+                                        <span className="bg-primary/10 w-6 h-6 flex items-center justify-center rounded text-[10px] font-black not-italic">{qty}x</span>
+                                        {allLiveProducts.find((f: any) => f.id === id)?.name}
+                                    </span>
+                                    <span className="font-bold">${((allLiveProducts.find((f: any) => f.id === id)?.price || 12) * qty).toFixed(2)}</span>
                                 </li>
                             ))}
                         </ul>
-                        <div className="flex justify-between font-serif text-2xl text-primary font-bold">
+                        <div className="flex justify-between font-serif text-3xl text-primary font-bold pt-4">
                             <span>Total</span>
-                            <span>${totalAmount.toFixed(2)}</span>
+                            <span className="underline decoration-accent decoration-4 underline-offset-4">${totalAmount.toFixed(2)}</span>
                         </div>
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-2 mb-10">
                         <button 
                             onClick={() => setPaymentMethod('transfer')}
-                            className={`p-6 rounded-2xl border-2 text-left transition-all ${paymentMethod === 'transfer' ? 'border-primary bg-primary/5' : 'border-bg'}`}>
-                            <h5 className="font-serif italic font-bold text-primary text-lg">Transferencia</h5>
-                            <p className="text-[10px] uppercase tracking-tighter opacity-60">Zelle / Venmo</p>
+                            className={`p-6 rounded-2xl border-2 text-left transition-all ${paymentMethod === 'transfer' ? 'border-primary bg-primary/5 shadow-md scale-[1.02]' : 'border-bg opacity-60'}`}>
+                            <h5 className="font-serif italic font-bold text-primary text-xl">Transferencia</h5>
+                            <p className="text-[10px] uppercase font-black tracking-widest text-primary/40 mt-1">Zelle / Venmo</p>
                         </button>
                         <button 
                             onClick={() => setPaymentMethod('cash')}
-                            className={`p-6 rounded-2xl border-2 text-left transition-all ${paymentMethod === 'cash' ? 'border-primary bg-primary/5' : 'border-bg'}`}>
-                            <h5 className="font-serif italic font-bold text-primary text-lg">Efectivo</h5>
-                            <p className="text-[10px] uppercase tracking-tighter opacity-60">Pago al recibir</p>
+                            className={`p-6 rounded-2xl border-2 text-left transition-all ${paymentMethod === 'cash' ? 'border-primary bg-primary/5 shadow-md scale-[1.02]' : 'border-bg opacity-60'}`}>
+                            <h5 className="font-serif italic font-bold text-primary text-xl">Efectivo</h5>
+                            <p className="text-[10px] uppercase font-black tracking-widest text-primary/40 mt-1">Pago al recibir</p>
                         </button>
                     </div>
 
                     {paymentMethod === 'transfer' && (
-                        <div className="bg-bg/20 p-8 rounded-3xl border border-primary/20 mb-10 max-w-sm mx-auto font-serif animate-fade-in">
-                            <h4 className="italic text-xl text-primary mb-4 text-center">Datos para Transferencia</h4>
-                            <div className="space-y-4 text-left text-sm mb-6 font-serif">
+                        <div className="bg-bg/20 p-8 rounded-3xl border border-primary/20 mb-10 max-w-sm mx-auto font-serif animate-fade-in shadow-lg">
+                            <h4 className="italic text-2xl text-primary mb-6 text-center font-bold">Datos de Pago</h4>
+                            <div className="space-y-4 text-left mb-8 font-serif">
                                 <div className="flex justify-between border-b border-primary/10 pb-2">
-                                    <span className="opacity-60 font-serif">Zelle/Apple Pay:</span>
-                                    <span className="font-bold">430 324 2593</span>
+                                    <span className="opacity-60 text-sm">Zelle/Apple Pay:</span>
+                                    <span className="font-bold text-primary">430 324 2593</span>
                                 </div>
                                 <div className="flex justify-between border-b border-primary/10 pb-2">
-                                    <span className="opacity-60 font-serif">Nombre:</span>
-                                    <span className="font-bold">Maria Soto</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="opacity-60 font-serif">Total a Pagar:</span>
-                                    <span className="font-bold text-lg text-primary">${totalAmount.toFixed(2)}</span>
+                                    <span className="opacity-60 text-sm">Nombre:</span>
+                                    <span className="font-bold text-primary">Maria Soto</span>
                                 </div>
                             </div>
                             
-                            {/* Zelle QR Code */}
-                            <div className="bg-white p-2 rounded-2xl w-48 h-48 mx-auto flex items-center justify-center border border-primary/5 shadow-md overflow-hidden">
-                                <img src="/imagenes/zelle.png" alt="Zelle QR Code" className="w-full h-full object-contain" />
+                            <div className="bg-white p-3 rounded-2xl w-44 h-44 mx-auto mb-4 border border-primary/5 shadow-inner">
+                                <img src="/imagenes/zelle.png" alt="Zelle QR" className="w-full h-full object-contain" />
                             </div>
-                            <p className="text-[10px] mt-4 uppercase tracking-wider text-primary/60 italic font-bold text-center mb-8">Escanea para pagar con Zelle</p>
+                            <p className="text-[9px] uppercase font-black tracking-widest text-primary/40 text-center mb-8">Escanea para pagar</p>
 
                             <div className="pt-6 border-t border-primary/10">
-                                <label className="block text-sm font-bold text-primary mb-3">Sube tu comprobante de pago *</label>
-                                <input 
-                                    type="file" 
-                                    accept="image/*" 
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setReceiptFile(e.target.files?.[0] || null)}
-                                    className="w-full text-sm font-serif file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-primary file:text-white hover:file:bg-primary/90 cursor-pointer"
-                                />
+                                <label className="block text-xs font-black uppercase tracking-widest text-primary mb-3">Sube tu comprobante *</label>
+                                <div className="relative">
+                                    <input 
+                                        type="file" 
+                                        accept="image/*" 
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setReceiptFile(e.target.files?.[0] || null)}
+                                        className="w-full text-[10px] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-primary file:text-white hover:file:bg-primary/90 cursor-pointer"
+                                    />
+                                    {receiptFile && <p className="text-[10px] text-accent font-bold mt-2">✨ Recibo seleccionado: {receiptFile.name}</p>}
+                                </div>
                             </div>
                         </div>
                     )}
@@ -530,15 +543,14 @@ export const CheckoutFlow: React.FC = () => {
                                     setStep(6);
                                 } catch (e: any) {
                                     console.error("Order failed:", e);
-                                    alert(`Hubo un error crítico al procesar tu orden: ${e?.message || 'Error del servidor'}. Por favor toma captura a tu resumen y envíanosla por WhatsApp para no perder el pedido.`);
-                                    // Remove setStep(6) from the catch block so the user can literally see it failed.
+                                    alert(`Hubo un error crítico: ${e?.message}. Toma captura a tu recibo y envíanosla por WhatsApp.`);
                                 } finally {
                                     setIsUploading(false);
                                 }
                             }}
-                            className="w-2/3 h-16 text-xl"
+                            className="w-2/3 h-16 text-xl shadow-xl"
                         >
-                            {isUploading ? 'Procesando...' : `Confirmar ($${totalAmount.toFixed(2)})`}
+                            {isUploading ? 'Generando Magia...' : `Confirmar Pedido`}
                         </Button>
                     </div>
                 </div>
@@ -547,38 +559,36 @@ export const CheckoutFlow: React.FC = () => {
             {/* Step 6: Success */}
             {step === 6 && (
                 <div className="animate-fade-in flex-1 text-center py-10">
-                    <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg className="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
+                    <div className="grid grid-cols-3 gap-2 max-w-xs mx-auto mb-10 group">
+                        {['/imagenes/IMG_6657.webp', '/imagenes/IMG_6749.webp', '/imagenes/IMG_6360.webp'].map((img, i) => (
+                            <div key={i} className={`aspect-square rounded-2xl overflow-hidden shadow-lg border-2 border-white transform transition-all duration-700 ${i === 1 ? 'scale-110 -rotate-3 z-10 hover:scale-125' : 'scale-90 rotate-3 opacity-60 hover:opacity-100 hover:scale-110'}`}>
+                                <img src={img} alt="" className="w-full h-full object-cover" />
+                            </div>
+                        ))}
                     </div>
-                    <h2 className="font-serif text-5xl md:text-6xl text-primary mb-6 italic leading-tight">
-                        Gracias <span className="font-bold underline decoration-accent">{customer.name.split(' |')[0].split(' ')[0]}</span>, hemos registrado tu pedido.
-                    </h2>
-                    <p className="text-xl text-gray-600 mb-10 max-w-lg mx-auto leading-relaxed">Solo falta un paso para confirmar la magia. Envíanos tu información de pago para garantizar tu pedido.</p>
 
-                    {paymentMethod === 'transfer' ? (
-                        <div className="bg-bg/20 p-8 rounded-3xl border border-primary/20 mb-10 max-w-sm mx-auto font-serif">
-                            <h4 className="italic text-xl text-primary mb-4">Comprobante Recibido ✅</h4>
-                            <p className="text-gray-600 mb-6 font-serif">
-                                Tu pago por transferencia fue registrado y tu lugar en el horno está asegurado. ¡Prepárate para disfrutar!
-                            </p>
-                            <a href="https://wa.me/14303242593" target="_blank" rel="noopener noreferrer">
-                                <Button className="w-full text-lg shadow-sm">Contactar por WhatsApp</Button>
-                            </a>
-                        </div>
-                    ) : (
-                        <div className="bg-bg/20 p-8 rounded-3xl border border-primary/20 mb-10 max-w-sm mx-auto font-serif">
-                            <h4 className="italic text-xl text-primary mb-4">Pago en Efectivo</h4>
-                            <p className="text-sm italic text-gray-600">
-                                Recuerda tener listos <strong>${totalAmount.toFixed(2)}</strong> al momento de la entrega o recolección.
-                            </p>
-                        </div>
-                    )}
+                    <h2 className="font-serif text-5xl md:text-6xl text-primary mb-6 italic leading-tight">
+                        ¡Listo, <span className="font-bold underline decoration-accent decoration-4">{customer.name.split(' ')[0]}!</span>
+                    </h2>
+                    <p className="text-xl text-gray-600 mb-10 max-w-sm mx-auto leading-relaxed font-serif italic">
+                        Tu pedido ha sido recibido con amor. Pronto recibirás noticias nuestras para la entrega.
+                    </p>
+
+                    <div className="bg-primary/5 p-8 rounded-[2rem] border border-primary/10 mb-12 max-w-md mx-auto relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-20 h-20 bg-accent/5 rounded-full -translate-y-10 translate-x-10"></div>
+                        <h4 className="text-[10px] uppercase font-black tracking-widest text-primary/40 mb-4">¿Qué sigue?</h4>
+                        <p className="text-sm text-primary leading-relaxed font-bold italic mb-6">
+                            Estaremos preparando tus productos en nuestro próximo lote. Si tienes dudas, contáctanos directamente.
+                        </p>
+                        <a href="https://wa.me/14303242593" target="_blank" rel="noopener noreferrer">
+                            <Button className="w-full h-14 text-sm font-black uppercase tracking-widest shadow-md">Escríbenos por WhatsApp</Button>
+                        </a>
+                    </div>
 
                     <Button 
                         onClick={() => window.location.href = '/'}
-                        className="w-full h-16 text-lg max-w-xs mx-auto"
+                        variant="outline"
+                        className="w-full h-14 text-sm font-black uppercase tracking-widest max-w-xs mx-auto border-bg hover:bg-bg"
                     >
                         Volver al Inicio
                     </Button>

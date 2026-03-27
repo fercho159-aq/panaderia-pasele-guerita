@@ -261,18 +261,25 @@ export const AdminDashboard: React.FC = () => {
 
                                                                 return (
                                                                     <>
-                                                                        <span className="text-sm font-semibold">{displayName}</span>
+                                                                        <span className="text-sm font-bold text-gray-900">{displayName}</span>
                                                                         {receiptUrl && (
-                                                                            <a href={receiptUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 mt-2 text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-1 rounded-md border border-primary/20 hover:bg-primary hover:text-white transition-colors w-max shadow-sm">
-                                                                                📎 Ver Recibo
+                                                                            <a 
+                                                                                href={receiptUrl} 
+                                                                                target="_blank" 
+                                                                                rel="noopener noreferrer" 
+                                                                                className="inline-flex items-center gap-1.5 mt-2 text-[10px] font-bold uppercase tracking-widest text-emerald-700 bg-emerald-50 px-2.5 py-1.5 rounded-lg border border-emerald-100 hover:bg-emerald-100 transition-colors w-max shadow-sm"
+                                                                            >
+                                                                                <span className="text-xs">📎</span> VER RECIBO
                                                                             </a>
                                                                         )}
-                                                                        {displayEmail && <a href={`mailto:${displayEmail}`} className="text-[10px] text-gray-500 hover:text-primary transition-colors">{displayEmail}</a>}
-                                                                        {displayPhone && <a href={`tel:${displayPhone}`} className="text-[10px] text-gray-500 hover:text-primary transition-colors">{displayPhone}</a>}
+                                                                        {displayEmail && <a href={`mailto:${displayEmail}`} className="text-[10px] text-gray-400 hover:text-primary transition-colors mt-1">{displayEmail}</a>}
+                                                                        {displayPhone && <a href={`tel:${displayPhone}`} className="text-[10px] text-gray-400 hover:text-primary transition-colors">{displayPhone}</a>}
                                                                         {(displayNotes || (order.notes)) && (
-                                                                            <span className="text-xs text-amber-600 font-normal italic mt-1 leading-tight line-clamp-2" title={displayNotes || order.notes}>
-                                                                                📝 {displayNotes || order.notes}
-                                                                            </span>
+                                                                            <div className="mt-2 p-2 bg-accent/5 rounded-lg border border-accent/10">
+                                                                                <p className="text-[11px] text-accent font-medium leading-relaxed italic">
+                                                                                    📝 {displayNotes || order.notes}
+                                                                                </p>
+                                                                            </div>
                                                                         )}
                                                                     </>
                                                                 );

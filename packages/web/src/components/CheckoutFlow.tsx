@@ -137,7 +137,7 @@ export const CheckoutFlow: React.FC = () => {
                 {steps.map((label, i) => (
                     <div key={label} className="flex-1 mx-1 flex flex-col items-center">
                         <div className={`h-2 w-full rounded-full mb-2 ${step >= i + 1 ? 'bg-primary' : 'bg-bg'}`} />
-                        <span className={`text-[8px] uppercase font-bold tracking-widest ${step === i + 1 ? 'text-primary' : 'text-gray-300'}`}>{label}</span>
+                        <span className={`text-[8px] uppercase font-extrabold tracking-widest ${step === i + 1 ? 'text-primary' : 'text-gray-300'}`}>{label}</span>
                     </div>
                 ))}
             </div>
@@ -299,8 +299,8 @@ export const CheckoutFlow: React.FC = () => {
                             
                             return (
                                 <div key={item.id} className="checkout-product-card group bg-white rounded-2xl overflow-hidden border border-bg shadow-sm hover:shadow-md transition-all flex flex-col relative">
-                                    <div className="relative w-full h-44 overflow-hidden bg-gray-50">
-                                        <img src={item.image} alt={item.name} className="img-main absolute inset-0 w-full h-full object-cover transition-opacity duration-300" />
+                                    <div className="relative w-full h-44 overflow-hidden bg-gray-50 flex items-center justify-center">
+                                        <img src={item.image || '/logo.png'} alt={item.name} className={`img-main absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${!item.image ? 'opacity-20 object-contain p-8' : ''}`} />
                                         <img src={hoverImg} alt={`${item.name} vista`} className="img-hover absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                         
                                         {item.is_sugar_free && (
@@ -324,7 +324,7 @@ export const CheckoutFlow: React.FC = () => {
                                     <div className="p-4 flex flex-col flex-1">
                                         <div className="flex justify-between items-start mb-1">
                                             <h4 className="font-serif text-lg text-primary font-bold italic leading-tight">{item.name}</h4>
-                                            {item.price && <span className="text-sm font-black text-primary/60">${item.price}</span>}
+                                            {item.price && <span className="text-sm font-bold text-primary/60">${item.price}</span>}
                                         </div>
                                         <p className="text-[10px] text-gray-500 line-clamp-2 font-serif italic mb-3">{item.description}</p>
                                         
@@ -380,6 +380,14 @@ export const CheckoutFlow: React.FC = () => {
                             value={customer.name}
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCustomer({...customer, name: e.target.value})}
                         />
+                        <div className="bg-white p-6 rounded-3xl shadow-lg border border-primary/10 inline-block mb-8 hover:scale-105 transition-transform duration-300">
+                            <img 
+                                src="/imagenes/ZELLE_QR.png" 
+                                alt="Zelle QR Maria Soto" 
+                                className="w-56 h-56 md:w-64 md:h-64 object-contain mx-auto"
+                            />
+                            <p className="text-[10px] uppercase font-bold text-primary/40 mt-4 tracking-widest text-center">Escanea para pagar</p>
+                        </div>
                         <div className="grid gap-4 md:grid-cols-2">
                             <input 
                                 type="tel" placeholder="Teléfono"

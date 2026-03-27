@@ -323,7 +323,7 @@ export const CheckoutFlow: React.FC = () => {
                                     
                                     <div className="p-4 flex flex-col flex-1">
                                         <div className="flex justify-between items-start mb-1">
-                                            <h4 className="font-serif text-lg text-primary font-bold italic leading-tight">{item.name}</h4>
+                                            <h4 className="font-serif text-lg text-primary italic leading-tight">{item.name}</h4>
                                             {item.price && <span className="text-sm font-bold text-primary/60">${item.price}</span>}
                                         </div>
                                         <p className="text-[10px] text-gray-500 line-clamp-2 font-serif italic mb-3">{item.description}</p>

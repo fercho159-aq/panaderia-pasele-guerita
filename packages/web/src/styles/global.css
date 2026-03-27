@@ -30,11 +30,11 @@
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif;
-    font-weight: 800;
+    font-weight: 400; /* Alfa Slab One is already thick/black at 400. Higher values cause faux-bold. */
     letter-spacing: -0.02em;
     line-height: 1.1;
   }
   strong, .font-bold {
-    font-weight: 700;
+    font-weight: 600; /* Adjusted from 700 for a cleaner look */
   }
 }

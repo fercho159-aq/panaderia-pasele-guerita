@@ -519,20 +519,29 @@ export const CheckoutFlow: React.FC = () => {
                                         }
                                     }
 
-                                    let finalNotes = gift.is_gift ? `[REGALO] Mensajero: ${gift.message} | Notas: ${remarks}`.trim() : remarks.trim();
-                                    if (receiptUrl) {
-                                        finalNotes = (finalNotes ? finalNotes + ' | ' : '') + `📎 Comprobante adjunto (${receiptUrl})`;
-                                    }
+                                    const orderMetadata = {
+                                        gift_message: gift.is_gift ? gift.message : '',
+                                        receipt_url: receiptUrl,
+                                        sliced: slicedBreads,
+                                        remarks: remarks
+                                    };
 
+                                    // Build a clean notes string for the 'notes' column
+                                    let cleanNotes = remarks.trim();
+                                    if (gift.is_gift) cleanNotes = `[REGALO] ${gift.message}${cleanNotes ? ' | ' + cleanNotes : ''}`;
+                                    if (receiptUrl) cleanNotes = `${cleanNotes ? cleanNotes + ' | ' : ''}Comprobante: ${receiptUrl}`;
                                     if (Object.keys(slicedBreads).length > 0) {
                                         const slices = Object.entries(slicedBreads).map(([id, q]) => `${q}x ${allLiveProducts.find((f:any)=>f.id===id)?.name}`).join(', ');
-                                        finalNotes = (finalNotes ? finalNotes + ' | ' : '') + `🍞 Rebanar: ${slices}`;
+                                        cleanNotes = `${cleanNotes ? cleanNotes + ' | ' : ''}Rebanar: ${slices}`;
                                     }
 
                                     await createOrder({
-                                        customer_name: finalNotes ? `${customer.name} | 📝 ${finalNotes}` : customer.name,
+                                        customer_name: customer.name, // Just the name now!
                                         customer_phone: customer.phone,
                                         customer_email: customer.email,
+                                        phone: customer.phone, // New column
+                                        email: customer.email, // New column
+                                        notes: cleanNotes,     // New column
                                         location_id: locationId, 
                                         pickup_day: selectedDate,
                                         box_size: boxSize ?? totalCookies,

@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { Button } from '@pasele-guerita/ui';
 import { Badge } from '@pasele-guerita/ui';
-import { cookieFlavors, breadFlavors, monthlySpecial } from '@pasele-guerita/core';
+import { cookieFlavors, breadFlavors, monthlySpecial, allProducts } from '@pasele-guerita/core';
 
 let displayCookies: any[] = cookieFlavors;
 let displayBreads: any[] = breadFlavors;
@@ -12,12 +12,12 @@ try {
     if (res.ok) {
         const data = await res.json();
         if (data.cookies?.length > 0) displayCookies = data.cookies.map((c: any) => {
-            const s = cookieFlavors.find((sf: any) => sf.id === c.id) || {};
-            return { ...s, ...c, image: (s as any).image || c.image };
+            const s = cookieFlavors.find((sf: any) => sf.id === c.id || sf.name === c.name) || {};
+            return { ...s, ...c, image: c.image || (s as any).image, description: c.description ?? (s as any).description };
         });
         if (data.breads?.length > 0) displayBreads = data.breads.map((b: any) => {
-            const s = breadFlavors.find((sf: any) => sf.id === b.id) || {};
-            return { ...s, ...b, image: (s as any).image || b.image };
+            const s = breadFlavors.find((sf: any) => sf.id === b.id || sf.name === b.name) || {};
+            return { ...s, ...b, image: b.image || (s as any).image, description: b.description ?? (s as any).description };
         });
     }
 } catch (e) {}
@@ -42,7 +42,7 @@ const breadHoverPool = [
 
 <Layout title="Home">
 	<!-- Announcement Bar -->
-	<div class="bg-accent text-primary text-center py-3 font-bold text-sm tracking-wide">
+	<div class="bg-primary text-bg text-center py-3 font-bold text-sm tracking-wide">
 		Próxima entrega: Sábado 18 de Noviembre. ¡Quedan pocos lugares!
 	</div>
 
@@ -120,6 +120,60 @@ const breadHoverPool = [
 		</div>
 	</section>
 
+	<!-- Favoritos Section - MOVED TO TOP -->
+	<div class="mb-24 py-16 px-8 bg-primary/5 rounded-[4rem] border border-primary/10">
+		<div class="max-w-7xl mx-auto">
+			<div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+				<div>
+					<h3 class="font-serif text-4xl text-primary mb-2">✨ Los Favoritos</h3>
+					<p class="text-gray-500 uppercase tracking-widest font-bold text-xs">Recomendaciones de la casa</p>
+				</div>
+				<a href="/checkout" class="text-primary font-bold border-b-2 border-primary/20 pb-1 hover:border-primary transition-all">Ver menú completo →</a>
+			</div>
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+				{[
+					allProducts.find(p => p.id === 'abuelita'),
+					allProducts.find(p => p.id === 'fresa-coco'),
+					allProducts.find(p => p.id === 'jalapeño-cheddar')
+				].filter(Boolean).map((fav: any) => (
+						<div class="bg-white p-6 rounded-3xl shadow-sm border border-bg hover:shadow-xl transition-all group overflow-hidden relative">
+							<div class="relative h-64 -mx-6 -mt-6 mb-6 overflow-hidden">
+								<img src={fav.image} alt={fav.name} class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+								<div class="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-primary text-xs font-bold shadow-sm">Popular</div>
+							</div>
+							<h4 class="font-serif text-2xl text-primary mb-2">{fav.name}</h4>
+							<p class="text-gray-600 text-sm mb-4 line-clamp-2">{fav.description}</p>
+							<a href="/checkout" class="inline-flex items-center text-primary font-bold gap-2 text-sm text-primary">Agregar al carrito <span class="group-hover:translate-x-1 transition-transform">→</span></a>
+						</div>
+				))}
+			</div>
+		</div>
+	</div>
+
+	<!-- Mensaje de Marca (Sourdough para cada ocasión) - MOVED TO TOP -->
+	<div class="mb-24 py-20 bg-primary rounded-[3rem] text-bg overflow-hidden relative">
+		<div class="absolute top-0 right-0 w-96 h-96 bg-accent opacity-10 rounded-full -translate-y-1/2 translate-x-1/2 blur-[80px]"></div>
+		<div class="max-w-6xl mx-auto px-8 relative z-10">
+			<div class="text-center mb-16">
+				<h3 class="font-serif text-4xl md:text-5xl mb-6">Sourdough para cada ocasión</h3>
+				<div class="w-24 h-1 bg-accent/30 mx-auto rounded-full"></div>
+			</div>
+			<div class="grid md:grid-cols-2 gap-12">
+				<div class="bg-white/5 backdrop-blur-sm p-10 rounded-[2.5rem] border border-white/10 hover:bg-white/10 transition-colors">
+					<span class="text-5xl mb-6 block">✨</span>
+					<h4 class="font-serif text-3xl mb-4">Para tus eventos</h4>
+					<p class="text-bg/80 text-lg leading-relaxed">¿Tienes una cena o reunión especial? Personalizamos nuestras cajas de galletas y hogazas para que tu evento tenga el toque artesanal único de Pásele Güerita.</p>
+				</div>
+				<div class="bg-white/5 backdrop-blur-sm p-10 rounded-[2.5rem] border border-white/10 hover:bg-white/10 transition-colors">
+					<span class="text-5xl mb-6 block">💼</span>
+					<h4 class="font-serif text-3xl mb-4">Para tu negocio</h4>
+					<p class="text-bg/80 text-lg leading-relaxed font-bold">Venta Wholesale</p>
+					<p class="text-bg/80 text-lg leading-relaxed">Lleva la magia de nuestra masa madre a tu café o restaurante. Ofrecemos precios de mayoreo para aliados comerciales que buscan calidad superior.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<!-- Testimonials with images -->
 	<section class="py-20 bg-white border-y border-bg">
 		<div class="max-w-7xl mx-auto px-6">
@@ -147,11 +201,11 @@ const breadHoverPool = [
 	<section id="menu" class="py-20 max-w-7xl mx-auto px-6">
 			<div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
 				<div>
-					<h2 class="font-serif text-4xl md:text-6xl text-primary italic mb-2">Nuestro Menú</h2>
-					<p class="text-xl font-bold text-gray-400 uppercase tracking-widest">Lo mejor de la semana</p>
+					<h2 class="font-serif text-4xl md:text-6xl text-primary mb-2">Nuestro Menú</h2>
 				</div>
 				<a href="/checkout"><Button variant="primary" className="text-xl px-12 h-16 shadow-xl hover:scale-105 transition-transform duration-300">Hacer Pedido Ahora</Button></a>
 		</div>
+
 
 		<!-- Galletas -->
 		<div class="mb-20">
@@ -232,6 +286,9 @@ const breadHoverPool = [
 				})}
 			</div>
 		</div>
+		</div>
+
+		<!-- Mensaje de Marca (Sourdough para cada ocasión) - REMOVED from bottom -->
 
 		<!-- Contact Section -->
 		<section class="py-20 mt-20 -mx-6 px-6">
@@ -239,8 +296,8 @@ const breadHoverPool = [
 				<div class="absolute -bottom-20 -right-20 w-80 h-80 bg-accent/10 rounded-full blur-[100px]"></div>
 				<div class="grid md:grid-cols-2 gap-16 mb-12 relative z-10">
 					<div>
-						<h2 class="font-serif text-4xl lg:text-5xl text-primary italic font-bold mb-6">Escríbenos Pásele Güerita ❤️</h2>
-						<p class="text-xl text-gray-700 leading-relaxed font-serif italic max-w-xl mb-10">
+						<h2 class="font-serif text-4xl lg:text-5xl text-primary mb-6">Escríbenos Pásele Güerita ❤️</h2>
+						<p class="text-xl text-gray-700 leading-relaxed font-serif max-w-xl mb-10">
 							En nuestro horno creemos que las mejores decisiones son las que alimentan el alma.
 						</p>
 						<a href="https://wa.me/14303242593" target="_blank" rel="noopener noreferrer">

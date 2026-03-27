@@ -34,7 +34,7 @@ export const cookieFlavors = [
     },
     { 
         id: 'abuelita', 
-        name: 'Chocolate Abuelita Mexicano', 
+        name: 'Abuelita', 
         active: true,
         category: 'cookie',
         image: '/imagenes/IMG_6757.webp',
@@ -126,6 +126,18 @@ export const breadFlavors = [
         image: '/imagenes/IMG_6532.webp',
         description: 'Cacao, arándanos y chocolate sin azúcar.',
         ingredients: 'Alérgenos: trigo.',
+        is_sourdough: true,
+        is_gluten_free: false
+    },
+    {
+        id: 'jalapeño-cheddar',
+        name: 'Jalapeño Cheddar',
+        active: true,
+        category: 'bread',
+        price: 13.00,
+        image: '/imagenes/IMG_6753.webp',
+        description: 'Picante sutil de jalapeño con queso cheddar fundido.',
+        ingredients: 'Alérgenos: trigo, lácteos.',
         is_sourdough: true,
         is_gluten_free: false
     }

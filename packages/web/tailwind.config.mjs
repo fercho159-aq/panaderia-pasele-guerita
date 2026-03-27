@@ -7,9 +7,10 @@ export default {
     theme: {
         extend: {
             colors: {
-                primary: "#486D62", // Verde Botánico
-                accent: "#F4A7C1",  // Rosa
-                bg: "#FFEFEA",      // Crema
+                primary: "#366F5F", // Verde Pásele
+                accent: "#F4A7C1",  // Rosa Corazón (Original)
+                bg: "#FFEFEA",      // Rosa Pálido / BG
+                brown: "#AF4C0F",   // Marrón Rustico
             },
             fontFamily: {
                 serif: ["'Frunchy Sage'", "serif"],

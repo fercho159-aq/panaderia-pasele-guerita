@@ -46,11 +46,18 @@ export const CheckoutFlow: React.FC = () => {
 
                 setLiveCookies(data.cookies?.length > 0 
                     ? data.cookies.map((c: any) => {
-                        const s = cookieFlavors.find((sf: any) => sf.id === c.id) || {};
+                        const s = cookieFlavors.find((sf: any) => sf.id === c.id || sf.name === c.name) || {};
                         return { ...s, ...c, image: c.image || (s as any).image, description: c.description ?? (s as any).description, ingredients: c.ingredients ?? (s as any).ingredients };
                     }) 
                     : cookieFlavors);
-                setLiveBreads(data.breads?.length > 0 ? data.breads : breadFlavors);
+
+                setLiveBreads(data.breads?.length > 0 
+                    ? data.breads.map((b: any) => {
+                        const s = breadFlavors.find((sf: any) => sf.id === b.id || sf.name === b.name) || {};
+                        return { ...s, ...b, image: b.image || (s as any).image, description: b.description ?? (s as any).description, ingredients: b.ingredients ?? (s as any).ingredients };
+                    })
+                    : breadFlavors);
+                
                 setLiveLocations(data.locations?.length > 0 ? data.locations : pickupLocations);
             } catch (error) {
                 console.error("Failed to load DB data, using fallbacks:", error);
@@ -380,14 +387,6 @@ export const CheckoutFlow: React.FC = () => {
                             value={customer.name}
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCustomer({...customer, name: e.target.value})}
                         />
-                        <div className="bg-white p-6 rounded-3xl shadow-lg border border-primary/10 inline-block mb-8 hover:scale-105 transition-transform duration-300">
-                            <img 
-                                src="/imagenes/ZELLE_QR.png" 
-                                alt="Zelle QR Maria Soto" 
-                                className="w-56 h-56 md:w-64 md:h-64 object-contain mx-auto"
-                            />
-                            <p className="text-[10px] uppercase font-bold text-primary/40 mt-4 tracking-widest text-center">Escanea para pagar</p>
-                        </div>
                         <div className="grid gap-4 md:grid-cols-2">
                             <input 
                                 type="tel" placeholder="Teléfono"
@@ -480,19 +479,19 @@ export const CheckoutFlow: React.FC = () => {
                             <h4 className="italic text-2xl text-primary mb-6 text-center font-bold">Datos de Pago</h4>
                             <div className="space-y-4 text-left mb-8 font-serif">
                                 <div className="flex justify-between border-b border-primary/10 pb-2">
-                                    <span className="opacity-60 text-sm">Zelle/Apple Pay:</span>
-                                    <span className="font-bold text-primary">430 324 2593</span>
+                                    <span className="opacity-60 text-sm font-sans font-bold">Zelle/Apple Pay:</span>
+                                    <span className="font-sans font-bold text-primary">430 324 2593</span>
                                 </div>
                                 <div className="flex justify-between border-b border-primary/10 pb-2">
-                                    <span className="opacity-60 text-sm">Nombre:</span>
-                                    <span className="font-bold text-primary">Maria Soto</span>
+                                    <span className="opacity-60 text-sm font-sans font-bold">Nombre:</span>
+                                    <span className="font-sans font-bold text-primary">Maria Soto</span>
                                 </div>
                             </div>
                             
-                            <div className="bg-white p-3 rounded-2xl w-44 h-44 mx-auto mb-4 border border-primary/5 shadow-inner">
-                                <img src="/imagenes/zelle.png" alt="Zelle QR" className="w-full h-full object-contain" />
+                            <div className="bg-white p-3 rounded-2xl w-48 h-48 mx-auto mb-4 border border-primary/5 shadow-inner">
+                                <img src="/imagenes/zelle.png" alt="Zelle QR Maria Soto" className="w-full h-full object-contain" />
                             </div>
-                            <p className="text-[9px] uppercase font-black tracking-widest text-primary/40 text-center mb-8">Escanea para pagar</p>
+                            <p className="text-[9px] uppercase font-bold tracking-widest text-primary/40 text-center mb-8 font-sans">Escanea para pagar</p>
 
                             <div className="pt-6 border-t border-primary/10">
                                 <label className="block text-xs font-black uppercase tracking-widest text-primary mb-3">Sube tu comprobante *</label>

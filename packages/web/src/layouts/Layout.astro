@@ -29,8 +29,8 @@ const { title, description = "Artisanal Sourdough Dallas, Handmade Cookies" } = 
 				--font-heading: 'Alfa Slab One', serif;
 				--font-body: 'Arvo', serif;
 			}
-			.font-serif { font-family: var(--font-heading) !important; }
-			.font-sans { font-family: var(--font-body) !important; }
+			.font-serif { font-family: var(--font-heading) !important; font-weight: normal !important; }
+			.font-sans { font-family: var(--font-body) !important; font-weight: 500 !important; }
 		</style>
 	</head>
 	<body class="bg-bg font-sans text-gray-900">
@@ -39,14 +39,14 @@ const { title, description = "Artisanal Sourdough Dallas, Handmade Cookies" } = 
 				<a href="/" class="flex flex-col justify-center">
 					<img src="/logo.png" alt="Pásele Güerita" class="h-20 sm:h-24 w-auto drop-shadow-sm" />
 				</a>
-				<div class="hidden md:flex space-x-8 font-serif text-2xl border-l border-primary/20 pl-8">
+				<div class="hidden md:flex space-x-8 font-sans text-xl border-l border-primary/20 pl-8 uppercase tracking-widest">
 					<a href="/" class="hover:text-accent transition-colors">Menú</a>
 					<a href="/about" class="hover:text-accent transition-colors">Quiénes somos</a>
 					<a href="/recipes" class="hover:text-accent transition-colors">Recetas</a>
-					<a href="/checkout" class="text-primary hover:text-accent font-black transition-colors">Carrito</a>
+					<a href="/checkout" class="text-primary hover:text-accent transition-colors underline decoration-2 underline-offset-4">Carrito</a>
 				</div>
                 <div class="md:hidden">
-                    <a href="/checkout" class="text-primary font-serif font-black text-2xl">Carrito</a>
+                    <a href="/checkout" class="text-primary font-serif text-2xl">Carrito</a>
                 </div>
 			</div>
 		</nav>
@@ -88,7 +88,7 @@ const { title, description = "Artisanal Sourdough Dallas, Handmade Cookies" } = 
 				<div class="bg-white p-3 rounded-2xl md:rounded-3xl inline-block mb-8 shadow-sm">
 					<img src="/logo.png" alt="Pásele Güerita" class="h-16 md:h-20 w-auto mx-auto" />
 				</div>
-				<h2 class="font-serif text-4xl md:text-5xl font-bold mb-6 italic">Hecho con masa madre y mucho amor.</h2>
+				<h2 class="font-serif text-4xl md:text-5xl mb-6">Hecho con masa madre y mucho amor.</h2>
 				
                 <div class="flex flex-col items-center gap-6 mb-10">
                     <div class="flex gap-8 items-center">

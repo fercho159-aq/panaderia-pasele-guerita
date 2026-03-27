@@ -163,17 +163,17 @@ const breadHoverPool = [
 					const hoverImg = cookieHoverPool[i % cookieHoverPool.length];
 					return (
 						<a href="/checkout" class="product-card group bg-white rounded-3xl overflow-hidden shadow-md border border-bg flex flex-col">
-							<div class="product-img-wrap relative w-full h-56 overflow-hidden bg-gray-100">
-								<img src={mainImg} alt={flavor.name} class="product-img-main absolute inset-0 w-full h-full object-cover" loading="lazy" decoding="async" />
+							<div class="product-img-wrap relative w-full h-56 overflow-hidden bg-gray-100 flex items-center justify-center">
+								<img src={mainImg || '/logo.png'} alt={flavor.name} class={`product-img-main absolute inset-0 w-full h-full object-cover ${!mainImg ? 'opacity-20 object-contain p-8' : ''}`} loading="lazy" decoding="async" />
 								<img src={hoverImg} alt={flavor.name + ' detalle'} class="product-img-hover absolute inset-0 w-full h-full object-cover opacity-0" loading="lazy" decoding="async" />
 								{flavor.is_sugar_free && (
-									<div class="absolute top-3 right-3 bg-blue-100 text-blue-700 text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded shadow border border-blue-200 z-10">Sugar Free</div>
+									<div class="absolute top-3 right-3 bg-blue-100 text-blue-700 text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded shadow border border-blue-200 z-10">Sugar Free</div>
 								)}
 							</div>
 							<div class="p-5 flex flex-col flex-1">
 								<div class="flex justify-between items-start mb-2">
 									<h4 class="font-serif text-xl text-primary font-bold italic leading-tight">{flavor.name}</h4>
-									<span class="font-black text-primary text-lg ml-2 shrink-0">${flavor.price || 12}</span>
+									<span class="font-bold text-primary text-lg ml-2 shrink-0">${flavor.price || 12}</span>
 								</div>
 								<p class="text-gray-600 text-sm mb-1 leading-relaxed">{flavor.description || 'Galleta artesanal horneada con masa madre.'}</p>
 								{flavor.ingredients && <p class="text-[10px] text-gray-400 italic mb-4">{flavor.ingredients}</p>}
@@ -212,14 +212,14 @@ const breadHoverPool = [
 					const hoverImg = breadHoverPool[i % breadHoverPool.length];
 					return (
 						<a href="/checkout" class="product-card group bg-white rounded-3xl overflow-hidden shadow-md border border-bg flex flex-col">
-							<div class="product-img-wrap relative w-full h-56 overflow-hidden bg-gray-100">
-								<img src={mainImg} alt={bread.name} class="product-img-main absolute inset-0 w-full h-full object-cover" loading="lazy" decoding="async" />
+							<div class="product-img-wrap relative w-full h-56 overflow-hidden bg-gray-100 flex items-center justify-center">
+								<img src={mainImg || '/logo.png'} alt={bread.name} class={`product-img-main absolute inset-0 w-full h-full object-cover ${!mainImg ? 'opacity-20 object-contain p-8' : ''}`} loading="lazy" decoding="async" />
 								<img src={hoverImg} alt={bread.name + ' detalle'} class="product-img-hover absolute inset-0 w-full h-full object-cover opacity-0" loading="lazy" decoding="async" />
 							</div>
 							<div class="p-5 flex flex-col flex-1">
 								<div class="flex justify-between items-start mb-2">
 									<h4 class="font-serif text-xl text-primary font-bold italic leading-tight">{bread.name}</h4>
-									<span class="font-black text-primary text-lg ml-2 shrink-0">${bread.price || 10}</span>
+									<span class="font-bold text-primary text-lg ml-2 shrink-0">${bread.price || 10}</span>
 								</div>
 								<p class="text-gray-600 text-sm mb-1 leading-relaxed">{bread.description || 'Pan artesanal de masa madre.'}</p>
 								{bread.ingredients && <p class="text-[10px] text-gray-400 italic mb-4">{bread.ingredients}</p>}
@@ -257,15 +257,15 @@ const breadHoverPool = [
 				<div class="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-10 border-t border-accent/20 relative z-10">
 					<div class="flex items-center gap-4 bg-white p-5 rounded-2xl border border-accent/5 shadow-sm hover:shadow-md transition-shadow">
 						<span class="text-3xl">📞</span>
-						<div><p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-black mb-1">WhatsApp</p><p class="font-bold text-primary text-xl">+1 430 324 2593</p></div>
+						<div><p className="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold mb-1">WhatsApp</p><p className="font-bold text-primary text-xl">+1 430 324 2593</p></div>
 					</div>
-					<div class="flex items-center gap-4 bg-white p-5 rounded-2xl border border-accent/5 shadow-sm hover:shadow-md transition-shadow">
-						<span class="text-3xl">📍</span>
-						<div><p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-black mb-1">Ubicación</p><p class="font-bold text-primary text-xl uppercase">Dallas - Farmersville TX</p></div>
+					<div className="flex items-center gap-4 bg-white p-5 rounded-2xl border border-accent/5 shadow-sm hover:shadow-md transition-shadow">
+						<span className="text-3xl">📍</span>
+						<div><p className="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold mb-1">Ubicación</p><p className="font-bold text-primary text-xl uppercase">Dallas - Farmersville TX</p></div>
 					</div>
-					<div class="flex items-center gap-4 bg-white p-5 rounded-2xl border border-accent/5 shadow-sm hover:shadow-md transition-shadow">
-						<span class="text-3xl">📲</span>
-						<div><p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-black mb-1">Redes</p><p class="font-bold text-primary text-xl italic">@paselegueritatx</p></div>
+					<div className="flex items-center gap-4 bg-white p-5 rounded-2xl border border-accent/5 shadow-sm hover:shadow-md transition-shadow">
+						<span className="text-3xl">📲</span>
+						<div><p className="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold mb-1">Redes</p><p className="font-bold text-primary text-xl italic">@paselegueritatx</p></div>
 					</div>
 				</div>
 			</div>

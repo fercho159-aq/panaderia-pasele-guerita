@@ -228,7 +228,7 @@ export const CheckoutFlow: React.FC = () => {
                     </div>
 
                     <div className="bg-primary/5 p-6 rounded-3xl border border-primary/10 mb-10">
-                        <h4 className="text-[10px] uppercase font-bold tracking-widest text-primary mb-2">Resumen de Logística</h4>
+                        <h4 className="text-[10px] uppercase font-black tracking-widest text-primary mb-2">Resumen de Logística</h4>
                         <div className="flex gap-4">
                             <div className="flex-1">
                                 <p className="text-[9px] text-gray-400 uppercase">Ubicación</p>
@@ -369,10 +369,11 @@ export const CheckoutFlow: React.FC = () => {
             {/* Step 4: Tus Datos */}
             {step === 4 && (
                 <div className="animate-fade-in flex-1">
-                    <h2 className="font-serif text-5xl md:text-6xl text-primary mb-2 italic">4. Tus Datos</h2>
-                    <p className="text-xl text-primary/70 mb-10 font-serif">Información para la entrega y contacto.</p>
+                    <h2 className="font-serif text-5xl md:text-6xl text-primary mb-2 italic font-black">4. Tus Datos</h2>
+                    <p className="text-xl text-primary/70 mb-10 font-serif font-black">Información para la entrega y contacto.</p>
 
                     <div className="space-y-6 flex-1 text-lg mb-10">
+                        <label className="block text-sm font-black text-primary/60 uppercase tracking-widest pl-1">Nombre completo</label>
                         <input 
                             type="text" placeholder="Nombre completo"
                             className="w-full p-6 rounded-2xl border-2 border-bg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none text-2xl font-bold bg-bg/10 font-serif shadow-sm transition-all"

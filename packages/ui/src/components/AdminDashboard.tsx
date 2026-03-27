@@ -107,13 +107,13 @@ export const AdminDashboard: React.FC = () => {
                 <div className="flex gap-4 mb-8">
                     <button
                         onClick={() => setActiveTab('inventory')}
-                        className={`px-8 py-3 rounded-xl font-bold transition-all ${activeTab === 'inventory' ? 'bg-primary text-white shadow-lg' : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-200'}`}
+                        className={`px-8 py-4 rounded-xl font-black text-xl transition-all ${activeTab === 'inventory' ? 'bg-primary text-white shadow-lg' : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-200'}`}
                     >
                         Inventario & Logística
                     </button>
                     <button
                         onClick={() => setActiveTab('orders')}
-                        className={`px-8 py-3 rounded-xl font-bold transition-all ${activeTab === 'orders' ? 'bg-primary text-white shadow-lg' : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-200'}`}
+                        className={`px-8 py-4 rounded-xl font-black text-xl transition-all ${activeTab === 'orders' ? 'bg-primary text-white shadow-lg' : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-200'}`}
                     >
                         Ventas & Pedidos
                     </button>

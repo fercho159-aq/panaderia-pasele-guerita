@@ -19,7 +19,22 @@
 }
 
 @layer base {
+  html {
+    font-size: 110%; /* Globally scale REM units for larger typography */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
   body {
-    @apply bg-bg selection:bg-accent selection:text-white;
+    @apply bg-bg selection:bg-accent selection:text-white font-serif;
+    line-height: 1.6;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+    font-weight: 900 !important;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  strong, .font-bold {
+    font-weight: 700 !important;
   }
 }

@@ -19,25 +19,19 @@ const { title, description = "Artisanal Sourdough Dallas, Handmade Cookies" } = 
 		<title>{title} | Pásele Güerita</title>
 		<meta name="description" content={description} />
 		
-		<!-- SEO -->
-		<meta name="keywords" content="Artisanal Sourdough Dallas, Limited Edition Cookies, Healthy Bread Dallas, Texas Bakery" />
-		<!-- LocalBusiness Schema -->
-		<script type="application/ld+json">
-		{
-			"@context": "https://schema.org",
-			"@type": "LocalBusiness",
-			"name": "Pásele Güerita",
-			"image": "https://paseleguerita.com/logo.png",
-			"address": {
-				"@type": "PostalAddress",
-				"addressLocality": "Dallas",
-				"addressRegion": "TX",
-				"addressCountry": "US"
-			},
-			"description": "Artisanal Sourdough Bakery in Dallas, Texas.",
-			"priceRange": "$$"
-		}
-		</script>
+		<!-- Fonts: Chunk Five Style (Alfa Slab One + Arvo) -->
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Arvo:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+		
+		<style is:global>
+			:root {
+				--font-heading: 'Alfa Slab One', serif;
+				--font-body: 'Arvo', serif;
+			}
+			.font-serif { font-family: var(--font-heading) !important; }
+			.font-sans { font-family: var(--font-body) !important; }
+		</style>
 	</head>
 	<body class="bg-bg font-sans text-gray-900">
 		<nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-bg">

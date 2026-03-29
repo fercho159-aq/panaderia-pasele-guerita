@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+import { CartDrawer } from '../components/CartDrawer';
+import { CartButton } from '../components/CartButton';
 
 interface Props {
 	title: string;
@@ -34,20 +36,20 @@ const { title, description = "Artisanal Sourdough Dallas, Handmade Cookies" } = 
 		</style>
 	</head>
 	<body class="bg-bg font-sans text-gray-900">
+		<CartDrawer client:load />
 		<nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-bg">
 			<div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 				<a href="/" class="flex flex-col justify-center">
 					<img src="/logo.png" alt="Pásele Güerita" class="h-20 sm:h-24 w-auto drop-shadow-sm" />
 				</a>
-				<div class="hidden md:flex space-x-8 font-sans text-xl border-l border-primary/20 pl-8 uppercase tracking-widest">
-					<a href="/" class="hover:text-accent transition-colors">Menú</a>
-					<a href="/about" class="hover:text-accent transition-colors">Quiénes somos</a>
-					<a href="/recipes" class="hover:text-accent transition-colors">Recetas</a>
-					<a href="/checkout" class="text-primary hover:text-accent transition-colors underline decoration-2 underline-offset-4">Carrito</a>
+				<div class="flex items-center space-x-8">
+					<div class="hidden md:flex space-x-8 font-sans text-xl border-l border-primary/20 pl-8 uppercase tracking-widest mr-4">
+						<a href="/" class="hover:text-accent transition-colors">Menú</a>
+						<a href="/about" class="hover:text-accent transition-colors">Quiénes somos</a>
+						<a href="/recipes" class="hover:text-accent transition-colors">Recetas</a>
+					</div>
+					<CartButton client:load />
 				</div>
-                <div class="md:hidden">
-                    <a href="/checkout" class="text-primary font-serif text-2xl">Carrito</a>
-                </div>
 			</div>
 		</nav>
 		<main>

@@ -216,7 +216,7 @@ const breadHoverPool = [
 					const mainImg = flavor.image || cookieFlavors[i % cookieFlavors.length]?.image || '/imagenes/IMG_6657.webp';
 					const hoverImg = cookieHoverPool[i % cookieHoverPool.length];
 					return (
-						<a href="/checkout" class="product-card group bg-white rounded-3xl overflow-hidden shadow-md border border-bg flex flex-col">
+						<a href={`/product/${flavor.id}`} class="product-card group bg-white rounded-3xl overflow-hidden shadow-md border border-bg flex flex-col">
 							<div class="product-img-wrap relative w-full h-56 overflow-hidden bg-gray-100 flex items-center justify-center">
 								<img src={mainImg || '/logo.png'} alt={flavor.name} class={`product-img-main absolute inset-0 w-full h-full object-cover ${!mainImg ? 'opacity-20 object-contain p-8' : ''}`} loading="lazy" decoding="async" />
 								<img src={hoverImg} alt={flavor.name + ' detalle'} class="product-img-hover absolute inset-0 w-full h-full object-cover opacity-0" loading="lazy" decoding="async" />
@@ -265,7 +265,7 @@ const breadHoverPool = [
 					const mainImg = bread.image || breadFlavors[i % breadFlavors.length]?.image || '/imagenes/IMG_6703.webp';
 					const hoverImg = breadHoverPool[i % breadHoverPool.length];
 					return (
-						<a href="/checkout" class="product-card group bg-white rounded-3xl overflow-hidden shadow-md border border-bg flex flex-col">
+						<a href={`/product/${bread.id}`} class="product-card group bg-white rounded-3xl overflow-hidden shadow-md border border-bg flex flex-col">
 							<div class="product-img-wrap relative w-full h-56 overflow-hidden bg-gray-100 flex items-center justify-center">
 								<img src={mainImg || '/logo.png'} alt={bread.name} class={`product-img-main absolute inset-0 w-full h-full object-cover ${!mainImg ? 'opacity-20 object-contain p-8' : ''}`} loading="lazy" decoding="async" />
 								<img src={hoverImg} alt={bread.name + ' detalle'} class="product-img-hover absolute inset-0 w-full h-full object-cover opacity-0" loading="lazy" decoding="async" />

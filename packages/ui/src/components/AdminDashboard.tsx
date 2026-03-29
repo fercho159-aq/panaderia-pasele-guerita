@@ -25,6 +25,7 @@ export const AdminDashboard: React.FC = () => {
     const [locations, setLocations] = useState<Location[]>([]);
     const [orders, setOrders] = useState<Order[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const fetchData = async () => {
         setIsLoading(true);
@@ -74,6 +75,15 @@ export const AdminDashboard: React.FC = () => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ type: 'order', id, status: newStatus })
+        });
+    };
+
+    const updateOrderDate = async (id: string, newDate: string) => {
+        setOrders(orders.map(o => o.id === id ? { ...o, pickup_day: newDate } : o));
+        await fetch('/api/admin/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type: 'order_date', id, date: newDate })
         });
     };
 
@@ -192,8 +202,18 @@ export const AdminDashboard: React.FC = () => {
 
                 {activeTab === 'orders' && (
                     <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+                        <div className="flex flex-col md:flex-row justify-between items-center mb-6 border-b border-gray-100 pb-4 gap-4">
                             <h2 className="font-serif text-2xl text-primary">Ventas y Producción</h2>
+                            <div className="relative flex-1 max-w-md">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+                                <input 
+                                    type="text" 
+                                    placeholder="Buscar cliente por nombre..." 
+                                    className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-sm"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
                             <p className="text-xs text-gray-400">Vista de control tipo Excel</p>
                         </div>
                         
@@ -219,14 +239,24 @@ export const AdminDashboard: React.FC = () => {
                                     {orders.length === 0 ? (
                                         <tr><td colSpan={20} className="py-8 text-center text-gray-400 italic">No hay pedidos registrados.</td></tr>
                                     ) : (
-                                        orders.map(order => {
+                                        orders
+                                        .filter(o => o.customer_name.toLowerCase().includes(searchTerm.toLowerCase()))
+                                        .map(order => {
                                             const cookieCount = Object.entries(order.flavors_selected || {}).reduce((sum, [id, q]) => sum + (!id.includes('hogaza') && !id.includes('pan-') && !id.includes('multigrano') ? q : 0), 0);
                                             const breadCount = Object.entries(order.flavors_selected || {}).reduce((sum, [id, q]) => sum + (id.includes('hogaza') || id.includes('pan-') || id.includes('multigrano') ? q : 0), 0);
                                             
                                             return (
                                                 <tr key={order.id} className={`border-b border-gray-100 hover:bg-gray-50/50 transition-colors ${order.status==='Cancelado' ? 'opacity-30' : ''}`}>
                                                     <td className="p-3 font-medium text-gray-600 sticky left-0 bg-white z-10 border-r border-gray-100">
-                                                        {(order as any).pickup_day || 'N/A'}
+                                                        <div className="flex flex-col gap-1">
+                                                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Fecha de Recolección</span>
+                                                            <input 
+                                                                type="date" 
+                                                                value={(order as any).pickup_day || ''} 
+                                                                onChange={(e) => updateOrderDate(order.id, e.target.value)}
+                                                                className="text-xs font-bold text-primary border-b border-dashed border-primary/20 bg-transparent hover:border-primary transition-colors cursor-pointer outline-none"
+                                                            />
+                                                        </div>
                                                     </td>
                                                     <td className="p-3 font-bold text-gray-800 sticky left-32 bg-white z-10 border-r border-gray-100">
                                                         <div className="flex flex-col">

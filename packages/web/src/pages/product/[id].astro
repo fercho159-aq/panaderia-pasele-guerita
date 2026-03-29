@@ -1,0 +1,20 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { ProductDetail } from '../../components/ProductDetail';
+import { allProducts } from '@pasele-guerita/core';
+
+export function getStaticPaths() {
+  return allProducts.map((product) => ({
+    params: { id: product.id },
+    props: { product },
+  }));
+}
+
+const { product } = Astro.props;
+---
+
+<Layout title={product.name} description={product.description}>
+	<div className="bg-[#FDF5E6]/30 min-h-screen">
+		<ProductDetail client:load product={product} />
+	</div>
+</Layout>

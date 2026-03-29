@@ -148,9 +148,15 @@ export const CartDrawer: React.FC = () => {
                         <Button 
                             className="w-full h-16 text-xl shadow-xl flex items-center justify-center gap-2"
                             disabled={cartItemsList.length === 0}
-                            onClick={() => window.location.href = '/checkout'}
+                            onClick={() => {
+                                if (window.location.pathname.startsWith('/checkout')) {
+                                    handleClose();
+                                } else {
+                                    window.location.href = '/checkout';
+                                }
+                            }}
                         >
-                            CHECK OUT
+                            {window.location.pathname.startsWith('/checkout') ? 'CONTINUE CHECKOUT' : 'CHECK OUT'}
                         </Button>
                         <p className="text-center text-[10px] uppercase font-bold text-[#000080]/40 tracking-widest">
                             Select delivery date and calculate shipping at Checkout.

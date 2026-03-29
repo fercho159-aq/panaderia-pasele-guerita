@@ -45,16 +45,19 @@ export const addToCart = (product: any, flavor?: string) => {
     } else {
         newItems[itemId] = { 
             ...product, 
+            id: itemId, // Important: Sync the ID for handleBoxSelection
             quantity: 1, 
             flavor: flavor || '',
             selections: product.boxSize ? { [flavor || 'Chocolate Lovers']: 1 } : undefined
         };
     }
 
+    const isCheckoutPage = typeof window !== 'undefined' && window.location.pathname.startsWith('/checkout');
+
     cartStore.set({
         ...state,
         items: newItems,
-        isOpen: true
+        isOpen: !isCheckoutPage // Don't open if already in checkout flow
     });
 };
 

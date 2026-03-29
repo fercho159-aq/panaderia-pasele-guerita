@@ -1,4 +1,4 @@
-import { map } from 'nanostores';
+import { persistentAtom } from '@nanostores/persistent';
 
 export type CartItem = {
     id: string;
@@ -16,57 +16,64 @@ export type CartStore = {
     isOpen: boolean;
 };
 
-export const cartStore = map<CartStore>({
+const initialState: CartStore = {
     items: {},
     gift: { is_gift: false, message: '' },
     isOpen: false,
+};
+
+// Persistent store with JSON encoding
+export const cartStore = persistentAtom<CartStore>('cart', initialState, {
+    encode: JSON.stringify,
+    decode: JSON.parse,
 });
 
 export const toggleCart = () => {
-    cartStore.setKey('isOpen', !cartStore.get().isOpen);
+    const state = cartStore.get();
+    cartStore.set({ ...state, isOpen: !state.isOpen });
 };
 
 export const addToCart = (product: any, flavor?: string) => {
-    const { items } = cartStore.get();
+    const state = cartStore.get();
     const itemId = flavor ? `${product.id}-${flavor}` : product.id;
     
-    if (items[itemId]) {
-        cartStore.setKey('items', {
-            ...items,
-            [itemId]: { ...items[itemId], quantity: items[itemId].quantity + 1 }
-        });
+    const newItems = { ...state.items };
+    if (newItems[itemId]) {
+        newItems[itemId] = { ...newItems[itemId], quantity: newItems[itemId].quantity + 1 };
     } else {
-        cartStore.setKey('items', {
-            ...items,
-            [itemId]: { 
-                ...product, 
-                quantity: 1, 
-                flavor: flavor || '' 
-            }
-        });
+        newItems[itemId] = { 
+            ...product, 
+            quantity: 1, 
+            flavor: flavor || '' 
+        };
     }
-    cartStore.setKey('isOpen', true);
+
+    cartStore.set({
+        ...state,
+        items: newItems,
+        isOpen: true
+    });
 };
 
 export const removeFromCart = (itemId: string) => {
-    const { items } = cartStore.get();
-    const newItems = { ...items };
+    const state = cartStore.get();
+    const newItems = { ...state.items };
     delete newItems[itemId];
-    cartStore.setKey('items', newItems);
+    cartStore.set({ ...state, items: newItems });
 };
 
 export const updateQuantity = (itemId: string, quantity: number) => {
-    const { items } = cartStore.get();
+    const state = cartStore.get();
     if (quantity <= 0) {
         removeFromCart(itemId);
         return;
     }
-    cartStore.setKey('items', {
-        ...items,
-        [itemId]: { ...items[itemId], quantity }
-    });
+    const newItems = { ...state.items };
+    newItems[itemId] = { ...newItems[itemId], quantity };
+    cartStore.set({ ...state, items: newItems });
 };
 
 export const setGiftMessage = (is_gift: boolean, message: string) => {
-    cartStore.setKey('gift', { is_gift, message });
+    const state = cartStore.get();
+    cartStore.set({ ...state, gift: { is_gift, message } });
 };

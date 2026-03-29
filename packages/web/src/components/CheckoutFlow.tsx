@@ -110,7 +110,11 @@ export const CheckoutFlow: React.FC = () => {
 
             await createOrder(orderData);
             setStep(6); // Success
-            cartStore.setKey('items', {}); // Clear cart
+            cartStore.set({
+                items: {},
+                gift: { is_gift: false, message: '' },
+                isOpen: false
+            }); // Clear cart
         } catch (e) {
             console.error(e);
             alert("Error al procesar tu pedido. Por favor intenta de nuevo.");

@@ -3,18 +3,18 @@ import Layout from '../../layouts/Layout.astro';
 import { ProductDetail } from '../../components/ProductDetail';
 import { allProducts } from '@pasele-guerita/core';
 
-export function getStaticPaths() {
-  return allProducts.map((product) => ({
-    params: { id: product.id },
-    props: { product },
-  }));
-}
+const { id } = Astro.params;
 
-const { product } = Astro.props;
+// Find product directly in SSR mode
+const product = allProducts.find((p) => p.id === id);
+
+if (!product) {
+    return Astro.redirect('/');
+}
 ---
 
 <Layout title={product.name} description={product.description}>
-	<div className="bg-[#FDF5E6]/30 min-h-screen">
+	<div class="bg-bg min-h-screen">
 		<ProductDetail client:load product={product} />
 	</div>
 </Layout>

@@ -20,26 +20,26 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     const price = product.price || (product.category === 'cookie' ? 12 : 10);
 
     return (
-        <div className="max-w-7xl mx-auto px-6 py-12">
-            <div className="grid lg:grid-cols-2 gap-16 items-start">
+        <div className="max-w-7xl mx-auto px-6 py-12 lg:py-24">
+            <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-start">
                 {/* Visuals - Left Column */}
-                <div className="space-y-6">
-                    <div className="relative aspect-square rounded-[2rem] overflow-hidden bg-white shadow-xl border border-primary/5 group">
+                <div className="space-y-8">
+                    <div className="relative aspect-square rounded-[3rem] overflow-hidden bg-white shadow-2xl border border-primary/5 group">
                         <img 
                             src={images[currentImageIndex]} 
                             alt={product.name} 
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
                         />
                         
-                        {/* Exclusive Design Badge */}
-                        <div className="absolute top-8 right-8 w-24 h-24 flex items-center justify-center">
+                        {/* Exclusive Design Badge - Branded Colors */}
+                        <div className="absolute top-10 right-10 w-28 h-28 flex items-center justify-center pointer-events-none">
                             <svg viewBox="0 0 100 100" className="w-full h-full animate-spin-slow">
                                 <path id="curve" fill="transparent" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" />
-                                <text className="text-[10px] uppercase font-black fill-primary tracking-widest">
+                                <text className="text-[11px] uppercase font-black fill-accent/80 tracking-widest">
                                     <textPath xlinkHref="#curve">Exclusive Design • Artisanal Baking • </textPath>
                                 </text>
                             </svg>
-                            <span className="absolute text-primary font-serif text-xs font-bold italic">Pásele</span>
+                            <span className="absolute text-accent font-serif text-sm font-bold italic">Pásele</span>
                         </div>
 
                         {/* Arrows */}
@@ -107,7 +107,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
 
                     <Button 
                         variant="primary" 
-                        className="w-full h-16 text-xl shadow-2xl hover:scale-[1.02] active:scale-95 transition-all mb-12"
+                        className="w-full h-20 text-xl shadow-2xl hover:scale-[1.02] active:scale-95 transition-all mb-12 rounded-2xl bg-primary text-bg hover:bg-primary/90 border-none"
                         onClick={() => addToCart({ ...product, price }, selectedFlavor)}
                     >
                         ADD TO BAG — ${price.toFixed(2)}

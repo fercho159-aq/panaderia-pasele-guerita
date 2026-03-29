@@ -1,0 +1,68 @@
+﻿13:50:05 [types] Generated 116ms
+13:50:05 [build] output: "server"
+13:50:05 [build] directory: C:\Users\alexi\Desktop\panaderia\pasele-guerita\packages\web\.vercel\output\
+13:50:05 [build] adapter: @astrojs/vercel/serverless
+13:50:05 [build] Collecting build info...
+13:50:05 [build] Ô£ô Completed in 216ms.
+13:50:05 [build] Building server entrypoints...
+node.exe : 13:50:06 
+[ERROR] [vite] 
+[31mx[39m Build failed 
+in 681ms
+En línea: 1 Carácter: 1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (1  
+  3:50:06 [ERROR...fail   
+ ed in 681ms:String) [    
+], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+[CompilerError] 
+[astro:build] The closing 
+frontmatter fence (---) 
+is missing an opening 
+fence
+file: C:/Users/alexi/Deskt
+op/panaderia/pasele-guerit
+a/packages/web/src/pages/p
+roduct/[id].astro:22:1
+  Hint:
+    Add --- at the 
+beginning of your file 
+before any import 
+statements or code
+  Location:
+    C:/Users/alexi/Desktop
+/panaderia/pasele-guerita/
+packages/web/src/pages/pro
+duct/[id].astro:22:1
+  Stack trace:
+    at 
+handleCompileResultErrors 
+(file:///C:/Users/alexi/De
+sktop/panaderia/pasele-gue
+rita/node_modules/astro/di
+st/core/compile/compile.js
+:65:11)
+    at async compileAstro 
+(file:///C:/Users/alexi/De
+sktop/panaderia/pasele-gue
+rita/node_modules/astro/di
+st/vite-plugin-astro/compi
+le.js:13:23)
+    at async transform (fi
+le:///C:/Users/alexi/Deskt
+op/panaderia/pasele-guerit
+a/node_modules/rollup/dist
+/es/shared/node-entry.js:2
+1269:16)
+

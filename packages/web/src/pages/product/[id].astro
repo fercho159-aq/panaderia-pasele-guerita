@@ -1,3 +1,8 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { ProductDetail } from '../../components/ProductDetail';
+import { allProducts } from '@pasele-guerita/core';
+
 const { id } = Astro.params;
 
 // Find product directly in SSR mode, case-insensitive

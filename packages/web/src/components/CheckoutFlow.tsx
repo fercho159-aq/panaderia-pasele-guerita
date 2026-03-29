@@ -97,27 +97,59 @@ export const CheckoutFlow: React.FC = () => {
             }
         });
     };
-
     const handleSubmitOrder = async () => {
         setIsUploading(true);
         try {
+            // Flatten flavors for Admin Dashboard (ID -> Quantity)
+            const flattened: Record<string, number> = {};
+            const boxGroups: string[] = [];
+            
+            cartItemsList.forEach(item => {
+                if (item.boxSize && item.selections) {
+                    const flavors: string[] = [];
+                    Object.entries(item.selections).forEach(([name, qty]) => {
+                        // Find ID by name
+                        const flavorObj = cookieFlavors.find(f => f.name === name);
+                        const id = flavorObj?.id || name;
+                        flattened[id] = (flattened[id] || 0) + (qty as number);
+                        if (qty > 0) flavors.push(`${qty}x ${name}`);
+                    });
+                    boxGroups.push(`Caja de ${item.boxSize}: [${flavors.join(', ')}]`);
+                } else {
+                    flattened[item.id] = (flattened[item.id] || 0) + (item.quantity || 1);
+                }
+            });
+
+            const firstBox = cartItemsList.find(i => i.boxSize);
+            const orderNotes = [
+                ...boxGroups,
+                cartGift.is_gift ? `🎁 REGALO: ${cartGift.message}` : '',
+                remarks,
+                receiptFile ? '📎 Comprobante adjunto' : ''
+            ].filter(Boolean).join(' | ');
+
             const orderData = {
                 customer_name: customer.name,
-                customer_phone: customer.phone,
-                customer_email: customer.email,
+                phone: customer.phone, // Synced with migration.sql
+                email: customer.email, // Synced with migration.sql
                 location_id: locationId,
                 pickup_day: selectedDate,
-                box_size: 0,
-                flavors_selected: cartItems,
+                box_size: firstBox?.boxSize || 0,
+                flavors_selected: flattened, // Flattened for Dashboard compatibility
                 total_price: totalAmount,
                 status: 'Pendiente',
-                notes: `${remarks}${receiptFile ? ' | Pago adjunto' : ''}`,
+                notes: orderNotes
             };
+
             await createOrder(orderData);
             setStep(6);
             cartStore.set({ items: {}, gift: { is_gift: false, message: '' }, isOpen: false });
-        } catch (e) { alert("Error al procesar pedido"); }
-        finally { setIsUploading(false); }
+        } catch (e) { 
+            console.error("Order error:", e);
+            alert("Error al procesar pedido. Por favor intenta de nuevo."); 
+        } finally { 
+            setIsUploading(false); 
+        }
     };
 
     if (isLoading) return <div className="text-center py-20 animate-pulse text-primary font-serif italic text-2xl font-bold">Iniciando horno...</div>;

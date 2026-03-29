@@ -77,7 +77,17 @@ export const CartDrawer: React.FC = () => {
                                     <div className="flex justify-between items-start">
                                         <div>
                                             <h3 className="font-serif text-lg text-[#000080] leading-tight">{item.name}</h3>
-                                            <p className="text-sm font-sans text-[#000080]/60 italic mt-1">{item.flavor || 'Regular'}</p>
+                                            {item.selections ? (
+                                                <div className="mt-2 space-y-1">
+                                                    {Object.entries(item.selections).map(([flavor, count]) => (
+                                                        <p key={flavor} className="text-[10px] font-sans text-accent font-bold uppercase tracking-wider">
+                                                            {count}x {flavor}
+                                                        </p>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <p className="text-sm font-sans text-[#000080]/60 italic mt-1">{item.flavor || 'Regular'}</p>
+                                            )}
                                         </div>
                                         <button 
                                             onClick={() => removeFromCart(id)}

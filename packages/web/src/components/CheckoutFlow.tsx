@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useStore } from '@nanostores/react';
 import { cartStore, addToCart, removeFromCart, updateQuantity } from '../stores/cartStore';
 import { 
@@ -44,7 +44,6 @@ export const CheckoutFlow: React.FC = () => {
                 const data = await response.json();
                 setLiveLocations(data.locations?.length > 0 ? data.locations : pickupLocations);
             } catch (error) {
-                console.error("Failed to load DB data, using fallbacks:", error);
                 setLiveLocations(pickupLocations);
             } finally {
                 setIsLoading(false);
@@ -57,6 +56,15 @@ export const CheckoutFlow: React.FC = () => {
     const totalAmount = cartItemsList.reduce((acc, item) => acc + (item.price * item.quantity), 0);
     const isStep2Valid = selectedDate && (locationId === 'special-coordination' || (isWednesdayOrSaturday(selectedDate)));
 
+    const allBoxesFull = useMemo(() => {
+        return cartItemsList
+            .filter(i => i.boxSize)
+            .every(box => {
+                const filled = Object.values(box.selections || {}).reduce((a, b) => a + b, 0);
+                return filled === box.boxSize;
+            });
+    }, [cartItems]);
+
     const handleBoxSelection = (boxId: string, flavorName: string, delta: number) => {
         const item = cartItems[boxId];
         if (!item || !item.boxSize || !item.selections) return;
@@ -67,13 +75,25 @@ export const CheckoutFlow: React.FC = () => {
 
         const newSelections = { ...item.selections };
         newSelections[flavorName] = (newSelections[flavorName] || 0) + delta;
-        if (newSelections[flavorName] === 0) delete newSelections[flavorName];
+        if (newSelections[flavorName] <= 0) delete newSelections[flavorName];
 
         cartStore.set({
             ...cartStore.get(),
             items: {
                 ...cartItems,
                 [boxId]: { ...item, selections: newSelections }
+            }
+        });
+    };
+
+    const clearBox = (boxId: string) => {
+        const item = cartItems[boxId];
+        if (!item) return;
+        cartStore.set({
+            ...cartStore.get(),
+            items: {
+                ...cartItems,
+                [boxId]: { ...item, selections: {} }
             }
         });
     };
@@ -96,7 +116,7 @@ export const CheckoutFlow: React.FC = () => {
             await createOrder(orderData);
             setStep(6);
             cartStore.set({ items: {}, gift: { is_gift: false, message: '' }, isOpen: false });
-        } catch (e) { alert("Error"); }
+        } catch (e) { alert("Error al procesar pedido"); }
         finally { setIsUploading(false); }
     };
 
@@ -121,14 +141,14 @@ export const CheckoutFlow: React.FC = () => {
                 <div className="animate-fade-in space-y-10">
                     <div className="text-center max-w-md mx-auto">
                         <h2 className="font-serif text-5xl text-primary italic mb-3">Tu Entrega</h2>
-                        <p className="text-primary/60 font-serif">Elige cómo quieres recibir tu pedido.</p>
+                        <p className="text-primary/60 font-serif line-clamp-2">Elige cómo quieres recibir tu pedido.</p>
                     </div>
                     
                     <div className="grid grid-cols-2 gap-8">
                         {['pickup', 'delivery'].map(type => (
                             <button key={type} onClick={() => setLogistics(type as any)} className={`p-10 rounded-[2.5rem] border-2 transition-all flex flex-col items-center gap-6 group ${logistics === type ? 'border-primary bg-primary/5 shadow-xl' : 'border-primary/5 hover:border-primary/20 bg-bg/20'}`}>
                                 <span className="text-5xl group-hover:scale-110 transition-transform">{type === 'pickup' ? '🛍️' : '🚚'}</span>
-                                <span className="font-serif text-2xl text-primary italic">{type === 'pickup' ? 'Recoger' : 'Envio'}</span>
+                                <span className="font-serif text-2xl text-primary italic">{type === 'pickup' ? 'Recoger' : 'Envío'}</span>
                             </button>
                         ))}
                     </div>
@@ -139,9 +159,6 @@ export const CheckoutFlow: React.FC = () => {
                                 <button key={l.id} onClick={() => setLocationId(l.id)} className={`p-6 rounded-3xl border-2 text-left transition-all ${locationId === l.id ? 'border-primary bg-white shadow-lg' : 'border-primary/5 bg-bg/5 hover:bg-white'}`}>
                                     <h4 className="font-serif text-lg text-primary">{l.name}</h4>
                                     <p className="text-xs text-primary/40 truncate mt-1">{l.address}</p>
-                                    <div className="flex gap-2 mt-4">
-                                        {l.days.map(d => <span key={d} className="text-[8px] font-black uppercase text-accent bg-accent/10 px-2 py-0.5 rounded-full">{d.slice(0,3)}</span>)}
-                                    </div>
                                 </button>
                             ))}
                         </div>
@@ -165,7 +182,7 @@ export const CheckoutFlow: React.FC = () => {
                     </div>
                     <div className="flex gap-6 mt-10">
                         <Button variant="outline" onClick={() => setStep(1)} className="flex-1 h-16 border-primary/20 text-primary/60">ATRÁS</Button>
-                        <Button disabled={!isStep2Valid} onClick={() => setStep(3)} className="flex-[2] h-16">ARMAS TU PEDIDO</Button>
+                        <Button disabled={!isStep2Valid} onClick={() => setStep(3)} className="flex-[2] h-16">ARMAR TU PEDIDO</Button>
                     </div>
                 </div>
             )}
@@ -183,32 +200,48 @@ export const CheckoutFlow: React.FC = () => {
                         const boxSize = box.boxSize || 3;
                         const filled = Object.values(box.selections || {}).reduce((a, b) => a + b, 0);
                         return (
-                            <div key={box.id} className="bg-primary/5 p-8 rounded-[3rem] border border-primary/10 relative overflow-hidden group">
+                            <div key={box.id} className="bg-primary/5 p-8 md:p-12 rounded-[3.5rem] border border-primary/10 relative overflow-hidden group">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-accent/10 rounded-bl-full translate-x-8 -translate-y-8" />
-                                <div className="flex justify-between items-center mb-8">
+                                
+                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-10">
                                     <div>
-                                        <h3 className="font-serif text-3xl text-primary italic">Tu Caja de {boxSize}</h3>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-accent mt-2">
-                                            {filled < boxSize ? `Faltan ${boxSize - filled} galletas` : '¡Caja completa! ✨'}
+                                        <h3 className="font-serif text-3xl md:text-4xl text-primary italic leading-tight">Tu Caja de {boxSize}</h3>
+                                        
+                                        {/* Visual Slots */}
+                                        <div className="flex gap-1.5 mt-4">
+                                            {Array.from({ length: boxSize }).map((_, i) => (
+                                                <div key={i} className={`w-8 h-2 rounded-full transition-all duration-300 ${i < filled ? 'bg-accent scale-x-110 shadow-sm' : 'bg-primary/10'}`} />
+                                            ))}
+                                        </div>
+                                        
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-accent mt-4">
+                                            {filled < boxSize ? `Faltan ${boxSize - filled} galletas` : '¡Caja completa! 💖'}
                                         </p>
                                     </div>
-                                    <button onClick={() => removeFromCart(box.id)} className="text-red-400 font-black text-[10px] uppercase hover:underline">Eliminar caja</button>
+                                    <div className="flex gap-4">
+                                        <button onClick={() => clearBox(box.id)} className="text-[10px] font-black uppercase tracking-widest text-primary/40 hover:text-primary transition-colors bg-white px-4 py-2 rounded-full shadow-sm border border-primary/5">Limpiar sabores</button>
+                                        <button onClick={() => removeFromCart(box.id)} className="text-red-400 font-black text-[10px] uppercase hover:underline">Eliminar caja</button>
+                                    </div>
                                 </div>
 
                                 {/* Flavor Picker Grid */}
-                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                                     {cookieFlavors.map(f => {
                                         const count = box.selections?.[f.name] || 0;
                                         return (
-                                            <div key={f.id} className="bg-white p-4 rounded-[2rem] flex flex-col items-center gap-3 border border-primary/5 shadow-sm hover:shadow-md transition-shadow">
-                                                <div className="w-16 h-16 rounded-full overflow-hidden border border-primary/10">
+                                            <div 
+                                                key={f.id} 
+                                                onClick={() => handleBoxSelection(box.id, f.name, 1)}
+                                                className={`bg-white p-5 rounded-[2.5rem] flex flex-col items-center gap-4 border-2 transition-all cursor-pointer group shadow-sm hover:shadow-xl ${count > 0 ? 'border-accent ring-4 ring-accent/5' : 'border-primary/5 hover:border-primary/10'}`}
+                                            >
+                                                <div className={`w-20 h-20 rounded-full overflow-hidden border-2 transition-transform group-hover:scale-105 ${count > 0 ? 'border-accent' : 'border-primary/5'}`}>
                                                     <img src={f.image} className="w-full h-full object-cover" />
                                                 </div>
-                                                <span className="text-[10px] font-serif italic text-primary text-center leading-tight">{f.name}</span>
-                                                <div className="flex items-center gap-4 bg-primary/5 rounded-full px-3 py-1">
-                                                    <button onClick={() => handleBoxSelection(box.id, f.name, -1)} className="font-black text-primary">-</button>
-                                                    <span className="text-xs font-bold text-primary">{count}</span>
-                                                    <button onClick={() => handleBoxSelection(box.id, f.name, 1)} className="font-black text-primary">+</button>
+                                                <span className="text-xs font-serif italic text-primary text-center leading-tight h-8 flex items-center">{f.name}</span>
+                                                <div className="flex items-center gap-4 bg-bg rounded-full px-4 py-1.5 border border-primary/5 shadow-inner" onClick={(e) => e.stopPropagation()}>
+                                                    <button onClick={() => handleBoxSelection(box.id, f.name, -1)} className="font-black text-primary text-lg px-1 hover:scale-125 transition-transform">-</button>
+                                                    <span className="text-sm font-black text-primary min-w-[1rem] text-center">{count}</span>
+                                                    <button onClick={() => handleBoxSelection(box.id, f.name, 1)} className="font-black text-primary text-lg px-1 hover:scale-125 transition-transform">+</button>
                                                 </div>
                                             </div>
                                         );
@@ -219,58 +252,63 @@ export const CheckoutFlow: React.FC = () => {
                     })}
 
                     {/* Fresh from Oven (Quick Add) */}
-                    <div>
-                        <h4 className="text-[10px] font-black uppercase tracking-widest text-primary/40 mb-6 px-2">Añadir algo más del horno</h4>
+                    <div className="mt-20">
+                        <div className="flex items-center gap-4 mb-8">
+                            <h4 className="text-[10px] font-black uppercase tracking-widest text-primary/40 px-2">Añadir algo más del horno</h4>
+                            <div className="h-[1px] flex-1 bg-primary/5"></div>
+                        </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            {[...cookieFlavors.slice(0, 2), ...breadFlavors].map(p => (
-                                <div key={p.id} className="bg-bg/10 p-4 rounded-[2rem] border border-primary/5 flex items-center gap-6 group hover:bg-white transition-colors cursor-pointer"
+                            {[...cookieFlavors.slice(0, 1), ...breadFlavors].map(p => (
+                                <div key={p.id} className="bg-bg/20 p-5 rounded-[2.5rem] border border-primary/5 flex items-center gap-6 group hover:bg-white transition-all cursor-pointer hover:shadow-xl hover:-translate-y-1"
                                      onClick={() => addToCart(p)}>
-                                    <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-sm group-hover:scale-105 transition-transform">
+                                    <div className="w-24 h-24 rounded-[1.5rem] overflow-hidden shadow-md group-hover:scale-105 transition-transform">
                                         <img src={p.image} className="w-full h-full object-cover" />
                                     </div>
                                     <div className="flex-1">
-                                        <p className="font-serif text-xl text-primary italic leading-tight">{p.name}</p>
-                                        <p className="text-xs font-bold text-accent mt-1">${p.price || (p.category === 'bread' ? 18 : 12)}</p>
+                                        <p className="font-serif text-2xl text-primary italic leading-tight">{p.name}</p>
+                                        <p className="text-xs font-bold text-accent/80 mt-1 uppercase tracking-widest">${p.price || 18.00}</p>
                                     </div>
-                                    <span className="text-2xl text-primary/20 group-hover:text-primary transition-colors">+</span>
+                                    <div className="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center text-primary/30 group-hover:bg-primary group-hover:text-bg transition-all">
+                                        <span className="text-2xl font-light">+</span>
+                                    </div>
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    <div className="pt-10 flex gap-6">
-                        <Button variant="outline" onClick={() => setStep(2)} className="flex-1 h-16">ATRÁS</Button>
-                        <Button disabled={cartItemsList.length === 0} onClick={() => setStep(4)} className="flex-[2] h-16 shadow-2xl">CONFIRMAR — ${totalAmount.toFixed(2)}</Button>
+                    <div className="pt-16 flex flex-col sm:flex-row gap-6">
+                        <Button variant="outline" onClick={() => setStep(2)} className="flex-1 h-20 text-primary font-black tracking-widest rounded-3xl">REGRESAR A FECHA</Button>
+                        <Button disabled={!allBoxesFull || cartItemsList.length === 0} onClick={() => setStep(4)} className="flex-[2] h-20 shadow-2xl rounded-3xl">CONFIRMAR PEDIDO — ${totalAmount.toFixed(2)}</Button>
                     </div>
                 </div>
             )}
 
-            {/* Step 4: Details & Step 5: Payment are similar but refined */}
+            {/* Step 4 & 5 same refined logic */}
             {step >= 4 && step <= 5 && (
                 <div className="animate-fade-in space-y-12">
                     <div className="text-center">
                         <h2 className="font-serif text-5xl text-primary italic">{step === 4 ? 'Tus Datos' : 'El Pago'}</h2>
                     </div>
                     {step === 4 ? (
-                        <div className="space-y-6">
-                            <input className="w-full bg-bg/5 p-6 rounded-3xl outline-none focus:ring-2 focus:ring-primary/20 border-2 border-primary/5 font-serif text-xl" placeholder="Nombre" value={customer.name} onChange={e => setCustomer({...customer, name: e.target.value})} />
-                            <input className="w-full bg-bg/5 p-6 rounded-3xl outline-none focus:ring-2 focus:ring-primary/20 border-2 border-primary/5 font-serif text-xl" placeholder="Email" value={customer.email} onChange={e => setCustomer({...customer, email: e.target.value})} />
-                            <input className="w-full bg-bg/5 p-6 rounded-3xl outline-none focus:ring-2 focus:ring-primary/20 border-2 border-primary/5 font-serif text-xl" placeholder="WhatsApp" value={customer.phone} onChange={e => setCustomer({...customer, phone: e.target.value})} />
+                        <div className="space-y-6 max-w-lg mx-auto w-full">
+                            <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/20" placeholder="¿A nombre de quién?" value={customer.name} onChange={e => setCustomer({...customer, name: e.target.value})} />
+                            <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/20" placeholder="Tu Email" value={customer.email} onChange={e => setCustomer({...customer, email: e.target.value})} />
+                            <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/20" placeholder="Tu WhatsApp" value={customer.phone} onChange={e => setCustomer({...customer, phone: e.target.value})} />
                         </div>
                     ) : (
-                        <div className="p-10 rounded-[3rem] bg-accent/5 border-2 border-accent/20 text-center">
-                            <h3 className="font-serif text-3xl text-primary italic mb-6">Pagar vía Transferencia</h3>
-                            <p className="text-primary/60 max-w-sm mx-auto mb-8">Una vez que finalices, te enviaremos los datos de Zelle/Venmo a tu correo y WhatsApp.</p>
-                            <label className="block p-8 rounded-[2rem] border-2 border-dashed border-primary/20 cursor-pointer hover:bg-white transition-colors">
-                                <span className="font-black text-[10px] uppercase tracking-widest text-primary/40">{receiptFile ? receiptFile.name : 'Sube tu comprobante (opcional)'}</span>
+                        <div className="p-12 rounded-[3.5rem] bg-accent/5 border-2 border-accent/10 text-center max-w-lg mx-auto w-full">
+                            <h3 className="font-serif text-4xl text-primary italic mb-6">Pagar vía Transferencia</h3>
+                            <p className="text-primary/60 mb-10 leading-relaxed font-serif">Una vez que finalices, recibirás los datos de Zelle/Venmo por email y WhatsApp.</p>
+                            <label className="block p-10 rounded-[2.5rem] border-2 border-dashed border-primary/10 cursor-pointer hover:bg-white transition-all group">
+                                <span className="font-black text-[10px] uppercase tracking-widest text-primary/30 group-hover:text-primary transition-colors">{receiptFile ? receiptFile.name : 'Sube tu comprobante (opcional)'}</span>
                                 <input type="file" className="hidden" onChange={e => setReceiptFile(e.target.files?.[0] || null)} />
                             </label>
                         </div>
                     )}
-                    <div className="flex gap-6 mt-10">
-                        <Button variant="outline" onClick={() => setStep(step - 1)} className="flex-1 h-16">ATRÁS</Button>
-                        <Button disabled={step === 4 && (!customer.name || !customer.email || !customer.phone)} onClick={step === 4 ? () => setStep(5) : handleSubmitOrder} className={`flex-[2] h-16 ${isUploading ? 'opacity-50' : ''}`}>
-                            {isUploading ? 'HORNENADO...' : (step === 4 ? 'CONTINUAR' : '¡PEDIR AHORA! 💖')}
+                    <div className="flex flex-col sm:flex-row gap-6 mt-16 max-w-lg mx-auto w-full">
+                        <Button variant="outline" onClick={() => setStep(step - 1)} className="flex-1 h-20 rounded-3xl font-black">ATRÁS</Button>
+                        <Button disabled={step === 4 && (!customer.name || !customer.email || !customer.phone)} onClick={step === 4 ? () => setStep(5) : handleSubmitOrder} className={`flex-[2] h-20 rounded-3xl font-black shadow-2xl ${isUploading ? 'opacity-50' : ''}`}>
+                            {isUploading ? 'HORNENADO...' : (step === 4 ? 'CONTINUAR' : 'PEDIR AHORA! 💖')}
                         </Button>
                     </div>
                 </div>
@@ -278,11 +316,16 @@ export const CheckoutFlow: React.FC = () => {
 
             {/* Step 6: Success */}
             {step === 6 && (
-                <div className="animate-fade-in flex-1 flex flex-col items-center justify-center text-center space-y-10 py-20">
-                    <span className="text-8xl animate-bounce">🥐</span>
-                    <h2 className="font-serif text-6xl text-primary italic leading-tight">¡Gracias por<br/>tu pedido!</h2>
-                    <p className="text-primary/60 max-w-xs font-serif italic text-lg line-clamp-2">Te hemos enviado todos los detalles a tu email. ¡Prepárate para el mejor pan!</p>
-                    <a href="/" className="w-full max-w-sm"><Button className="w-full h-20 text-xl font-black rounded-3xl shadow-2xl">REGRESAR AL INICIO</Button></a>
+                <div className="animate-fade-in flex-1 flex flex-col items-center justify-center text-center space-y-12 py-20">
+                    <div className="relative">
+                        <span className="text-9xl animate-bounce inline-block">🥐</span>
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-accent/5 rounded-full animate-ping pointer-events-none" />
+                    </div>
+                    <div>
+                        <h2 className="font-serif text-6xl md:text-7xl text-primary italic leading-tight mb-6">¡Gracias por<br/>tu pedido!</h2>
+                        <p className="text-primary/60 max-w-sm mx-auto font-serif italic text-xl leading-relaxed">Estamos preparando lo mejor de nuestro horno para ti. Revisa tu email.</p>
+                    </div>
+                    <a href="/" className="w-full max-w-md"><Button className="w-full h-20 text-xl font-black rounded-[2rem] shadow-2xl">REGRESAR AL INICIO</Button></a>
                 </div>
             )}
         </div>

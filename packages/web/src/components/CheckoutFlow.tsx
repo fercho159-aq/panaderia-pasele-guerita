@@ -296,13 +296,32 @@ export const CheckoutFlow: React.FC = () => {
                             <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/20" placeholder="Tu WhatsApp" value={customer.phone} onChange={e => setCustomer({...customer, phone: e.target.value})} />
                         </div>
                     ) : (
-                        <div className="p-12 rounded-[3.5rem] bg-accent/5 border-2 border-accent/10 text-center max-w-lg mx-auto w-full">
-                            <h3 className="font-serif text-4xl text-primary italic mb-6">Pagar vía Transferencia</h3>
-                            <p className="text-primary/60 mb-10 leading-relaxed font-serif">Una vez que finalices, recibirás los datos de Zelle/Venmo por email y WhatsApp.</p>
-                            <label className="block p-10 rounded-[2.5rem] border-2 border-dashed border-primary/10 cursor-pointer hover:bg-white transition-all group">
-                                <span className="font-black text-[10px] uppercase tracking-widest text-primary/30 group-hover:text-primary transition-colors">{receiptFile ? receiptFile.name : 'Sube tu comprobante (opcional)'}</span>
-                                <input type="file" className="hidden" onChange={e => setReceiptFile(e.target.files?.[0] || null)} />
-                            </label>
+                        <div className="flex flex-col items-center gap-8 max-w-lg mx-auto w-full animate-fade-in">
+                            <div className="p-10 rounded-[3.5rem] bg-accent/5 border-2 border-accent/10 text-center w-full shadow-inner">
+                                <h3 className="font-serif text-4xl text-primary italic mb-6">Pagar vía Transferencia</h3>
+                                
+                                {/* QR Section */}
+                                <div className="bg-white p-6 rounded-[2.5rem] shadow-xl border border-primary/5 flex flex-col items-center gap-4 mb-8">
+                                    <div className="w-48 h-48 rounded-2xl overflow-hidden shadow-inner">
+                                        <img src="/imagenes/zelle.png" alt="Zelle QR" className="w-full h-full object-contain" />
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-primary/40">Zelle / Venmo</p>
+                                        <p className="font-serif text-2xl text-primary italic mt-1">Maria Soto</p>
+                                    </div>
+                                </div>
+
+                                <p className="text-primary/60 mb-10 leading-relaxed font-serif text-lg">
+                                    Escanea el código de arriba en tu app bancaria para completar el pago.
+                                </p>
+                                
+                                <label className="block p-8 rounded-[2.5rem] border-2 border-dashed border-primary/10 cursor-pointer hover:bg-white transition-all group">
+                                    <span className="font-black text-[10px] uppercase tracking-widest text-primary/30 group-hover:text-primary transition-colors">
+                                        {receiptFile ? receiptFile.name : 'Sube tu comprobante (opcional)'}
+                                    </span>
+                                    <input type="file" className="hidden" onChange={e => setReceiptFile(e.target.files?.[0] || null)} />
+                                </label>
+                            </div>
                         </div>
                     )}
                     <div className="flex flex-col sm:flex-row gap-6 mt-16 max-w-lg mx-auto w-full">

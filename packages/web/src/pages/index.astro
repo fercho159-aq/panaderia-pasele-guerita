@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { Button } from '@pasele-guerita/ui';
-import { Badge } from '@pasele-guerita/ui';
+import { Button, Badge } from '@pasele-guerita/ui';
+import { AddToCartButton } from '../components/AddToCartButton';
 import { cookieFlavors, breadFlavors, monthlySpecial, allProducts } from '@pasele-guerita/core';
 
 let displayCookies: any[] = cookieFlavors;
@@ -216,26 +216,28 @@ const breadHoverPool = [
 					const mainImg = flavor.image || cookieFlavors[i % cookieFlavors.length]?.image || '/imagenes/IMG_6657.webp';
 					const hoverImg = cookieHoverPool[i % cookieHoverPool.length];
 					return (
-						<a href={`/product/${flavor.id}`} class="product-card group bg-white rounded-3xl overflow-hidden shadow-md border border-bg flex flex-col">
-							<div class="product-img-wrap relative w-full h-56 overflow-hidden bg-gray-100 flex items-center justify-center">
-								<img src={mainImg || '/logo.png'} alt={flavor.name} class={`product-img-main absolute inset-0 w-full h-full object-cover ${!mainImg ? 'opacity-20 object-contain p-8' : ''}`} loading="lazy" decoding="async" />
-								<img src={hoverImg} alt={flavor.name + ' detalle'} class="product-img-hover absolute inset-0 w-full h-full object-cover opacity-0" loading="lazy" decoding="async" />
-								{flavor.is_sugar_free && (
-									<div class="absolute top-3 right-3 bg-blue-100 text-blue-700 text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded shadow border border-blue-200 z-10">Sugar Free</div>
-								)}
-							</div>
-							<div class="p-5 flex flex-col flex-1">
-								<div class="flex justify-between items-start mb-2">
-									<h4 class="font-serif text-xl text-primary font-medium italic leading-tight">{flavor.name}</h4>
-									<span class="font-bold text-primary text-lg ml-2 shrink-0">${flavor.price || 12}</span>
+						<div class="product-card group bg-white rounded-3xl overflow-hidden shadow-md border border-bg flex flex-col hover:scale-[1.02] transition-transform duration-300">
+							<a href={`/product/${flavor.id}`} class="flex-1 flex flex-col">
+								<div class="product-img-wrap relative w-full h-56 overflow-hidden bg-gray-100 flex items-center justify-center">
+									<img src={mainImg || '/logo.png'} alt={flavor.name} class={`product-img-main absolute inset-0 w-full h-full object-cover ${!mainImg ? 'opacity-20 object-contain p-8' : ''}`} loading="lazy" decoding="async" />
+									<img src={hoverImg} alt={flavor.name + ' detalle'} class="product-img-hover absolute inset-0 w-full h-full object-cover opacity-0" loading="lazy" decoding="async" />
+									{flavor.is_sugar_free && (
+										<div class="absolute top-3 right-3 bg-blue-100 text-blue-700 text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded shadow border border-blue-200 z-10">Sugar Free</div>
+									)}
 								</div>
-								<p class="text-gray-600 text-sm mb-1 leading-relaxed">{flavor.description || 'Galleta artesanal horneada con masa madre.'}</p>
-								{flavor.ingredients && <p class="text-[10px] text-gray-400 italic mb-4">{flavor.ingredients}</p>}
-								<div class="mt-auto pt-3 border-t border-bg">
-									<span class="block w-full text-center text-sm font-bold text-primary group-hover:text-accent transition-colors duration-200">Agregar al pedido →</span>
+								<div class="p-5 flex flex-col flex-1">
+									<div class="flex justify-between items-start mb-2">
+										<h4 class="font-serif text-xl text-primary font-medium italic leading-tight">{flavor.name}</h4>
+										<span class="font-bold text-primary text-lg ml-2 shrink-0">${flavor.price || 12}</span>
+									</div>
+									<p class="text-gray-600 text-sm mb-1 leading-relaxed">{flavor.description || 'Galleta artesanal horneada con masa madre.'}</p>
+									{flavor.ingredients && <p class="text-[10px] text-gray-400 italic mb-4">{flavor.ingredients}</p>}
 								</div>
+							</a>
+							<div class="px-5 border-t border-bg">
+								<AddToCartButton product={flavor} client:load />
 							</div>
-						</a>
+						</div>
 					);
 				})}
 			</div>
@@ -265,23 +267,25 @@ const breadHoverPool = [
 					const mainImg = bread.image || breadFlavors[i % breadFlavors.length]?.image || '/imagenes/IMG_6703.webp';
 					const hoverImg = breadHoverPool[i % breadHoverPool.length];
 					return (
-						<a href={`/product/${bread.id}`} class="product-card group bg-white rounded-3xl overflow-hidden shadow-md border border-bg flex flex-col">
-							<div class="product-img-wrap relative w-full h-56 overflow-hidden bg-gray-100 flex items-center justify-center">
-								<img src={mainImg || '/logo.png'} alt={bread.name} class={`product-img-main absolute inset-0 w-full h-full object-cover ${!mainImg ? 'opacity-20 object-contain p-8' : ''}`} loading="lazy" decoding="async" />
-								<img src={hoverImg} alt={bread.name + ' detalle'} class="product-img-hover absolute inset-0 w-full h-full object-cover opacity-0" loading="lazy" decoding="async" />
-							</div>
-							<div class="p-5 flex flex-col flex-1">
-								<div class="flex justify-between items-start mb-2">
-									<h4 class="font-serif text-xl text-primary font-medium italic leading-tight">{bread.name}</h4>
-									<span class="font-bold text-primary text-lg ml-2 shrink-0">${bread.price || 10}</span>
+						<div class="product-card group bg-white rounded-3xl overflow-hidden shadow-md border border-bg flex flex-col hover:scale-[1.02] transition-transform duration-300">
+							<a href={`/product/${bread.id}`} class="flex-1 flex flex-col">
+								<div class="product-img-wrap relative w-full h-56 overflow-hidden bg-gray-100 flex items-center justify-center">
+									<img src={mainImg || '/logo.png'} alt={bread.name} class={`product-img-main absolute inset-0 w-full h-full object-cover ${!mainImg ? 'opacity-20 object-contain p-8' : ''}`} loading="lazy" decoding="async" />
+									<img src={hoverImg} alt={bread.name + ' detalle'} class="product-img-hover absolute inset-0 w-full h-full object-cover opacity-0" loading="lazy" decoding="async" />
 								</div>
-								<p class="text-gray-600 text-sm mb-1 leading-relaxed">{bread.description || 'Pan artesanal de masa madre.'}</p>
-								{bread.ingredients && <p class="text-[10px] text-gray-400 italic mb-4">{bread.ingredients}</p>}
-								<div class="mt-auto pt-3 border-t border-bg">
-									<span class="block w-full text-center text-sm font-bold text-primary group-hover:text-accent transition-colors duration-200">Agregar al pedido →</span>
+								<div class="p-5 flex flex-col flex-1">
+									<div class="flex justify-between items-start mb-2">
+										<h4 class="font-serif text-xl text-primary font-medium italic leading-tight">{bread.name}</h4>
+										<span class="font-bold text-primary text-lg ml-2 shrink-0">${bread.price || 10}</span>
+									</div>
+									<p class="text-gray-600 text-sm mb-1 leading-relaxed">{bread.description || 'Pan artesanal de masa madre.'}</p>
+									{bread.ingredients && <p class="text-[10px] text-gray-400 italic mb-4">{bread.ingredients}</p>}
 								</div>
+							</a>
+							<div class="px-5 border-t border-bg">
+								<AddToCartButton product={bread} client:load />
 							</div>
-						</a>
+						</div>
 					);
 				})}
 			</div>

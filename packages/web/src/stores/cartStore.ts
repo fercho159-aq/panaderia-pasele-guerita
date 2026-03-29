@@ -8,6 +8,8 @@ export type CartItem = {
     quantity: number;
     category: 'cookie' | 'bread';
     flavor?: string;
+    boxSize?: number; // 3, 6, 9
+    selections?: Record<string, number>; // flavor -> quantity within the box
 };
 
 export type CartStore = {
@@ -35,16 +37,17 @@ export const toggleCart = () => {
 
 export const addToCart = (product: any, flavor?: string) => {
     const state = cartStore.get();
-    const itemId = flavor ? `${product.id}-${flavor}` : product.id;
+    const itemId = product.boxSize ? `box-${product.boxSize}-${Date.now()}` : (flavor ? `${product.id}-${flavor}` : product.id);
     
     const newItems = { ...state.items };
-    if (newItems[itemId]) {
+    if (newItems[itemId] && !product.boxSize) { // Don't stack boxes automatically, let them be unique if needed
         newItems[itemId] = { ...newItems[itemId], quantity: newItems[itemId].quantity + 1 };
     } else {
         newItems[itemId] = { 
             ...product, 
             quantity: 1, 
-            flavor: flavor || '' 
+            flavor: flavor || '',
+            selections: product.boxSize ? { [flavor || 'Chocolate Lovers']: 1 } : undefined
         };
     }
 

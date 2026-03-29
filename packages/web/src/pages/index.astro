@@ -225,18 +225,24 @@ const breadHoverPool = [
 										<div class="absolute top-3 right-3 bg-blue-100 text-blue-700 text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded shadow border border-blue-200 z-10">Sugar Free</div>
 									)}
 								</div>
-								<div class="p-5 flex flex-col flex-1">
-									<div class="flex justify-between items-start mb-2">
-										<h4 class="font-serif text-xl text-primary font-medium italic leading-tight">{flavor.name}</h4>
-										<span class="font-bold text-primary text-lg ml-2 shrink-0">${flavor.price || 12}</span>
-									</div>
-									<p class="text-gray-600 text-sm mb-1 leading-relaxed">{flavor.description || 'Galleta artesanal horneada con masa madre.'}</p>
+								<div class="p-6 bg-white relative">
+    <div class="flex justify-between items-start mb-2">
+        <h3 class="font-serif text-2xl text-primary italic leading-tight">{flavor.name}</h3>
+        <span class="text-sm font-bold text-primary">${flavor.price || 12.00}</span>
+    </div>
+    <p class="text-xs text-gray-500 line-clamp-2 mb-4 italic font-serif opacity-70">
+        {flavor.description}
+    </p>
+    <div class="flex items-center gap-2 mb-6">
+        <span class="text-[8px] font-black uppercase tracking-widest text-accent bg-accent/5 px-2 py-0.5 rounded-full whitespace-nowrap">Plan de caja disponible</span>
+        <div class="h-[1px] flex-1 bg-accent/10"></div>
+    </div>
+    
+    <AddToCartButton client:load product={{...flavor, category: 'cookie', price: 12, boxSize: 3}} />
+</div>
 									{flavor.ingredients && <p class="text-[10px] text-gray-400 italic mb-4">{flavor.ingredients}</p>}
 								</div>
 							</a>
-							<div class="px-5 border-t border-bg">
-								<AddToCartButton product={flavor} client:load />
-							</div>
 						</div>
 					);
 				})}
@@ -273,18 +279,20 @@ const breadHoverPool = [
 									<img src={mainImg || '/logo.png'} alt={bread.name} class={`product-img-main absolute inset-0 w-full h-full object-cover ${!mainImg ? 'opacity-20 object-contain p-8' : ''}`} loading="lazy" decoding="async" />
 									<img src={hoverImg} alt={bread.name + ' detalle'} class="product-img-hover absolute inset-0 w-full h-full object-cover opacity-0" loading="lazy" decoding="async" />
 								</div>
-								<div class="p-5 flex flex-col flex-1">
-									<div class="flex justify-between items-start mb-2">
-										<h4 class="font-serif text-xl text-primary font-medium italic leading-tight">{bread.name}</h4>
-										<span class="font-bold text-primary text-lg ml-2 shrink-0">${bread.price || 10}</span>
-									</div>
-									<p class="text-gray-600 text-sm mb-1 leading-relaxed">{bread.description || 'Pan artesanal de masa madre.'}</p>
+								<div class="p-6 bg-white">
+    <div class="flex justify-between items-start mb-2">
+        <h3 class="font-serif text-2xl text-primary italic leading-tight">{bread.name}</h3>
+        <span class="text-sm font-bold text-primary">${bread.price || 18}</span>
+    </div>
+    <p class="text-xs text-gray-500 line-clamp-2 mb-6 italic font-serif opacity-70">
+        {bread.description}
+    </p>
+    
+    <AddToCartButton client:load product={{...bread, category: 'bread'}} />
+</div>
 									{bread.ingredients && <p class="text-[10px] text-gray-400 italic mb-4">{bread.ingredients}</p>}
 								</div>
 							</a>
-							<div class="px-5 border-t border-bg">
-								<AddToCartButton product={bread} client:load />
-							</div>
 						</div>
 					);
 				})}

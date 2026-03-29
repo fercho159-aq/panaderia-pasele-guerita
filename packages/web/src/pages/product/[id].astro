@@ -1,12 +1,20 @@
----
-import Layout from '../../layouts/Layout.astro';
-import { ProductDetail } from '../../components/ProductDetail';
-import { allProducts } from '@pasele-guerita/core';
-
 const { id } = Astro.params;
 
-// Find product directly in SSR mode
-const product = allProducts.find((p) => p.id === id);
+// Find product directly in SSR mode, case-insensitive
+let product = allProducts.find((p) => p.id?.toLowerCase() === id?.toLowerCase());
+
+if (!product) {
+    // If not in static config, check storefront API (last resort)
+    try {
+        const origin = Astro.url.origin;
+        const res = await fetch(`${origin}/api/storefront-data`);
+        if (res.ok) {
+            const data = await res.json();
+            const allStorefrontItems = [...(data.cookies || []), ...(data.breads || [])];
+            product = allStorefrontItems.find((p: any) => p.id?.toLowerCase() === id?.toLowerCase());
+        }
+    } catch (e) {}
+}
 
 if (!product) {
     return Astro.redirect('/');

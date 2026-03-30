@@ -433,16 +433,19 @@ export const CheckoutFlow: React.FC = () => {
                     {step === 4 ? (
                         <div className="space-y-6 max-w-lg mx-auto w-full">
                             {/* Resumen del pedido */}
-                            <div className="bg-primary/5 p-6 rounded-[2.5rem] border border-primary/10 max-h-[40vh] overflow-y-auto shadow-inner">
+                            <div className="bg-primary/5 p-6 rounded-[2.5rem] border border-primary/10 shadow-inner">
                                 <h4 className="font-serif text-2xl text-primary italic font-bold mb-4">Lo que llevas:</h4>
-                                <div className="space-y-3">
+                                <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory py-2 pb-4 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent -mx-2 px-2">
                                     {cartItemsList.length === 0 ? (
-                                        <p className="text-sm font-bold text-primary/40 text-center py-4">Tu canasta está vacía.</p>
+                                        <p className="text-sm font-bold text-primary/40 text-center py-4 w-full">Tu canasta está vacía.</p>
                                     ) : (
                                         cartItemsList.map(item => (
-                                            <div key={item.id} className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-primary/5">
-                                                <div className="flex-1 pr-4">
-                                                    <p className="font-serif text-lg text-primary italic font-bold leading-tight">{item.name}</p>
+                                            <div key={item.id} className="snap-start flex-shrink-0 w-64 md:w-72 flex flex-col justify-between bg-white p-5 rounded-[2rem] shadow-sm border border-primary/5 hover:border-primary/20 transition-all">
+                                                <div className="mb-4">
+                                                    <div className="flex justify-between items-start gap-2 mb-2">
+                                                        <p className="font-serif text-xl text-primary italic font-bold leading-tight">{item.name}</p>
+                                                        <span className="font-black text-primary text-lg">${(item.price * item.quantity).toFixed(2)}</span>
+                                                    </div>
                                                     {item.boxSize && (
                                                         <p className="text-[10px] text-primary/60 font-black uppercase tracking-wider mt-1 leading-relaxed">
                                                             {Object.entries(item.selections || {}).filter(([_, q]) => q > 0).map(([n, q]) => `${q}x ${n}`).join(' · ')}
@@ -454,9 +457,10 @@ export const CheckoutFlow: React.FC = () => {
                                                         </p>
                                                     )}
                                                 </div>
-                                                <div className="flex flex-col items-end gap-2">
-                                                    <span className="font-black text-primary">${(item.price * item.quantity).toFixed(2)}</span>
-                                                    <button onClick={() => removeFromCart(item.id)} className="text-[10px] font-black uppercase text-red-400 hover:text-red-600 border border-red-100 bg-red-50 hover:bg-red-100 rounded-full px-3 py-1 transition-colors">Quitar</button>
+                                                <div className="mt-auto flex justify-end">
+                                                    <button onClick={() => removeFromCart(item.id)} className="text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-white border border-red-200 bg-red-50 hover:bg-red-500 rounded-xl px-4 py-2 transition-all w-full flex justify-center items-center gap-2">
+                                                        <span>✕</span> Quitar
+                                                    </button>
                                                 </div>
                                             </div>
                                         ))

@@ -105,9 +105,10 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                             <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mt-1">Receta original de la Güerita</p>
                                         </div>
                                         <span className="font-black text-primary text-3xl">${plan.price.toFixed(2)}</span>
-                                    </button>
+                                     </button>
                                 ))}
                             </div>
+                            <p className="text-xs text-primary/60 italic mt-4 px-2">✨ Podrás personalizar y mezclar los sabores de tu caja en el siguiente paso.</p>
                         </div>
                     ) : (
                         <div className="mb-12">

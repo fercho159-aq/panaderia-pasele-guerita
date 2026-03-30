@@ -33,10 +33,10 @@ const cookieHoverPool = [
     '/imagenes/IMG_6750.webp',
 ];
 const breadHoverPool = [
-    '/imagenes/IMG_6654.webp',
-    '/imagenes/IMG_6662.webp',
-    '/imagenes/IMG_6753.webp',
-    '/imagenes/IMG_6755.webp',
+    '/imagenes/IMG_6703.webp',
+    '/imagenes/IMG_6751.webp',
+    '/imagenes/IMG_6749.webp',
+    '/imagenes/IMG_6532.webp',
 ];
 ---
 
@@ -228,7 +228,7 @@ const breadHoverPool = [
 								<div class="p-6 bg-white relative">
     <div class="flex justify-between items-start mb-2">
         <h3 class="font-serif text-2xl text-primary italic leading-tight">{flavor.name}</h3>
-        <span class="text-sm font-bold text-primary">${flavor.price || 12.00}</span>
+        <span class="text-sm font-bold text-primary">${flavor.price ? (flavor.price / 3).toFixed(2) : '4.00'} c/u</span>
     </div>
     <p class="text-xs text-gray-500 line-clamp-2 mb-4 italic font-serif opacity-70">
         {flavor.description}

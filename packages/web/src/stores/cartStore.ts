@@ -48,7 +48,7 @@ export const addToCart = (product: any, flavor?: string) => {
             id: itemId, // Important: Sync the ID for handleBoxSelection
             quantity: 1, 
             flavor: flavor || '',
-            selections: product.boxSize ? { [flavor || 'Chocolate Lovers']: 1 } : undefined
+            selections: product.boxSize ? (flavor ? { [flavor]: 1 } : {}) : undefined
         };
     }
 

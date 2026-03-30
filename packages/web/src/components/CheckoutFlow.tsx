@@ -431,6 +431,42 @@ export const CheckoutFlow: React.FC = () => {
                     </div>
                     {step === 4 ? (
                         <div className="space-y-6 max-w-lg mx-auto w-full">
+                            {/* Resumen del pedido */}
+                            <div className="bg-primary/5 p-6 rounded-[2.5rem] border border-primary/10 max-h-[40vh] overflow-y-auto shadow-inner">
+                                <h4 className="font-serif text-2xl text-primary italic font-bold mb-4">Lo que llevas:</h4>
+                                <div className="space-y-3">
+                                    {cartItemsList.length === 0 ? (
+                                        <p className="text-sm font-bold text-primary/40 text-center py-4">Tu canasta está vacía.</p>
+                                    ) : (
+                                        cartItemsList.map(item => (
+                                            <div key={item.id} className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-primary/5">
+                                                <div className="flex-1 pr-4">
+                                                    <p className="font-serif text-lg text-primary italic font-bold leading-tight">{item.name}</p>
+                                                    {item.boxSize && (
+                                                        <p className="text-[10px] text-primary/60 font-black uppercase tracking-wider mt-1 leading-relaxed">
+                                                            {Object.entries(item.selections || {}).filter(([_, q]) => q > 0).map(([n, q]) => `${q}x ${n}`).join(' · ')}
+                                                        </p>
+                                                    )}
+                                                    {!item.boxSize && item.quantity > 1 && (
+                                                        <p className="text-[10px] text-primary/60 font-black uppercase tracking-wider mt-1">
+                                                            Cantidad: {item.quantity}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                                <div className="flex flex-col items-end gap-2">
+                                                    <span className="font-black text-primary">${(item.price * item.quantity).toFixed(2)}</span>
+                                                    <button onClick={() => removeFromCart(item.id)} className="text-[10px] font-black uppercase text-red-400 hover:text-red-600 border border-red-100 bg-red-50 hover:bg-red-100 rounded-full px-3 py-1 transition-colors">Quitar</button>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                                <div className="border-t-2 border-primary/10 mt-5 pt-4 flex justify-between items-center">
+                                    <span className="text-sm font-black uppercase tracking-widest text-primary/60">Total</span>
+                                    <span className="font-serif text-3xl text-primary italic font-bold">${totalAmount.toFixed(2)}</span>
+                                </div>
+                            </div>
+
                             <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/20" placeholder="¿A nombre de quién?" value={customer.name} onChange={e => setCustomer({...customer, name: e.target.value})} />
                             <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/20" placeholder="Tu Email" value={customer.email} onChange={e => setCustomer({...customer, email: e.target.value})} />
                             <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/20" placeholder="Tu WhatsApp" value={customer.phone} onChange={e => setCustomer({...customer, phone: e.target.value})} />

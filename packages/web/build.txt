@@ -1,0 +1,17 @@
+16:10:49 [types] Generated 58ms
+16:10:49 [build] output: "server"
+16:10:49 [build] directory: C:\Users\alexi\Desktop\panaderia\pasele-guerita\packages\web\.vercel\output\
+16:10:49 [build] adapter: @astrojs/vercel/serverless
+16:10:49 [build] Collecting build info...
+16:10:49 [build] ✓ Completed in 119ms.
+16:10:49 [build] Building server entrypoints...
+16:10:50 [ERROR] [vite] [31mx[39m Build failed in 1.16s
+Expected ")" but found "}"
+  Location:
+    C:/Users/alexi/Desktop/panaderia/pasele-guerita/packages/ui/src/components/AdminDashboard.tsx:471:40
+  Stack trace:
+    at failureErrorWithLog (C:\Users\alexi\Desktop\panaderia\pasele-guerita\node_modules\esbuild\lib\main.js:1472:15)
+    at responseCallbacks.<computed> (C:\Users\alexi\Desktop\panaderia\pasele-guerita\node_modules\esbuild\lib\main.js:622:9)
+    at Socket.readFromStdout (C:\Users\alexi\Desktop\panaderia\pasele-guerita\node_modules\esbuild\lib\main.js:600:7)
+    at addChunk (node:internal/streams/readable:559:12)
+    at Readable.push (node:internal/streams/readable:390:5)

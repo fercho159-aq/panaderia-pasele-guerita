@@ -26,6 +26,7 @@ export const AdminDashboard: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [dateFilter, setDateFilter] = useState<string>('all');
     const [editingOrder, setEditingOrder] = useState<Order | null>(null);
 
     const updateOrderDetails = async (id: string, updates: Partial<Order>) => {
@@ -276,17 +277,31 @@ export const AdminDashboard: React.FC = () => {
 
                 {activeTab === 'orders' && (
                     <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div className="flex flex-col md:flex-row justify-between items-center mb-6 border-b border-gray-100 pb-4 gap-4">
-                            <h2 className="font-serif text-2xl text-primary">Ventas y Producción</h2>
-                            <div className="relative flex-1 max-w-md">
-                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
-                                <input 
-                                    type="text" 
-                                    placeholder="Buscar cliente por nombre..." 
-                                    className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-sm"
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                />
+                        <div className="flex flex-col lg:flex-row justify-between items-center mb-6 border-b border-gray-100 pb-4 gap-4">
+                            <h2 className="font-serif text-2xl text-primary whitespace-nowrap">Ventas y Producción</h2>
+                            
+                            <div className="flex flex-1 w-full gap-3 flex-col sm:flex-row">
+                                <div className="relative flex-1">
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+                                    <input 
+                                        type="text" 
+                                        placeholder="Buscar cliente..." 
+                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-sm font-medium"
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                    />
+                                </div>
+                                
+                                <select
+                                    value={dateFilter}
+                                    onChange={(e) => setDateFilter(e.target.value)}
+                                    className="px-4 py-2.5 rounded-xl border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-sm font-bold text-gray-700 bg-gray-50 cursor-pointer min-w-[200px]"
+                                >
+                                    <option value="all">📅 Todas las fechas</option>
+                                    {Array.from(new Set(orders.map(o => (o as any).pickup_day).filter(Boolean))).sort().map(date => (
+                                        <option key={date as string} value={date as string}>📅 {date as string}</option>
+                                    ))}
+                                </select>
                             </div>
                             <div className="flex gap-4 items-center">
                                 <p className="text-xs text-gray-400 hidden lg:block">Vista de control tipo Excel</p>
@@ -321,9 +336,16 @@ export const AdminDashboard: React.FC = () => {
                                     {orders.length === 0 ? (
                                         <tr><td colSpan={20} className="py-8 text-center text-gray-400 italic">No hay pedidos registrados.</td></tr>
                                     ) : (
-                                        orders
-                                        .filter(o => o.customer_name.toLowerCase().includes(searchTerm.toLowerCase()))
-                                        .map(order => {
+                                        (() => {
+                                            const filteredOrders = orders
+                                                .filter(o => dateFilter === 'all' || (o as any).pickup_day === dateFilter)
+                                                .filter(o => o.customer_name.toLowerCase().includes(searchTerm.toLowerCase()));
+                                                
+                                            if (filteredOrders.length === 0) {
+                                                return <tr><td colSpan={20} className="py-8 text-center text-gray-400 italic">No hay pedidos para este filtro.</td></tr>;
+                                            }
+
+                                            return filteredOrders.map(order => {
                                             const cookieCount = Object.entries(order.flavors_selected || {}).reduce((sum, [id, q]) => sum + (!id.includes('hogaza') && !id.includes('pan-') && !id.includes('multigrano') ? q : 0), 0);
                                             const breadCount = Object.entries(order.flavors_selected || {}).reduce((sum, [id, q]) => sum + (id.includes('hogaza') || id.includes('pan-') || id.includes('multigrano') ? q : 0), 0);
                                             
@@ -446,34 +468,38 @@ export const AdminDashboard: React.FC = () => {
                                                 </tr>
                                             );
                                         })
+                                    })()
                                     )}
                                     
                                     {/* --- SUMMARIES --- */}
-                                    {orders.length > 0 && (
+                                    {(() => {
+                                        if (orders.length === 0) return null;
+                                        const totalOrders = orders.filter(o => dateFilter === 'all' || (o as any).pickup_day === dateFilter);
+                                        return (
                                         <>
                                             {/* TOTAL VENDIDO */}
                                             <tr className="bg-gray-800 text-white font-bold border-t-2 border-primary">
                                                 <td colSpan={2} className="p-3 text-right sticky left-0 z-10 bg-gray-800 border-r border-gray-700">TOTAL VENDIDO</td>
                                                 
                                                 <td className="p-3 text-center bg-pink-900 border-r border-gray-700">
-                                                    {orders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + Object.entries(o.flavors_selected||{}).reduce((s, [id, q])=> s + (!id.includes('hogaza')&&!id.includes('pan-')&&!id.includes('multigrano') ? q : 0), 0), 0)}
+                                                    {totalOrders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + Object.entries(o.flavors_selected||{}).reduce((s, [id, q])=> s + (!id.includes('hogaza')&&!id.includes('pan-')&&!id.includes('multigrano') ? q : 0), 0), 0)}
                                                 </td>
                                                 
                                                 {flavors.filter(f => !f.id.includes('hogaza') && !f.id.includes('pan-') && !f.id.includes('multigrano')).map(flavor => {
-                                                    const total = orders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + (o.flavors_selected?.[flavor.id] || 0), 0);
+                                                    const total = totalOrders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + (o.flavors_selected?.[flavor.id] || 0), 0);
                                                     return <td key={flavor.id} className="p-3 text-center border-r border-gray-700">{total}</td>;
                                                 })}
                                                 
                                                 <td className="p-3 text-center bg-amber-900 border-r border-gray-700">
-                                                    {orders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + Object.entries(o.flavors_selected||{}).reduce((s, [id, q])=> s + (id.includes('hogaza')||id.includes('pan-')||id.includes('multigrano') ? q : 0), 0), 0)}
+                                                    {totalOrders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + Object.entries(o.flavors_selected||{}).reduce((s, [id, q])=> s + (id.includes('hogaza')||id.includes('pan-')||id.includes('multigrano') ? q : 0), 0), 0)}
                                                 </td>
                                                 
                                                 {flavors.filter(f => f.id.includes('hogaza') || f.id.includes('pan-') || f.id.includes('multigrano')).map(flavor => {
-                                                    const total = orders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + (o.flavors_selected?.[flavor.id] || 0), 0);
+                                                    const total = totalOrders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + (o.flavors_selected?.[flavor.id] || 0), 0);
                                                     return <td key={flavor.id} className="p-3 text-center border-r border-gray-700">{total}</td>;
                                                 })}
                                                 
-                                                <td className="p-3 text-center">${orders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + o.total_price, 0).toFixed(2)}</td>
+                                                <td className="p-3 text-center">${totalOrders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + o.total_price, 0).toFixed(2)}</td>
                                                 <td className="p-3"></td>
                                             </tr>
                                             
@@ -514,7 +540,7 @@ export const AdminDashboard: React.FC = () => {
                                                 <td className="p-3 border-r border-gray-200"></td>
                                                 
                                                 {flavors.filter(f => !f.id.includes('hogaza') && !f.id.includes('pan-') && !f.id.includes('multigrano')).map(flavor => {
-                                                    const total = orders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + (o.flavors_selected?.[flavor.id] || 0), 0);
+                                                    const total = totalOrders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + (o.flavors_selected?.[flavor.id] || 0), 0);
                                                     const diff = (flavor.stock || 0) - total;
                                                     return (
                                                         <td key={flavor.id} className={`p-3 text-center border-r border-gray-200 ${diff < 0 ? 'text-red-600 bg-red-50/50' : diff > 0 ? 'text-green-600 bg-green-50/50' : 'text-gray-400'}`}>
@@ -526,7 +552,7 @@ export const AdminDashboard: React.FC = () => {
                                                 <td className="p-3 border-r border-gray-200"></td>
                                                 
                                                 {flavors.filter(f => f.id.includes('hogaza') || f.id.includes('pan-') || f.id.includes('multigrano')).map(flavor => {
-                                                    const total = orders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + (o.flavors_selected?.[flavor.id] || 0), 0);
+                                                    const total = totalOrders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + (o.flavors_selected?.[flavor.id] || 0), 0);
                                                     const diff = (flavor.stock || 0) - total;
                                                     return (
                                                         <td key={flavor.id} className={`p-3 text-center border-r border-gray-200 ${diff < 0 ? 'text-red-600 bg-red-50/50' : diff > 0 ? 'text-green-600 bg-green-50/50' : 'text-gray-400'}`}>
@@ -537,7 +563,8 @@ export const AdminDashboard: React.FC = () => {
                                                 <td colSpan={2}></td>
                                             </tr>
                                         </>
-                                    )}
+                                        );
+                                    })()}
                                 </tbody>
                             </table>
                         </div>

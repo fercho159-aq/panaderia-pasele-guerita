@@ -1,0 +1,53 @@
+16:08:16 [types] Generated 75ms
+16:08:16 [check] Getting diagnostics for Astro files in C:\Users\alexi\Desktop\panaderia\pasele-guerita\packages\web...
+[96msrc/components/CheckoutFlow.tsx[0m:[93m33[0m:[93m26[0m - [93mwarning[0m[90m ts(6133): [0m'setSlicedBreads' is declared but its value is never read.
+
+[7m33[0m     const [slicedBreads, setSlicedBreads] = useState<Record<string, number>>({});
+[7m  [0m [93m                         ~~~~~~~~~~~~~~~[0m
+[96msrc/components/CheckoutFlow.tsx[0m:[93m33[0m:[93m12[0m - [93mwarning[0m[90m ts(6133): [0m'slicedBreads' is declared but its value is never read.
+
+[7m33[0m     const [slicedBreads, setSlicedBreads] = useState<Record<string, number>>({});
+[7m  [0m [93m           ~~~~~~~~~~~~[0m
+[96msrc/components/CheckoutFlow.tsx[0m:[93m32[0m:[93m27[0m - [93mwarning[0m[90m ts(6133): [0m'setPaymentMethod' is declared but its value is never read.
+
+[7m32[0m     const [paymentMethod, setPaymentMethod] = useState<'transfer' | 'cash' | null>(null);
+[7m  [0m [93m                          ~~~~~~~~~~~~~~~~[0m
+[96msrc/components/CheckoutFlow.tsx[0m:[93m32[0m:[93m12[0m - [93mwarning[0m[90m ts(6133): [0m'paymentMethod' is declared but its value is never read.
+
+[7m32[0m     const [paymentMethod, setPaymentMethod] = useState<'transfer' | 'cash' | null>(null);
+[7m  [0m [93m           ~~~~~~~~~~~~~[0m
+[96msrc/components/CheckoutFlow.tsx[0m:[93m31[0m:[93m21[0m - [93mwarning[0m[90m ts(6133): [0m'setRemarks' is declared but its value is never read.
+
+[7m31[0m     const [remarks, setRemarks] = useState('');
+[7m  [0m [93m                    ~~~~~~~~~~[0m
+[96msrc/components/CheckoutFlow.tsx[0m:[93m27[0m:[93m21[0m - [93mwarning[0m[90m ts(6133): [0m'setZipCode' is declared but its value is never read.
+
+[7m27[0m     const [zipCode, setZipCode] = useState('');
+[7m  [0m [93m                    ~~~~~~~~~~[0m
+[96msrc/components/CheckoutFlow.tsx[0m:[93m27[0m:[93m12[0m - [93mwarning[0m[90m ts(6133): [0m'zipCode' is declared but its value is never read.
+
+[7m27[0m     const [zipCode, setZipCode] = useState('');
+[7m  [0m [93m           ~~~~~~~[0m
+[96msrc/components/CheckoutFlow.tsx[0m:[93m7[0m:[93m5[0m - [93mwarning[0m[90m ts(6133): [0m'isValidHoustonZip' is declared but its value is never read.
+
+[7m7[0m     isValidHoustonZip,
+[7m [0m [93m    ~~~~~~~~~~~~~~~~~[0m
+[96msrc/components/CheckoutFlow.tsx[0m:[93m3[0m:[93m48[0m - [93mwarning[0m[90m ts(6133): [0m'updateQuantity' is declared but its value is never read.
+
+[7m3[0m import { cartStore, addToCart, removeFromCart, updateQuantity } from '../stores/cartStore';
+[7m [0m [93m                                               ~~~~~~~~~~~~~~[0m
+
+[96msrc/pages/index.astro[0m:[93m5[0m:[93m39[0m - [93mwarning[0m[90m ts(6133): [0m'monthlySpecial' is declared but its value is never read.
+
+[7m5[0m import { cookieFlavors, breadFlavors, monthlySpecial, allProducts } from '@pasele-guerita/core';
+[7m [0m [93m                                      ~~~~~~~~~~~~~~[0m
+[96msrc/pages/index.astro[0m:[93m189[0m:[93m20[0m - [93mwarning[0m[90m ts(6133): [0m'src' is declared but its value is never read.
+
+[7m189[0m      onerror="this.src='/imagenes/IMG_6658.webp'" />
+[7m   [0m [93m                   ~~~[0m
+
+Result (23 files): 
+- 0 errors
+- 0 warnings
+- 11 hints
+

@@ -97,6 +97,22 @@ export const CheckoutFlow: React.FC = () => {
             }
         });
     };
+    const nextStep1Ref = React.useRef<HTMLDivElement>(null);
+    const nextStep2Ref = React.useRef<HTMLDivElement>(null);
+
+    // Auto-scroll logic
+    useEffect(() => {
+        if (step === 1 && (logistics === 'delivery' || (logistics === 'pickup' && locationId))) {
+            nextStep1Ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, [logistics, locationId, step]);
+
+    useEffect(() => {
+        if (step === 2 && selectedDate) {
+            nextStep2Ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, [selectedDate, step]);
+
     const handleSubmitOrder = async () => {
         setIsUploading(true);
         try {
@@ -130,12 +146,12 @@ export const CheckoutFlow: React.FC = () => {
 
             const orderData = {
                 customer_name: customer.name,
-                phone: customer.phone, // Synced with migration.sql
-                email: customer.email, // Synced with migration.sql
+                phone: customer.phone,
+                email: customer.email,
                 location_id: locationId,
                 pickup_day: selectedDate,
                 box_size: firstBox?.boxSize || 0,
-                flavors_selected: flattened, // Flattened for Dashboard compatibility
+                flavors_selected: flattened,
                 total_price: totalAmount,
                 status: 'Pendiente',
                 notes: orderNotes
@@ -196,8 +212,8 @@ export const CheckoutFlow: React.FC = () => {
                         </div>
                     )}
 
-                    <div className="pt-10">
-                        <Button disabled={!logistics || (logistics === 'pickup' && !locationId)} onClick={() => setStep(2)} className="w-full h-20 text-xl font-black rounded-3xl">SIGUIENTE PASO</Button>
+                    <div className="pt-10" ref={nextStep1Ref}>
+                        <Button disabled={!logistics || (logistics === 'pickup' && !locationId)} onClick={() => setStep(2)} className="w-full h-20 text-xl font-black rounded-3xl shadow-xl">SIGUIENTE PASO</Button>
                     </div>
                 </div>
             )}
@@ -212,9 +228,9 @@ export const CheckoutFlow: React.FC = () => {
                     <div className="max-w-md mx-auto">
                         <CustomCalendar selectedDate={selectedDate} onDateSelect={setSelectedDate} minDate={earliestDate} allowedDays={['Wednesday', 'Saturday']} />
                     </div>
-                    <div className="flex gap-6 mt-10">
-                        <Button variant="outline" onClick={() => setStep(1)} className="flex-1 h-16 border-primary/20 text-primary/60">ATRÁS</Button>
-                        <Button disabled={!isStep2Valid} onClick={() => setStep(3)} className="flex-[2] h-16">ARMAR TU PEDIDO</Button>
+                    <div className="flex gap-6 mt-10" ref={nextStep2Ref}>
+                        <Button variant="outline" onClick={() => setStep(1)} className="flex-1 h-16 border-primary/20 text-primary/60 rounded-2xl">ATRÁS</Button>
+                        <Button disabled={!isStep2Valid} onClick={() => setStep(3)} className="flex-[2] h-16 rounded-2xl shadow-lg">ARMAR TU PEDIDO</Button>
                     </div>
                 </div>
             )}

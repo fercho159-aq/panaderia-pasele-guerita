@@ -83,66 +83,103 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
 
                 {/* Details - Right Column */}
                 <div className="py-4">
-                    <h1 className="font-serif text-5xl md:text-7xl text-primary mb-6">{product.name}</h1>
+                    <h1 className="font-serif text-5xl md:text-7xl text-primary mb-6 font-bold tracking-tight">{product.name}</h1>
                     
-                    <div className="prose prose-lg text-gray-700 font-serif italic mb-10 leading-relaxed border-l-4 border-accent/20 pl-6">
-                        <p>{product.description || "Deléitate con lo mejor de nuestra panadería artesanal. Hecho fresco cada día con ingredientes de la más alta calidad."}</p>
+                    <div className="prose prose-lg text-gray-700 font-serif italic mb-10 leading-relaxed border-l-4 border-accent/30 pl-6">
+                        <p className="font-medium text-xl leading-relaxed">{product.description || "Deléitate con lo mejor de nuestra panadería artesanal. Hecho fresco cada día con ingredientes de la más alta calidad y un proceso de fermentación lenta que garantiza un sabor inigualable."}</p>
                     </div>
 
                     {/* Options: Plan Selection for Cookies */}
                     {isCookie ? (
                         <div className="mb-12">
-                            <label className="block text-xs font-black uppercase tracking-[0.2em] text-primary/40 mb-6">Selecciona tu Plan de Galletas</label>
+                            <label className="block text-[11px] font-black uppercase tracking-[0.25em] text-primary/60 mb-6">Selecciona tu Plan de Galletas</label>
                             <div className="grid grid-cols-1 gap-4">
                                 {cookiePlans.map((plan) => (
                                     <button 
                                         key={plan.count}
                                         onClick={() => setSelectedPlan(plan)}
-                                        className={`p-6 rounded-2xl border-2 transition-all flex justify-between items-center ${selectedPlan.count === plan.count ? 'border-primary bg-primary/5 shadow-inner' : 'border-bg hover:border-primary/10 bg-white'}`}
+                                        className={`p-6 rounded-[2rem] border-2 transition-all flex justify-between items-center ${selectedPlan.count === plan.count ? 'border-primary bg-primary/5 shadow-inner' : 'border-bg hover:border-primary/20 bg-white'}`}
                                     >
                                         <div className="text-left">
-                                            <span className="font-serif text-xl text-primary italic">{plan.label}</span>
-                                            <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest mt-1">Galletas horneadas hoy</p>
+                                            <span className="font-serif text-2xl text-primary italic font-bold">{plan.label}</span>
+                                            <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mt-1">Receta original de la Güerita</p>
                                         </div>
-                                        <span className="font-bold text-primary text-2xl">${plan.price.toFixed(2)}</span>
+                                        <span className="font-black text-primary text-3xl">${plan.price.toFixed(2)}</span>
                                     </button>
                                 ))}
                             </div>
                         </div>
                     ) : (
                         <div className="mb-12">
-                            <div className="flex justify-between items-center p-6 bg-white rounded-2xl border-2 border-primary/5 shadow-sm">
-                                <span className="font-serif text-xl text-primary italic">Hogaza Individual</span>
-                                <span className="font-bold text-primary text-2xl">${displayPrice.toFixed(2)}</span>
+                            <div className="flex justify-between items-center p-8 bg-white rounded-[2rem] border-2 border-primary/10 shadow-sm">
+                                <div>
+                                    <span className="font-serif text-2xl text-primary italic font-bold">Hogaza Individual</span>
+                                    <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mt-1">Fermentación natural +48h</p>
+                                </div>
+                                <span className="font-black text-primary text-3xl">${displayPrice.toFixed(2)}</span>
                             </div>
                         </div>
                     )}
 
                     <Button 
                         variant="primary" 
-                        className="w-full h-20 text-xl shadow-2xl hover:scale-[1.02] active:scale-95 transition-all mb-12 rounded-3xl bg-primary text-bg hover:shadow-primary/20"
+                        className="w-full h-20 text-xl shadow-2xl hover:scale-[1.02] active:scale-95 transition-all mb-16 rounded-[2.5rem] bg-primary text-bg hover:shadow-primary/20 font-black tracking-widest"
                         onClick={handleAddToBag}
                     >
                         AGREGAR A LA BOLSA — ${displayPrice.toFixed(2)}
                     </Button>
 
                     {/* Accordion Sections */}
-                    <div className="divide-y divide-primary/10 border-t border-primary/10">
-                        {['Description', 'Allergens', 'Care & Storage'].map((section) => (
-                            <details key={section} className="group py-6" open={section === 'Description'}>
-                                <summary className="flex justify-between items-center cursor-pointer list-none font-sans font-bold uppercase tracking-widest text-xs text-primary/60">
-                                    {section}
-                                    <span className="transition-transform group-open:rotate-180">↓</span>
+                    <div className="divide-y divide-primary/10 border-t border-primary/10 mb-10">
+                        {[
+                            { id: 'Description', label: 'Descripción', icon: '✨' },
+                            { id: 'Allergens', label: 'Alérgenos', icon: '🛡️' },
+                            { id: 'Care', label: 'Cuidados y Conservación', icon: '🏠' }
+                        ].map((section) => (
+                            <details key={section.id} className="group py-8" open={section.id === 'Description'}>
+                                <summary className="flex justify-between items-center cursor-pointer list-none font-sans font-black uppercase tracking-[0.2em] text-[11px] text-primary">
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-xl opacity-80">{section.icon}</span>
+                                        {section.label}
+                                    </div>
+                                    <span className="transition-transform group-open:rotate-180 opacity-40 text-lg">↓</span>
                                 </summary>
-                                <div className="mt-4 text-gray-600 leading-relaxed font-sans text-sm">
-                                    {section === 'Description' && (
-                                        <>
-                                            {product.description}
-                                            {product.ingredients && <p className="mt-4 pt-4 border-t border-primary/5 italic opacity-60 text-xs">{product.ingredients}</p>}
-                                        </>
+                                <div className="mt-6 text-gray-600 leading-relaxed font-sans text-base max-w-xl">
+                                    {section.id === 'Description' && (
+                                        <div className="space-y-4">
+                                            <p className="font-medium">{product.description}</p>
+                                            {product.ingredients && (
+                                                <div className="pt-6 mt-6 border-t border-primary/5">
+                                                    <p className="text-[10px] uppercase tracking-widest font-black text-primary/40 mb-2">Ingredientes Protagónicos</p>
+                                                    <p className="italic font-serif opacity-80">{product.ingredients}</p>
+                                                </div>
+                                            )}
+                                        </div>
                                     )}
-                                    {section === 'Allergens' && "Contiene trigo y lácteos. Procesado en instalaciones que también manejan nueces y almendras."}
-                                    {section === 'Care & Storage' && "Mantener en un lugar fresco y seco. Recomendamos calentar ligeramente antes de consumir para recuperar la textura del horno."}
+                                    {section.id === 'Allergens' && (
+                                        <div className="bg-bg/40 p-6 rounded-2xl border border-primary/5">
+                                            <p className="font-bold text-primary mb-2">Información importante para tu salud:</p>
+                                            <p>Contiene gluten (trigo) y derivados lácteos. Nuestros productos son elaborados en una cocina artesanal que también procesa nueces, cacahuates, almendras y semillas. Si tienes alguna alergia severa, por favor contáctanos vía WhatsApp antes de realizar tu pedido.</p>
+                                        </div>
+                                    )}
+                                    {section.id === 'Care' && (
+                                        <table className="w-full text-sm">
+                                            <tbody>
+                                                <tr>
+                                                    <td className="font-bold py-3 border-b border-primary/5 text-primary">Temp. Ambiente</td>
+                                                    <td className="py-3 border-b border-primary/5 italic opacity-80 text-right">3 días en recipiente hermético.</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="font-bold py-3 border-b border-primary/5 text-primary">Refrigeración</td>
+                                                    <td className="py-3 border-b border-primary/5 italic opacity-80 text-right">7 días. Calentar antes de consumir.</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="font-bold py-3 text-primary">Congelación</td>
+                                                    <td className="py-3 italic opacity-80 text-right">Hasta 1 mes. Cortar en rebanadas antes.</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    )}
                                 </div>
                             </details>
                         ))}

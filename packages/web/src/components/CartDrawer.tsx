@@ -39,59 +39,64 @@ export const CartDrawer: React.FC = () => {
             {/* Drawer */}
             <div className={`absolute right-0 top-0 h-full w-full max-w-md bg-[#FDF5E6] shadow-2xl flex flex-col transition-transform duration-300 transform ${isClosing ? 'translate-x-full' : 'translate-x-0'}`}>
                 {/* Header */}
-                <div className="p-6 flex justify-between items-center border-b border-[#000080]/10">
+                <div className="p-6 flex justify-between items-center border-b border-primary/10">
                     <div className="flex items-center gap-3">
                         <div className="relative">
-                            <svg viewBox="0 0 24 24" className="w-8 h-8 fill-none stroke-[#000080]" strokeWidth="2">
+                            <svg viewBox="0 0 24 24" className="w-8 h-8 fill-none stroke-primary" strokeWidth="2.5">
                                 <path d="M4 6h16l-1.5 13H5.5L4 6z" />
                                 <circle cx="12" cy="6" r="3" />
-                                <text x="12" y="7" textAnchor="middle" fontSize="8" fontWeight="bold" fill="#000080" stroke="none">{cartItemsList.length}</text>
+                                <text x="12" y="7" textAnchor="middle" fontSize="7" fontWeight="900" fill="currentColor" stroke="none" className="text-primary">{cartItemsList.length}</text>
                             </svg>
                         </div>
-                        <h2 className="font-serif text-3xl text-[#000080]">Your Bag</h2>
+                        <h2 className="font-serif text-3xl text-primary font-bold">Tu Orden</h2>
                     </div>
                     <button 
                         onClick={handleClose}
-                        className="w-10 h-10 rounded-full border border-[#000080]/20 flex items-center justify-center text-[#000080] hover:bg-[#000080]/5 transition-colors"
+                        className="w-10 h-10 rounded-full border border-primary/20 flex items-center justify-center text-primary hover:bg-primary/5 transition-colors"
                     >
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
 
                 {/* Items List */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                <div className="flex-1 overflow-y-auto p-6 space-y-8">
                     {cartItemsList.length === 0 ? (
-                        <div className="h-full flex flex-col items-center justify-center text-center">
-                            <span className="text-6xl mb-4">🍪</span>
-                            <p className="font-serif text-xl text-[#000080]/60 italic">Your bag is empty...</p>
+                        <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
+                            <span className="text-7xl mb-6">🍪</span>
+                            <p className="font-serif text-xl text-primary italic font-medium">Bolsa vacía...<br/>¿Huele a galletas?</p>
                         </div>
                     ) : (
                         cartItemsList.map(([id, item]) => (
-                            <div key={id} className="flex gap-4 group">
-                                <div className="w-24 h-24 rounded-2xl overflow-hidden bg-white/50 border border-[#000080]/5">
-                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                            <div key={id} className="flex gap-5 group animate-fade-in">
+                                <div className="w-24 h-24 rounded-2xl overflow-hidden bg-white shadow-sm border border-primary/5 flex-shrink-0">
+                                    <img 
+                                        src={item.image || '/imagenes/IMG_6657.webp'} 
+                                        alt={item.name} 
+                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                                        onError={(e) => (e.currentTarget.src = '/imagenes/IMG_6657.webp')}
+                                    />
                                 </div>
-                                <div className="flex-1 min-w-0">
+                                <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
                                     <div className="flex justify-between items-start">
-                                        <div>
-                                            <h3 className="font-serif text-lg text-[#000080] leading-tight">{item.name}</h3>
+                                        <div className="pr-4">
+                                            <h3 className="font-serif text-xl text-primary leading-tight font-bold italic">{item.name}</h3>
                                             {item.selections ? (
                                                 <div className="mt-2 space-y-1">
                                                     {Object.entries(item.selections).map(([flavor, count]) => (
-                                                        <p key={flavor} className="text-[10px] font-sans text-accent font-bold uppercase tracking-wider">
+                                                        <p key={flavor} className="text-[10px] font-sans text-accent font-black uppercase tracking-widest bg-accent/5 px-2 py-0.5 rounded-full inline-block mr-2 mt-1">
                                                             {count}x {flavor}
                                                         </p>
                                                     ))}
                                                 </div>
                                             ) : (
-                                                <p className="text-sm font-sans text-[#000080]/60 italic mt-1">{item.flavor || 'Regular'}</p>
+                                                <p className="text-xs font-sans text-primary/50 font-bold uppercase tracking-widest mt-1.5">{item.category === 'bread' ? 'Hogaza' : 'Unidad'}</p>
                                             )}
                                         </div>
                                         <button 
                                             onClick={() => removeFromCart(id)}
-                                            className="text-[#000080]/40 hover:text-red-500 transition-colors"
+                                            className="text-primary/20 hover:text-red-500 transition-colors p-1"
                                         >
                                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -99,18 +104,18 @@ export const CartDrawer: React.FC = () => {
                                         </button>
                                     </div>
                                     <div className="flex justify-between items-center mt-3">
-                                        <div className="flex items-center gap-4 bg-white rounded-full border border-[#000080]/10 px-3 py-1 scale-90 -ml-2">
+                                        <div className="flex items-center gap-4 bg-white rounded-full border border-primary/10 px-3 py-1 scale-90 -ml-1 shadow-sm">
                                             <button 
                                                 onClick={() => updateQuantity(id, item.quantity - 1)}
-                                                className="text-[#000080] font-bold px-1"
+                                                className="text-primary font-black px-1.5 hover:scale-125 transition-transform"
                                             >-</button>
-                                            <span className="font-sans font-bold text-[#000080] min-w-[20px] text-center">{item.quantity}</span>
+                                            <span className="font-sans font-bold text-primary min-w-[15px] text-center">{item.quantity}</span>
                                             <button 
                                                 onClick={() => updateQuantity(id, item.quantity + 1)}
-                                                className="text-[#000080] font-bold px-1"
+                                                className="text-primary font-black px-1.5 hover:scale-125 transition-transform"
                                             >+</button>
                                         </div>
-                                        <span className="font-sans font-bold text-[#000080]">${(item.price * item.quantity).toFixed(2)}</span>
+                                        <span className="font-sans font-black text-primary text-lg">${(item.price * item.quantity).toFixed(2)}</span>
                                     </div>
                                 </div>
                             </div>
@@ -119,30 +124,27 @@ export const CartDrawer: React.FC = () => {
                 </div>
 
                 {/* Footer Section */}
-                <div className="p-6 bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.05)] border-t border-[#000080]/5 space-y-6">
+                <div className="p-6 bg-white shadow-[0_-20px_50px_rgba(45,90,78,0.1)] border-t border-primary/5 space-y-6">
                     {/* Gift Section */}
-                    <div className="bg-[#B0E0E6]/30 border border-[#000080]/10 rounded-3xl p-6 relative overflow-hidden group">
+                    <div className="bg-accent/5 border border-accent/10 rounded-[2rem] p-6 relative overflow-hidden group">
                         <div className="relative z-10">
-                            <div className="flex items-center gap-4 mb-2">
-                                <div className="w-12 h-12 flex items-center justify-center">
-                                    <svg viewBox="0 0 24 24" className="w-8 h-8 fill-none stroke-[#000080]" strokeWidth="1.5">
-                                        <path d="M4 8h16v13H4V8zM12 8c1-3 4-3 4-3s-1 4-4 4-4-4-4-4 3 0 4 3z" />
-                                        <path d="M12 21V8" />
-                                        <path d="M12 11c-1 0-2 1-2 2s1 2 2 2 2-1 2-2-1-2-2-2z" fill="#000080" className="opacity-0 group-hover:opacity-20 transition-opacity" />
-                                    </svg>
+                            <div className="flex items-center gap-4 mb-4">
+                                <div className="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm text-2xl">
+                                    🎁
                                 </div>
-                                <h3 className="font-serif text-2xl text-[#000080]">Make It Personal</h3>
+                                <h3 className="font-serif text-2xl text-primary font-bold italic">¿Es un regalo?</h3>
                             </div>
                             <button 
                                 onClick={() => setGiftMessage(!gift.is_gift, gift.message)}
-                                className="flex items-center gap-2 text-[#000080] text-sm font-bold uppercase tracking-widest hover:opacity-70 transition-opacity"
+                                className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] transition-all ${gift.is_gift ? 'text-accent' : 'text-primary'}`}
                             >
-                                {gift.is_gift ? 'Edit Gift Message' : 'ADD A GIFT MESSAGE (+)'}
+                                {gift.is_gift ? 'QUITAR MENSAJE' : 'AÑADIR MENSAJE ESPECIAL (+)'}
                             </button>
                             {gift.is_gift && (
                                 <textarea 
-                                    className="w-full mt-4 bg-transparent border-b border-[#000080]/20 focus:border-[#000080] outline-none text-[#000080] font-serif italic py-2"
-                                    placeholder="Your sweet message here..."
+                                    className="w-full mt-4 bg-white/50 border-b-2 border-accent/20 focus:border-accent outline-none text-primary font-serif italic py-3 px-4 rounded-xl resize-none shadow-inner"
+                                    placeholder="Tu mensaje aquí..."
+                                    rows={2}
                                     value={gift.message}
                                     onChange={(e) => setGiftMessage(true, e.target.value)}
                                 />
@@ -150,13 +152,14 @@ export const CartDrawer: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="space-y-4">
-                        <div className="flex justify-between font-serif text-2xl text-[#000080]">
-                            <span className="italic">Subtotal</span>
-                            <span className="font-sans font-bold">${subtotal.toFixed(2)}</span>
+                    <div className="space-y-4 pt-2">
+                        <div className="flex justify-between font-serif text-3xl text-primary items-end">
+                            <span className="italic font-medium">Subtotal</span>
+                            <span className="font-sans font-black text-primary">${subtotal.toFixed(2)}</span>
                         </div>
                         <Button 
-                            className="w-full h-16 text-xl shadow-xl flex items-center justify-center gap-2"
+                            variant="primary"
+                            className="w-full h-20 text-xl shadow-2xl flex items-center justify-center gap-3 rounded-[1.5rem] font-black tracking-widest"
                             disabled={cartItemsList.length === 0}
                             onClick={() => {
                                 if (window.location.pathname.startsWith('/checkout')) {
@@ -166,10 +169,10 @@ export const CartDrawer: React.FC = () => {
                                 }
                             }}
                         >
-                            {window.location.pathname.startsWith('/checkout') ? 'CONTINUE CHECKOUT' : 'CHECK OUT'}
+                            {window.location.pathname.startsWith('/checkout') ? 'CONTINUAR' : 'PEDIR AHORA! 💖'}
                         </Button>
-                        <p className="text-center text-[10px] uppercase font-bold text-[#000080]/40 tracking-widest">
-                            Select delivery date and calculate shipping at Checkout.
+                        <p className="text-center text-[9px] uppercase font-black text-primary/30 tracking-[0.2em] px-4">
+                            Entregas los Sábados en Dallas y alrededores. Revisa disponibilidad en el próximo paso.
                         </p>
                     </div>
                 </div>

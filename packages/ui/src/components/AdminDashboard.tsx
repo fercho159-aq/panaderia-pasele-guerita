@@ -113,7 +113,17 @@ export const AdminDashboard: React.FC = () => {
 
             setFlavors(await flavorsRes.json());
             setLocations(await locationsRes.json());
-            setOrders(await ordersRes.json());
+            const rawOrders = await ordersRes.json();
+            setOrders(rawOrders.map((o: any) => {
+                if (typeof o.flavors_selected === 'string') {
+                    try { 
+                        let obj = JSON.parse(o.flavors_selected);
+                        while(typeof obj === 'string') { obj = JSON.parse(obj); }
+                        o.flavors_selected = obj;
+                    } catch { o.flavors_selected = {}; }
+                }
+                return o;
+            }));
         } catch (e) {
             console.error(e);
             alert("Error cargando base de datos.");

@@ -69,13 +69,14 @@ export const CheckoutFlow: React.FC = () => {
 
     const handleBoxSelection = (boxId: string, flavorName: string, delta: number) => {
         const item = cartItems[boxId];
-        if (!item || !item.boxSize || !item.selections) return;
+        if (!item || !item.boxSize) return;
         
-        const currentTotal = Object.values(item.selections).reduce((a, b) => a + b, 0);
+        const currentSelections = item.selections || {};
+        const currentTotal = Object.values(currentSelections).reduce((a, b) => a + b, 0);
         if (delta > 0 && currentTotal >= item.boxSize) return;
-        if (delta < 0 && (item.selections[flavorName] || 0) <= 0) return;
+        if (delta < 0 && (currentSelections[flavorName] || 0) <= 0) return;
 
-        const newSelections = { ...item.selections };
+        const newSelections = { ...currentSelections };
         newSelections[flavorName] = (newSelections[flavorName] || 0) + delta;
         if (newSelections[flavorName] <= 0) delete newSelections[flavorName];
 
@@ -148,8 +149,8 @@ export const CheckoutFlow: React.FC = () => {
 
             const orderData = {
                 customer_name: customer.name,
-                phone: customer.phone,
-                email: customer.email,
+                customer_phone: customer.phone,   // ← matches NOT NULL column
+                customer_email: customer.email,
                 location_id: locationId,
                 pickup_day: selectedDate,
                 box_size: firstBox?.boxSize || 0,
@@ -359,18 +360,19 @@ export const CheckoutFlow: React.FC = () => {
 
                         {/* Tab: Extra Cookies */}
                         {extrasTab === 'cookies' && (
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                                {cookieFlavors.map(f => (
-                                    <div
-                                        key={f.id}
-                                        onClick={() => addToCart({ ...f, category: 'cookie', price: 12, boxSize: 3, name: `Caja de 3` }, '')}
-                                        className="bg-white p-4 rounded-[2rem] flex flex-col items-center gap-3 border-2 border-primary/5 hover:border-primary/20 hover:shadow-lg cursor-pointer transition-all group"
-                                    >
-                                        <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-primary/5 group-hover:scale-110 transition-transform">
-                                            <img src={f.image} alt={f.name} className="w-full h-full object-cover" />
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {cookieFlavors.map(c => (
+                                    <div key={c.id} className="bg-white rounded-[2.5rem] border border-primary/10 overflow-hidden flex items-center p-4 hover:shadow-xl hover:border-primary/30 transition-all duration-300 group cursor-pointer" onClick={() => addToCart({ ...c, category: 'cookie', price: 12, boxSize: 3, name: `Caja de 3` }, '')}>
+                                        <div className="w-20 h-20 rounded-full overflow-hidden flex-shrink-0 border-4 border-white shadow-sm bg-gray-50">
+                                            <img src={c.image || '/imagenes/IMG_6657.webp'} alt={c.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                         </div>
-                                        <span className="text-[11px] font-bold text-primary text-center leading-tight">{f.name}</span>
-                                        <span className="text-[10px] font-black text-accent uppercase tracking-widest">+ Caja de 3 · $12</span>
+                                        <div className="ml-5 flex-1 pr-2">
+                                            <h4 className="font-serif text-xl text-primary italic font-bold leading-tight mb-1">{c.name}</h4>
+                                            <p className="text-[10px] text-primary/50 uppercase tracking-widest font-black line-clamp-1">{c.ingredients?.split(',')[0]}...</p>
+                                            <div className="mt-3 text-[10px] font-black uppercase tracking-[0.2em] text-accent flex items-center gap-1.5 group-hover:translate-x-1 transition-transform">
+                                                Añadir (3x) $12 <span>→</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -378,27 +380,26 @@ export const CheckoutFlow: React.FC = () => {
 
                         {/* Tab: Breads */}
                         {extrasTab === 'breads' && (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 {breadFlavors.map(b => (
-                                    <div key={b.id} className="bg-white rounded-[2rem] border-2 border-primary/5 overflow-hidden flex flex-col sm:flex-row hover:shadow-lg hover:border-primary/20 transition-all group">
-                                        <div className="w-full sm:w-28 h-36 sm:h-auto flex-shrink-0 overflow-hidden">
-                                            <img src={b.image || '/imagenes/IMG_6703.webp'} alt={b.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                    <div key={b.id} className="bg-white rounded-[2.5rem] border border-primary/10 overflow-hidden flex flex-col hover:shadow-2xl hover:border-primary/30 transition-all duration-300 group">
+                                        <div className="w-full h-44 overflow-hidden relative">
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10 pointer-events-none"></div>
+                                            <img src={b.image || '/imagenes/IMG_6703.webp'} alt={b.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                            <h4 className="absolute bottom-5 left-6 right-6 font-serif text-2xl text-white italic font-bold leading-tight z-20 drop-shadow-md">{b.name}</h4>
                                         </div>
-                                        <div className="p-5 flex flex-col justify-between gap-3 flex-1">
-                                            <div>
-                                                <h4 className="font-serif text-lg text-primary italic font-bold leading-tight">{b.name}</h4>
-                                                <p className="text-xs text-primary/50 mt-1 leading-relaxed line-clamp-2">{b.description}</p>
-                                            </div>
-                                            <div className="flex gap-2">
+                                        <div className="p-6 bg-gradient-to-b from-white to-primary/5 flex flex-col justify-between gap-5 flex-1">
+                                            <p className="text-sm text-primary/60 leading-relaxed line-clamp-2">{b.description}</p>
+                                            <div className="flex gap-3">
                                                 <button
                                                     onClick={() => addToCart({ ...b, category: 'bread' })}
-                                                    className="flex-1 bg-primary text-bg text-xs font-black uppercase tracking-widest py-2.5 rounded-xl hover:bg-primary/80 transition-colors"
+                                                    className="flex-[3] bg-primary text-bg text-[11px] font-black uppercase tracking-widest py-3.5 rounded-[1.2rem] hover:bg-primary/90 hover:-translate-y-0.5 shadow-md hover:shadow-lg transition-all flex items-center justify-center"
                                                 >
                                                     Hogaza ${b.price}
                                                 </button>
                                                 <button
                                                     onClick={() => addToCart({ ...b, id: `${b.id}-slice`, name: `Rebanada de ${b.name}`, price: 1, category: 'bread' })}
-                                                    className="flex-1 bg-accent/10 text-accent text-xs font-black uppercase tracking-widest py-2.5 rounded-xl hover:bg-accent/20 transition-colors border border-accent/10"
+                                                    className="flex-[2] bg-accent/10 text-accent text-[11px] font-black uppercase tracking-widest py-3.5 rounded-[1.2rem] hover:bg-accent hover:text-white hover:-translate-y-0.5 transition-all border border-accent/20 flex items-center justify-center"
                                                 >
                                                     Rebanada $1
                                                 </button>
@@ -470,6 +471,39 @@ export const CheckoutFlow: React.FC = () => {
                             <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/20" placeholder="¿A nombre de quién?" value={customer.name} onChange={e => setCustomer({...customer, name: e.target.value})} />
                             <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/20" placeholder="Tu Email" value={customer.email} onChange={e => setCustomer({...customer, email: e.target.value})} />
                             <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/20" placeholder="Tu WhatsApp" value={customer.phone} onChange={e => setCustomer({...customer, phone: e.target.value})} />
+
+                            {/* Gift Note Toggle */}
+                            <div className={`rounded-[2rem] border-2 transition-all duration-300 overflow-hidden ${
+                                cartGift.is_gift ? 'border-accent bg-accent/5' : 'border-primary/10 bg-white'
+                            }`}>
+                                <button
+                                    type="button"
+                                    onClick={() => cartStore.set({ ...cartStore.get(), gift: { ...cartGift, is_gift: !cartGift.is_gift } })}
+                                    className="w-full flex items-center justify-between p-6 text-left"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-3xl">🎁</span>
+                                        <div>
+                                            <p className="font-serif text-xl text-primary italic font-bold">¿Es un regalo?</p>
+                                            <p className="text-xs font-black uppercase tracking-widest text-primary/40 mt-0.5">Añadir nota de regalo</p>
+                                        </div>
+                                    </div>
+                                    <div className={`w-12 h-6 rounded-full transition-all duration-300 flex items-center px-1 ${
+                                        cartGift.is_gift ? 'bg-accent justify-end' : 'bg-primary/15 justify-start'
+                                    }`}>
+                                        <div className="w-4 h-4 bg-white rounded-full shadow-sm" />
+                                    </div>
+                                </button>
+                                {cartGift.is_gift && (
+                                    <textarea
+                                        className="w-full bg-transparent px-6 pb-6 outline-none font-serif text-lg text-primary placeholder:text-primary/30 resize-none"
+                                        rows={3}
+                                        placeholder="Escribe tu mensaje de regalo aquí..."
+                                        value={cartGift.message}
+                                        onChange={e => cartStore.set({ ...cartStore.get(), gift: { ...cartGift, message: e.target.value } })}
+                                    />
+                                )}
+                            </div>
                         </div>
                     ) : (
                         <div className="flex flex-col items-center gap-8 max-w-lg mx-auto w-full animate-fade-in">

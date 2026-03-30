@@ -46,6 +46,9 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         } else if (type === 'order_date') {
             const { error } = await supabaseAdmin.from('orders').update({ pickup_day: body.date }).eq('id', id);
             if (error) throw error;
+        } else if (type === 'order_details') {
+            const { error } = await supabaseAdmin.from('orders').update(body.updates).eq('id', id);
+            if (error) throw error;
         }
 
         return new Response(JSON.stringify({ success: true }), { status: 200 });

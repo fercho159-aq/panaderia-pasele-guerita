@@ -411,15 +411,22 @@ export const CheckoutFlow: React.FC = () => {
                         )}
                     </div>
 
-                    <div className="pt-8 flex flex-col sm:flex-row gap-6">
-                        <Button variant="outline" onClick={() => setStep(2)} className="flex-1 h-16 text-primary font-black tracking-widest rounded-2xl">← FECHA</Button>
-                        <Button
-                            disabled={!allBoxesFull || cartItemsList.length === 0}
-                            onClick={() => setStep(4)}
-                            className="flex-[2] h-20 shadow-2xl rounded-3xl font-black text-lg"
-                        >
-                            CONFIRMAR PEDIDO — ${totalAmount.toFixed(2)}
-                        </Button>
+                    <div className="pt-8 flex flex-col gap-4">
+                        {!allBoxesFull && cartItemsList.length > 0 && (
+                            <p className="text-center text-xs font-bold text-red-500 bg-red-50 p-3 rounded-xl border border-red-100 animate-pulse">
+                                Por favor llena todas tus cajas con sabores antes de continuar 🍪
+                            </p>
+                        )}
+                        <div className="flex flex-col sm:flex-row gap-6">
+                            <Button variant="outline" onClick={() => setStep(2)} className="flex-1 h-16 text-primary font-black tracking-widest rounded-2xl">← FECHA</Button>
+                            <Button
+                                disabled={!allBoxesFull || cartItemsList.length === 0}
+                                onClick={() => setStep(4)}
+                                className="flex-[2] h-20 shadow-2xl rounded-3xl font-black text-lg transition-all"
+                            >
+                                CONFIRMAR PEDIDO — ${totalAmount.toFixed(2)}
+                            </Button>
+                        </div>
                     </div>
                 </div>
             )}
@@ -431,16 +438,16 @@ export const CheckoutFlow: React.FC = () => {
                         <h2 className="font-serif text-5xl text-primary italic">{step === 4 ? 'Tus Datos' : 'El Pago'}</h2>
                     </div>
                     {step === 4 ? (
-                        <div className="space-y-6 max-w-lg mx-auto w-full">
+                        <div className="space-y-6 max-w-2xl mx-auto w-full">
                             {/* Resumen del pedido */}
                             <div className="bg-primary/5 p-6 rounded-[2.5rem] border border-primary/10 shadow-inner">
                                 <h4 className="font-serif text-2xl text-primary italic font-bold mb-4">Lo que llevas:</h4>
-                                <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory py-2 pb-4 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent -mx-2 px-2">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-2 pb-4">
                                     {cartItemsList.length === 0 ? (
-                                        <p className="text-sm font-bold text-primary/40 text-center py-4 w-full">Tu canasta está vacía.</p>
+                                        <p className="text-sm font-bold text-primary/40 text-center py-4 w-full col-span-full">Tu canasta está vacía.</p>
                                     ) : (
                                         cartItemsList.map(item => (
-                                            <div key={item.id} className="snap-start flex-shrink-0 w-64 md:w-72 flex flex-col justify-between bg-white p-5 rounded-[2rem] shadow-sm border border-primary/5 hover:border-primary/20 transition-all">
+                                            <div key={item.id} className="w-full flex flex-col justify-between bg-white p-5 rounded-[2rem] shadow-sm border border-primary/5 hover:border-primary/20 transition-all">
                                                 <div className="mb-4">
                                                     <div className="flex justify-between items-start gap-2 mb-2">
                                                         <p className="font-serif text-xl text-primary italic font-bold leading-tight">{item.name}</p>

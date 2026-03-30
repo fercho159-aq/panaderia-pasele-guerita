@@ -26,7 +26,81 @@ export const AdminDashboard: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [editingOrder, setEditingOrder] = useState<Order | null>(null);
 
+    const updateOrderDetails = async (id: string, updates: Partial<Order>) => {
+        setIsLoading(true);
+        try {
+            const res = await fetch('/api/admin/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: 'order_details', id, updates })
+            });
+            if (res.ok) {
+                setOrders(orders.map(o => o.id === id ? { ...o, ...updates } : o));
+                setEditingOrder(null);
+            } else {
+                alert("Error al actualizar datos del pedido.");
+            }
+        } catch(e) {
+            console.error(e);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const exportToCSV = () => {
+        const headers = [
+            "ID", "Fecha de Recoleccion", "Cliente", "Telefono", "Email", "Total Pagado",
+            "Total Galletas", "Total Panes", "Notas / Mensaje Regalo", "Estado"
+        ];
+        
+        const cookieFlavorsList = flavors.filter(f => !f.id.includes('hogaza') && !f.id.includes('pan-') && !f.id.includes('multigrano'));
+        const breadFlavorsList = flavors.filter(f => f.id.includes('hogaza') || f.id.includes('pan-') || f.id.includes('multigrano'));
+        
+        cookieFlavorsList.forEach(f => headers.push(f.name));
+        breadFlavorsList.forEach(f => headers.push(f.name));
+
+        const csvRows = orders.map(order => {
+            const cookieCount = Object.entries(order.flavors_selected || {}).reduce((sum, [id, q]) => sum + (!id.includes('hogaza') && !id.includes('pan-') && !id.includes('multigrano') ? q : 0), 0);
+            const breadCount = Object.entries(order.flavors_selected || {}).reduce((sum, [id, q]) => sum + (id.includes('hogaza') || id.includes('pan-') || id.includes('multigrano') ? q : 0), 0);
+            
+            let displayNotes = order.notes || "";
+            let displayName = order.customer_name;
+            if (!order.notes) {
+                const urlMatch = order.customer_name.match(/📎 Comprobante adjunto \((https:\/\/[^)]+)\)/);
+                if (urlMatch) displayName = displayName.replace(urlMatch[0], '');
+                displayName = displayName.replace(/\| 📝\s*\|/g, '|').replace(/\| 📝\s*$/, '').replace(/\|\s*$/, '').trim();
+                const notesMatch = order.customer_name.match(/📝\s*(.*)/);
+                if (notesMatch) displayNotes = notesMatch[1];
+            }
+
+            const row = [
+                order.id.slice(0,6),
+                (order as any).pickup_day || "",
+                displayName,
+                order.phone || order.customer_phone || "",
+                order.email || order.customer_email || "",
+                order.total_price,
+                cookieCount,
+                breadCount,
+                displayNotes,
+                order.status
+            ];
+
+            cookieFlavorsList.forEach(f => row.push(order.flavors_selected?.[f.id] || 0));
+            breadFlavorsList.forEach(f => row.push(order.flavors_selected?.[f.id] || 0));
+
+            return row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',');
+        });
+
+        const csvContent = [headers.join(','), ...csvRows].join('\n');
+        const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `pedidos-pasele-guerita-${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+    };
     const fetchData = async () => {
         setIsLoading(true);
         try {
@@ -214,7 +288,15 @@ export const AdminDashboard: React.FC = () => {
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
                             </div>
-                            <p className="text-xs text-gray-400">Vista de control tipo Excel</p>
+                            <div className="flex gap-4 items-center">
+                                <p className="text-xs text-gray-400 hidden lg:block">Vista de control tipo Excel</p>
+                                <button
+                                    onClick={exportToCSV}
+                                    className="bg-primary text-bg px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary/90 flex items-center gap-2 shadow-sm transition-all"
+                                >
+                                    <span>⬇️</span> Exportar a Excel
+                                </button>
+                            </div>
                         </div>
                         
                         <div className="overflow-x-auto custom-scrollbar pb-6 rounded-xl border border-gray-100">
@@ -291,7 +373,15 @@ export const AdminDashboard: React.FC = () => {
 
                                                                 return (
                                                                     <>
-                                                                        <span className="text-sm font-bold text-gray-900">{displayName}</span>
+                                                                        <div className="flex items-center gap-2">
+                                                                            <span className="text-sm font-bold text-gray-900">{displayName}</span>
+                                                                            <button 
+                                                                                onClick={() => setEditingOrder(order)}
+                                                                                className="inline-flex items-center text-[10px] uppercase font-bold text-primary/50 hover:text-primary transition-colors hover:bg-primary/5 px-2 py-0.5 rounded-full border border-transparent hover:border-primary/20"
+                                                                            >
+                                                                                ✏️ Editar
+                                                                            </button>
+                                                                        </div>
                                                                         {receiptUrl && (
                                                                             <a 
                                                                                 href={receiptUrl} 
@@ -454,6 +544,74 @@ export const AdminDashboard: React.FC = () => {
                     </div>
                 )}
             </div>
+            
+            {/* Edit Order Modal */}
+            {editingOrder && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-fade-in border border-primary/20">
+                        <div className="bg-primary/5 p-6 border-b border-primary/10">
+                            <h3 className="font-serif text-2xl text-primary font-bold">Editar Pedido</h3>
+                            <p className="text-xs text-primary/60 mt-1 uppercase tracking-widest font-black">ID: #{editingOrder.id.slice(0, 8)}</p>
+                        </div>
+                        <div className="p-6 space-y-4">
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Nombre del Cliente</label>
+                                <input type="text" className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none" 
+                                    value={editingOrder.customer_name} 
+                                    onChange={(e) => setEditingOrder({...editingOrder, customer_name: e.target.value})} 
+                                />
+                            </div>
+                            <div className="flex gap-4">
+                                <div className="flex-1">
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Teléfono</label>
+                                    <input type="text" className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none" 
+                                        value={editingOrder.phone || editingOrder.customer_phone || ''} 
+                                        onChange={(e) => setEditingOrder({...editingOrder, phone: e.target.value, customer_phone: e.target.value})} 
+                                    />
+                                </div>
+                                <div className="flex-1">
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Email</label>
+                                    <input type="email" className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none" 
+                                        value={editingOrder.email || editingOrder.customer_email || ''} 
+                                        onChange={(e) => setEditingOrder({...editingOrder, email: e.target.value, customer_email: e.target.value})} 
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Total Pagado ($)</label>
+                                <input type="number" step="0.01" className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none font-bold text-primary" 
+                                    value={editingOrder.total_price} 
+                                    onChange={(e) => setEditingOrder({...editingOrder, total_price: parseFloat(e.target.value) || 0})} 
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Notas / Menaje Regalo</label>
+                                <textarea className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none min-h-[100px]" 
+                                    value={editingOrder.notes || ''} 
+                                    onChange={(e) => setEditingOrder({...editingOrder, notes: e.target.value})} 
+                                />
+                            </div>
+                        </div>
+                        <div className="p-6 bg-gray-50 border-t border-gray-100 flex justify-end gap-3 rounded-b-3xl">
+                            <button onClick={() => setEditingOrder(null)} className="px-5 py-2.5 rounded-xl font-bold text-gray-500 hover:bg-gray-200 transition-colors text-sm">Cancelar</button>
+                            <button 
+                                onClick={() => updateOrderDetails(editingOrder.id, { 
+                                    customer_name: editingOrder.customer_name,
+                                    phone: editingOrder.phone || editingOrder.customer_phone,
+                                    customer_phone: editingOrder.phone || editingOrder.customer_phone,
+                                    email: editingOrder.email || editingOrder.customer_email,
+                                    customer_email: editingOrder.email || editingOrder.customer_email,
+                                    total_price: editingOrder.total_price,
+                                    notes: editingOrder.notes
+                                })} 
+                                className="px-6 py-2.5 rounded-xl font-black bg-primary text-white hover:bg-primary/90 transition-all text-sm uppercase tracking-widest shadow-md"
+                            >
+                                Guardar Cambios
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

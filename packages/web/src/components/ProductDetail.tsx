@@ -29,13 +29,13 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
 
     const handleAddToBag = () => {
         if (isCookie) {
-            // Logic: Add a box of X cookies starting with this flavor
+            // Start with empty selections — user picks flavors in Step 3
             addToCart({ 
                 ...product, 
                 price: selectedPlan.price,
                 boxSize: selectedPlan.count,
-                name: `Caja de ${selectedPlan.count} (${product.name})`
-            }, product.name);
+                name: `Caja de ${selectedPlan.count}`
+            }, '');
         } else {
             addToCart({ ...product, price: displayPrice });
         }

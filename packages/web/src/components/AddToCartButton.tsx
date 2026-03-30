@@ -12,9 +12,8 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({ product, class
             onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                // Default flavor for quick add
-                const flavor = product.category === 'cookie' ? 'Chocolate Lovers' : '';
-                addToCart(product, flavor);
+                // Always start with empty selections so user picks flavors in Step 3
+                addToCart(product, '');
             }}
             className={`block w-full text-center text-sm font-bold text-primary hover:text-accent transition-colors duration-200 py-3 ${className}`}
         >

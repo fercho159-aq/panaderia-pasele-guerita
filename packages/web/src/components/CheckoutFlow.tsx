@@ -33,6 +33,8 @@ export const CheckoutFlow: React.FC = () => {
     const [slicedBreads, setSlicedBreads] = useState<Record<string, number>>({});
     const [receiptFile, setReceiptFile] = useState<File | null>(null);
     const [isUploading, setIsUploading] = useState(false);
+    const [extrasTab, setExtrasTab] = useState<'cookies' | 'breads'>('cookies');
+    const [orderError, setOrderError] = useState<string | null>(null);
 
     const earliestDate = getEarliestAvailableDate();
 
@@ -115,6 +117,7 @@ export const CheckoutFlow: React.FC = () => {
 
     const handleSubmitOrder = async () => {
         setIsUploading(true);
+        setOrderError(null);
         try {
             // Flatten flavors for Admin Dashboard (ID -> Quantity)
             const flattened: Record<string, number> = {};
@@ -124,7 +127,6 @@ export const CheckoutFlow: React.FC = () => {
                 if (item.boxSize && item.selections) {
                     const flavors: string[] = [];
                     Object.entries(item.selections).forEach(([name, qty]) => {
-                        // Find ID by name
                         const flavorObj = cookieFlavors.find(f => f.name === name);
                         const id = flavorObj?.id || name;
                         flattened[id] = (flattened[id] || 0) + (qty as number);
@@ -139,9 +141,9 @@ export const CheckoutFlow: React.FC = () => {
             const firstBox = cartItemsList.find(i => i.boxSize);
             const orderNotes = [
                 ...boxGroups,
-                cartGift.is_gift ? `🎁 REGALO: ${cartGift.message}` : '',
+                cartGift.is_gift ? `\uD83C\uDF81 REGALO: ${cartGift.message}` : '',
                 remarks,
-                receiptFile ? '📎 Comprobante adjunto' : ''
+                receiptFile ? '\uD83D\uDCCE Comprobante adjunto' : ''
             ].filter(Boolean).join(' | ');
 
             const orderData = {
@@ -151,7 +153,8 @@ export const CheckoutFlow: React.FC = () => {
                 location_id: locationId,
                 pickup_day: selectedDate,
                 box_size: firstBox?.boxSize || 0,
-                flavors_selected: flattened,
+                // Stringify to ensure JSONB compatibility
+                flavors_selected: JSON.stringify(flattened),
                 total_price: totalAmount,
                 status: 'Pendiente',
                 notes: orderNotes
@@ -160,9 +163,10 @@ export const CheckoutFlow: React.FC = () => {
             await createOrder(orderData);
             setStep(6);
             cartStore.set({ items: {}, gift: { is_gift: false, message: '' }, isOpen: false });
-        } catch (e) { 
-            console.error("Order error:", e);
-            alert("Error al procesar pedido. Por favor intenta de nuevo."); 
+        } catch (e: any) { 
+            console.error('Order error:', e);
+            const msg = e?.message || JSON.stringify(e) || 'Error desconocido';
+            setOrderError(msg);
         } finally { 
             setIsUploading(false); 
         }
@@ -235,61 +239,83 @@ export const CheckoutFlow: React.FC = () => {
                 </div>
             )}
 
-            {/* Step 3: Box Builder & Picker (Visual Hero) */}
+            {/* Step 3: Box Builder & Extras Picker */}
             {step === 3 && (
-                <div className="animate-fade-in space-y-12">
-                     <div className="text-center">
+                <div className="animate-fade-in space-y-10">
+                    <div className="text-center">
                         <h2 className="font-serif text-5xl text-primary italic">Personaliza</h2>
-                        <p className="text-primary/60 font-serif">Arma tu caja y añade extras del horno.</p>
+                        <p className="text-primary/60 font-serif text-lg mt-2">Elige tus sabores y añade extras del horno.</p>
                     </div>
 
-                    {/* Boxes in Cart */}
+                    {/* Cookie Boxes */}
                     {cartItemsList.filter(i => i.boxSize).map(box => {
                         const boxSize = box.boxSize || 3;
                         const filled = Object.values(box.selections || {}).reduce((a, b) => a + b, 0);
+                        const remaining = boxSize - filled;
                         return (
-                            <div key={box.id} className="bg-primary/5 p-8 md:p-12 rounded-[3.5rem] border border-primary/10 relative overflow-hidden group">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-accent/10 rounded-bl-full translate-x-8 -translate-y-8" />
-                                
-                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-10">
+                            <div key={box.id} className="bg-primary/5 p-6 md:p-10 rounded-[3rem] border border-primary/10 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-40 h-40 bg-accent/10 rounded-bl-full translate-x-10 -translate-y-10 pointer-events-none" />
+
+                                {/* Box Header */}
+                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                                     <div>
-                                        <h3 className="font-serif text-3xl md:text-4xl text-primary italic leading-tight">Tu Caja de {boxSize}</h3>
-                                        
-                                        {/* Visual Slots */}
-                                        <div className="flex gap-1.5 mt-4">
+                                        <h3 className="font-serif text-3xl md:text-4xl text-primary italic font-bold">Tu Caja de {boxSize} 🍪</h3>
+                                        <div className="flex gap-1.5 mt-3">
                                             {Array.from({ length: boxSize }).map((_, i) => (
-                                                <div key={i} className={`w-8 h-2 rounded-full transition-all duration-300 ${i < filled ? 'bg-accent scale-x-110 shadow-sm' : 'bg-primary/10'}`} />
+                                                <div key={i} className={`h-2.5 rounded-full transition-all duration-500 ${i < filled ? 'bg-accent w-10 shadow-sm' : 'bg-primary/15 w-6'}`} />
                                             ))}
                                         </div>
-                                        
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-accent mt-4">
-                                            {filled < boxSize ? `Faltan ${boxSize - filled} galletas` : '¡Caja completa! 💖'}
+                                        <p className={`text-xs font-black uppercase tracking-widest mt-3 ${remaining === 0 ? 'text-primary' : 'text-accent'}`}>
+                                            {remaining === 0 ? '✅ ¡Caja completa!' : `⚡ Faltan ${remaining} galleta${remaining !== 1 ? 's' : ''}`}
                                         </p>
                                     </div>
-                                    <div className="flex gap-4">
-                                        <button onClick={() => clearBox(box.id)} className="text-[10px] font-black uppercase tracking-widest text-primary/40 hover:text-primary transition-colors bg-white px-4 py-2 rounded-full shadow-sm border border-primary/5">Limpiar sabores</button>
-                                        <button onClick={() => removeFromCart(box.id)} className="text-red-400 font-black text-[10px] uppercase hover:underline">Eliminar caja</button>
+                                    <div className="flex gap-3">
+                                        <button onClick={() => clearBox(box.id)} className="text-[10px] font-black uppercase tracking-widest text-primary/40 hover:text-primary transition-colors bg-white px-4 py-2 rounded-full shadow-sm border border-primary/5 whitespace-nowrap">Limpiar</button>
+                                        <button onClick={() => removeFromCart(box.id)} className="text-[10px] font-black uppercase tracking-widest text-red-400 hover:text-red-600 transition-colors bg-white/50 px-4 py-2 rounded-full border border-red-100 whitespace-nowrap">Eliminar caja</button>
                                     </div>
                                 </div>
 
+                                {/* Cookies Selection Summary */}
+                                {filled > 0 && (
+                                    <div className="flex flex-wrap gap-2 mb-6">
+                                        {Object.entries(box.selections || {}).map(([name, qty]) => (
+                                            <span key={name} className="bg-accent/10 text-accent text-xs font-black px-3 py-1.5 rounded-full border border-accent/20">
+                                                {qty}x {name}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+
                                 {/* Flavor Picker Grid */}
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
                                     {cookieFlavors.map(f => {
                                         const count = box.selections?.[f.name] || 0;
+                                        const isAtMax = filled >= boxSize && count === 0;
                                         return (
-                                            <div 
-                                                key={f.id} 
-                                                onClick={() => handleBoxSelection(box.id, f.name, 1)}
-                                                className={`bg-white p-5 rounded-[2.5rem] flex flex-col items-center gap-4 border-2 transition-all cursor-pointer group shadow-sm hover:shadow-xl ${count > 0 ? 'border-accent ring-4 ring-accent/5' : 'border-primary/5 hover:border-primary/10'}`}
+                                            <div
+                                                key={f.id}
+                                                onClick={() => !isAtMax && handleBoxSelection(box.id, f.name, 1)}
+                                                className={`bg-white p-4 rounded-[2rem] flex flex-col items-center gap-3 border-2 transition-all select-none
+                                                    ${count > 0 ? 'border-accent ring-2 ring-accent/10 shadow-lg shadow-accent/5' : 'border-primary/5 shadow-sm'}
+                                                    ${isAtMax ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer hover:shadow-lg hover:border-primary/20'}`}
                                             >
-                                                <div className={`w-20 h-20 rounded-full overflow-hidden border-2 transition-transform group-hover:scale-105 ${count > 0 ? 'border-accent' : 'border-primary/5'}`}>
-                                                    <img src={f.image} className="w-full h-full object-cover" />
+                                                <div className={`w-16 h-16 rounded-full overflow-hidden border-2 transition-all ${count > 0 ? 'border-accent scale-110' : 'border-primary/5'}`}>
+                                                    <img src={f.image} alt={f.name} className="w-full h-full object-cover" />
                                                 </div>
-                                                <span className="text-xs font-serif italic text-primary text-center leading-tight h-8 flex items-center">{f.name}</span>
-                                                <div className="flex items-center gap-4 bg-bg rounded-full px-4 py-1.5 border border-primary/5 shadow-inner" onClick={(e) => e.stopPropagation()}>
-                                                    <button onClick={() => handleBoxSelection(box.id, f.name, -1)} className="font-black text-primary text-lg px-1 hover:scale-125 transition-transform">-</button>
-                                                    <span className="text-sm font-black text-primary min-w-[1rem] text-center">{count}</span>
-                                                    <button onClick={() => handleBoxSelection(box.id, f.name, 1)} className="font-black text-primary text-lg px-1 hover:scale-125 transition-transform">+</button>
+                                                <span className="text-[11px] font-bold text-primary text-center leading-tight">{f.name}</span>
+                                                <div
+                                                    className="flex items-center gap-3 bg-bg/50 rounded-full px-3 py-1 border border-primary/5"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    <button
+                                                        onClick={() => handleBoxSelection(box.id, f.name, -1)}
+                                                        className="font-black text-primary w-6 h-6 flex items-center justify-center hover:text-accent transition-colors"
+                                                    >−</button>
+                                                    <span className="text-sm font-black text-primary min-w-[1.25rem] text-center">{count}</span>
+                                                    <button
+                                                        onClick={() => !isAtMax && handleBoxSelection(box.id, f.name, 1)}
+                                                        className={`font-black w-6 h-6 flex items-center justify-center transition-colors ${isAtMax ? 'text-primary/20' : 'text-primary hover:text-accent'}`}
+                                                    >+</button>
                                                 </div>
                                             </div>
                                         );
@@ -299,34 +325,100 @@ export const CheckoutFlow: React.FC = () => {
                         );
                     })}
 
-                    {/* Fresh from Oven (Quick Add) */}
-                    <div className="mt-20">
-                        <div className="flex items-center gap-4 mb-8">
-                            <h4 className="text-[10px] font-black uppercase tracking-widest text-primary/40 px-2">Añadir algo más del horno</h4>
-                            <div className="h-[1px] flex-1 bg-primary/5"></div>
+                    {/* Extras Panel — Tabbed: Galletas & Panes */}
+                    <div className="mt-8">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="h-px flex-1 bg-primary/10" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/30">Añadir extras del horno</span>
+                            <div className="h-px flex-1 bg-primary/10" />
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            {[...cookieFlavors.slice(0, 1), ...breadFlavors].map(p => (
-                                <div key={p.id} className="bg-bg/20 p-5 rounded-[2.5rem] border border-primary/5 flex items-center gap-6 group hover:bg-white transition-all cursor-pointer hover:shadow-xl hover:-translate-y-1"
-                                     onClick={() => addToCart(p)}>
-                                    <div className="w-24 h-24 rounded-[1.5rem] overflow-hidden shadow-md group-hover:scale-105 transition-transform">
-                                        <img src={p.image} className="w-full h-full object-cover" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="font-serif text-2xl text-primary italic leading-tight">{p.name}</p>
-                                        <p className="text-xs font-bold text-accent/80 mt-1 uppercase tracking-widest">${p.price || 18.00}</p>
-                                    </div>
-                                    <div className="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center text-primary/30 group-hover:bg-primary group-hover:text-bg transition-all">
-                                        <span className="text-2xl font-light">+</span>
-                                    </div>
-                                </div>
-                            ))}
+
+                        {/* Tabs */}
+                        <div className="flex gap-3 mb-6">
+                            <button
+                                onClick={() => setExtrasTab('cookies')}
+                                className={`flex-1 py-3 rounded-2xl text-sm font-black uppercase tracking-widest transition-all border-2 ${
+                                    extrasTab === 'cookies'
+                                        ? 'bg-primary text-bg border-primary shadow-lg'
+                                        : 'bg-white text-primary border-primary/10 hover:border-primary/30'
+                                }`}
+                            >
+                                🍪 Galletas extra
+                            </button>
+                            <button
+                                onClick={() => setExtrasTab('breads')}
+                                className={`flex-1 py-3 rounded-2xl text-sm font-black uppercase tracking-widest transition-all border-2 ${
+                                    extrasTab === 'breads'
+                                        ? 'bg-primary text-bg border-primary shadow-lg'
+                                        : 'bg-white text-primary border-primary/10 hover:border-primary/30'
+                                }`}
+                            >
+                                🍞 Panes
+                            </button>
                         </div>
+
+                        {/* Tab: Extra Cookies */}
+                        {extrasTab === 'cookies' && (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                                {cookieFlavors.map(f => (
+                                    <div
+                                        key={f.id}
+                                        onClick={() => addToCart({ ...f, category: 'cookie', price: 12, boxSize: 3, name: `Caja de 3` }, '')}
+                                        className="bg-white p-4 rounded-[2rem] flex flex-col items-center gap-3 border-2 border-primary/5 hover:border-primary/20 hover:shadow-lg cursor-pointer transition-all group"
+                                    >
+                                        <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-primary/5 group-hover:scale-110 transition-transform">
+                                            <img src={f.image} alt={f.name} className="w-full h-full object-cover" />
+                                        </div>
+                                        <span className="text-[11px] font-bold text-primary text-center leading-tight">{f.name}</span>
+                                        <span className="text-[10px] font-black text-accent uppercase tracking-widest">+ Caja de 3 · $12</span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Tab: Breads */}
+                        {extrasTab === 'breads' && (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {breadFlavors.map(b => (
+                                    <div key={b.id} className="bg-white rounded-[2rem] border-2 border-primary/5 overflow-hidden flex flex-col sm:flex-row hover:shadow-lg hover:border-primary/20 transition-all group">
+                                        <div className="w-full sm:w-28 h-36 sm:h-auto flex-shrink-0 overflow-hidden">
+                                            <img src={b.image || '/imagenes/IMG_6703.webp'} alt={b.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                        </div>
+                                        <div className="p-5 flex flex-col justify-between gap-3 flex-1">
+                                            <div>
+                                                <h4 className="font-serif text-lg text-primary italic font-bold leading-tight">{b.name}</h4>
+                                                <p className="text-xs text-primary/50 mt-1 leading-relaxed line-clamp-2">{b.description}</p>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <button
+                                                    onClick={() => addToCart({ ...b, category: 'bread' })}
+                                                    className="flex-1 bg-primary text-bg text-xs font-black uppercase tracking-widest py-2.5 rounded-xl hover:bg-primary/80 transition-colors"
+                                                >
+                                                    Hogaza ${b.price}
+                                                </button>
+                                                <button
+                                                    onClick={() => addToCart({ ...b, id: `${b.id}-slice`, name: `Rebanada de ${b.name}`, price: 1, category: 'bread' })}
+                                                    className="flex-1 bg-accent/10 text-accent text-xs font-black uppercase tracking-widest py-2.5 rounded-xl hover:bg-accent/20 transition-colors border border-accent/10"
+                                                >
+                                                    Rebanada $1
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
-                    <div className="pt-16 flex flex-col sm:flex-row gap-6">
-                        <Button variant="outline" onClick={() => setStep(2)} className="flex-1 h-20 text-primary font-black tracking-widest rounded-3xl">REGRESAR A FECHA</Button>
-                        <Button disabled={!allBoxesFull || cartItemsList.length === 0} onClick={() => setStep(4)} className="flex-[2] h-20 shadow-2xl rounded-3xl">CONFIRMAR PEDIDO — ${totalAmount.toFixed(2)}</Button>
+                    <div className="pt-8 flex flex-col sm:flex-row gap-6">
+                        <Button variant="outline" onClick={() => setStep(2)} className="flex-1 h-16 text-primary font-black tracking-widest rounded-2xl">← FECHA</Button>
+                        <Button
+                            disabled={!allBoxesFull || cartItemsList.length === 0}
+                            onClick={() => setStep(4)}
+                            className="flex-[2] h-20 shadow-2xl rounded-3xl font-black text-lg"
+                        >
+                            CONFIRMAR PEDIDO — ${totalAmount.toFixed(2)}
+                        </Button>
                     </div>
                 </div>
             )}
@@ -364,18 +456,27 @@ export const CheckoutFlow: React.FC = () => {
                                 </p>
                                 
                                 <label className="block p-8 rounded-[2.5rem] border-2 border-dashed border-primary/10 cursor-pointer hover:bg-white transition-all group">
-                                    <span className="font-black text-[10px] uppercase tracking-widest text-primary/30 group-hover:text-primary transition-colors">
-                                        {receiptFile ? receiptFile.name : 'Sube tu comprobante (opcional)'}
-                                    </span>
-                                    <input type="file" className="hidden" onChange={e => setReceiptFile(e.target.files?.[0] || null)} />
+                                    <div className="flex flex-col items-center gap-2">
+                                        <span className="text-2xl">📎</span>
+                                        <span className="font-black text-base uppercase tracking-wider text-primary/40 group-hover:text-primary transition-colors text-center">
+                                            {receiptFile ? receiptFile.name : 'Sube tu comprobante (opcional)'}
+                                        </span>
+                                    </div>
+                                    <input type="file" className="hidden" accept="image/*,.pdf" onChange={e => setReceiptFile(e.target.files?.[0] || null)} />
                                 </label>
                             </div>
                         </div>
                     )}
-                    <div className="flex flex-col sm:flex-row gap-6 mt-16 max-w-lg mx-auto w-full">
+                    {orderError && (
+                        <div className="max-w-lg mx-auto w-full bg-red-50 border border-red-200 rounded-2xl p-4 text-red-700 text-sm font-bold">
+                            <p className="font-black mb-1">⚠️ Error al procesar:</p>
+                            <p className="font-mono text-xs opacity-80 break-all">{orderError}</p>
+                        </div>
+                    )}
+                    <div className="flex flex-col sm:flex-row gap-6 mt-8 max-w-lg mx-auto w-full">
                         <Button variant="outline" onClick={() => setStep(step - 1)} className="flex-1 h-20 rounded-3xl font-black">ATRÁS</Button>
                         <Button disabled={step === 4 && (!customer.name || !customer.email || !customer.phone)} onClick={step === 4 ? () => setStep(5) : handleSubmitOrder} className={`flex-[2] h-20 rounded-3xl font-black shadow-2xl ${isUploading ? 'opacity-50' : ''}`}>
-                            {isUploading ? 'HORNENADO...' : (step === 4 ? 'CONTINUAR' : 'PEDIR AHORA! 💖')}
+                            {isUploading ? '⏳ Horneando...' : (step === 4 ? 'CONTINUAR' : '¡PEDIR AHORA! 💖')}
                         </Button>
                     </div>
                 </div>

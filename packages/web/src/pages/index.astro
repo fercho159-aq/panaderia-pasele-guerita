@@ -33,10 +33,10 @@ const cookieHoverPool = [
     '/imagenes/IMG_6750.webp',
 ];
 const breadHoverPool = [
-    '/imagenes/IMG_6703.webp',
-    '/imagenes/IMG_6751.webp',
-    '/imagenes/IMG_6749.webp',
-    '/imagenes/IMG_6532.webp',
+    '/imagenes/hogaza-natural-2.webp',
+    '/imagenes/hogaza-semillas-2.webp',
+    '/imagenes/hogaza-centeno.webp',
+    '/imagenes/hogaza-proceso.webp',
 ];
 ---
 
@@ -51,9 +51,9 @@ const breadHoverPool = [
 		<div class="absolute inset-0 z-0" id="hero-carousel">
 			{[
 				{ src: '/imagenes/IMG_6657.webp', alt: 'Choco Nuts cookie' },
-				{ src: '/imagenes/IMG_6703.webp', alt: 'Hogaza Natural' },
+				{ src: '/imagenes/hogaza-natural.webp', alt: 'Hogaza Natural' },
 				{ src: '/imagenes/IMG_6360.webp', alt: 'Mango Coco cookie' },
-				{ src: '/imagenes/IMG_6750.webp', alt: 'Panes variados' },
+				{ src: '/imagenes/hogaza-proceso.webp', alt: 'Panes fermentando' },
 			].map((slide, i) => (
 				<div class={`hero-slide absolute inset-0 transition-opacity duration-1000 ${i === 0 ? 'opacity-100' : 'opacity-0'}`} data-index={i}>
 					<img src={slide.src} alt={slide.alt} class="w-full h-full object-cover" style="transform: scale(1.05);" fetchpriority={i === 0 ? 'high' : 'low'} loading={i === 0 ? 'eager' : 'lazy'} />

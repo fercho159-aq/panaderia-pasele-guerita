@@ -44,12 +44,12 @@ export const cookieFlavors = [
         is_gluten_free: false
     },
     { 
-        id: 'chai-latte', 
-        name: 'Chai Latte', 
+        id: 'matcha-dark', 
+        name: 'Matcha y Chocolate Oscuro', 
         active: true,
         category: 'cookie',
         image: '/imagenes/cookie-chai.webp',
-        description: 'Nuestra nueva receta con especias aromáticas chai y chocolate blanco.',
+        description: 'Té matcha premium con trozos de chocolate oscuro.',
         ingredients: 'Alérgenos: trigo, lácteos, almendras.',
         is_sourdough: true,
         is_gluten_free: false

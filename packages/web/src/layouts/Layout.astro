@@ -37,18 +37,18 @@ const { title, description = "Artisanal Sourdough Dallas, Handmade Cookies" } = 
 	</head>
 	<body class="bg-bg font-sans text-gray-900">
 		<CartDrawer client:load />
-		<nav class="bg-white/90 backdrop-blur-lg sticky top-0 z-50 border-b border-bg/20">
-			<div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
-				<a href="/" class="flex flex-col justify-center relative z-50">
-					<img src="/logo.png" alt="Pásele Güerita" class="h-16 sm:h-24 w-auto drop-shadow-sm" />
+		<nav class="bg-white/95 backdrop-blur-lg sticky top-0 z-[100] border-b border-bg/20 shadow-sm">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex justify-between items-center h-20 sm:h-24">
+				<a href="/" class="flex flex-col justify-center">
+					<img src="/logo.png" alt="Pásele Güerita" class="h-16 sm:h-20 w-auto drop-shadow-sm" />
 				</a>
 
 				<!-- Desktop Menu -->
-				<div class="hidden md:flex items-center space-x-8">
-					<div class="flex space-x-8 font-sans text-sm border-l border-primary/10 pl-8 uppercase tracking-widest mr-4">
-						<a href="/" class="hover:text-accent transition-colors font-bold">Menú</a>
-						<a href="/about" class="hover:text-accent transition-colors font-bold">Quiénes somos</a>
-						<a href="/recipes" class="hover:text-accent transition-colors font-bold">Recetas</a>
+				<div class="hidden md:flex items-center space-x-12">
+					<div class="flex space-x-10 font-sans text-sm border-l border-primary/10 pl-10 uppercase tracking-widest">
+						<a href="/" class="hover:text-accent transition-all hover:-translate-y-0.5 font-bold">Menú</a>
+						<a href="/about" class="hover:text-accent transition-all hover:-translate-y-0.5 font-bold">Quiénes somos</a>
+						<a href="/recipes" class="hover:text-accent transition-all hover:-translate-y-0.5 font-bold">Recetas</a>
 					</div>
 					<CartButton client:load />
 				</div>
@@ -56,48 +56,59 @@ const { title, description = "Artisanal Sourdough Dallas, Handmade Cookies" } = 
 				<!-- Mobile Controls -->
 				<div class="flex items-center gap-4 md:hidden">
 					<CartButton client:load />
-					<button id="mobile-menu-btn" class="p-2 text-primary focus:outline-none relative z-50" aria-label="Toggle Menu">
+					<button id="mobile-menu-btn" class="p-2 text-primary focus:outline-none" aria-label="Open Menu">
 						<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
 						</svg>
 					</button>
 				</div>
 			</div>
-
-			<!-- Mobile Menu Drawer -->
-			<div id="mobile-menu" class="fixed inset-0 bg-primary z-40 translate-x-full transition-transform duration-300 md:hidden flex flex-col items-center justify-center space-y-8">
-				<a href="/" class="text-bg text-3xl font-serif italic hover:text-accent transition-colors">Menú</a>
-				<a href="/about" class="text-bg text-3xl font-serif italic hover:text-accent transition-colors">Quiénes Somos</a>
-				<a href="/recipes" class="text-bg text-3xl font-serif italic hover:text-accent transition-colors">Recetas</a>
-				<div class="pt-8 border-t border-white/10 w-2/3 flex justify-center">
-					<a href="https://instagram.com/paselegueritatx" target="_blank" class="text-bg text-sm font-sans uppercase tracking-widest">Instagram</a>
-				</div>
-			</div>
 		</nav>
 
-		<script is:inline>
-			const btn = document.getElementById('mobile-menu-btn');
-			const menu = document.getElementById('mobile-menu');
-			let isOpen = false;
+		<!-- Mobile Menu Drawer (Now outside the main nav flow) -->
+		<div id="mobile-menu" class="fixed inset-0 bg-primary z-[200] opacity-0 pointer-events-none transition-all duration-300 md:hidden flex flex-col items-center justify-center backdrop-blur-md">
+			<!-- Close Button -->
+			<button id="mobile-menu-close" class="absolute top-6 right-6 p-2 text-bg hover:rotate-90 transition-transform duration-300" aria-label="Close Menu">
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+				</svg>
+			</button>
 
-			btn?.addEventListener('click', () => {
-				isOpen = !isOpen;
-				if (isOpen) {
-					menu?.classList.remove('translate-x-full');
+			<div class="flex flex-col items-center space-y-10 animate-fade-in-up">
+				<a href="/" class="mobile-link text-bg text-4xl font-serif italic hover:text-accent transition-all">Menú</a>
+				<a href="/about" class="mobile-link text-bg text-4xl font-serif italic hover:text-accent transition-all">Quiénes Somos</a>
+				<a href="/recipes" class="mobile-link text-bg text-4xl font-serif italic hover:text-accent transition-all">Recetas</a>
+				
+				<div class="pt-10 border-t border-white/20 w-48 flex flex-col items-center gap-6">
+					<a href="https://instagram.com/paselegueritatx" target="_blank" class="text-bg/60 text-xs font-sans uppercase tracking-[0.3em] hover:text-accent transition-colors">Instagram</a>
+					<img src="/logo.png" alt="" class="h-12 w-auto opacity-20 invert grayscale" />
+				</div>
+			</div>
+		</div>
+
+		<script is:inline>
+			const openBtn = document.getElementById('mobile-menu-btn');
+			const closeBtn = document.getElementById('mobile-menu-close');
+			const menu = document.getElementById('mobile-menu');
+			
+			const toggleMenu = (open) => {
+				if (open) {
+					menu?.classList.remove('opacity-0', 'pointer-events-none');
+					menu?.classList.add('opacity-100');
 					document.body.style.overflow = 'hidden';
 				} else {
-					menu?.classList.add('translate-x-full');
+					menu?.classList.add('opacity-0', 'pointer-events-none');
+					menu?.classList.remove('opacity-100');
 					document.body.style.overflow = '';
 				}
-			});
+			};
+
+			openBtn?.addEventListener('click', () => toggleMenu(true));
+			closeBtn?.addEventListener('click', () => toggleMenu(false));
 
 			// Close on link click
-			menu?.querySelectorAll('a').forEach(link => {
-				link.addEventListener('click', () => {
-					menu?.classList.add('translate-x-full');
-					document.body.style.overflow = '';
-					isOpen = false;
-				});
+			menu?.querySelectorAll('.mobile-link').forEach(link => {
+				link.addEventListener('click', () => toggleMenu(false));
 			});
 		</script>
 		<main>

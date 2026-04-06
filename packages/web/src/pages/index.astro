@@ -128,24 +128,37 @@ const breadHoverPool = [
 					<h3 class="font-serif text-4xl text-primary mb-2">✨ Los Favoritos</h3>
 					<p class="text-gray-500 uppercase tracking-widest font-bold text-xs">Recomendaciones de la casa</p>
 				</div>
-				<a href="/#menu" class="text-primary font-bold border-b-2 border-primary/20 pb-1 hover:border-primary transition-all">Ver menú completo →</a>
 			</div>
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 				{[
-					allProducts.find(p => p.id === 'abuelita'),
-					allProducts.find(p => p.id === 'fresa-coco'),
-					allProducts.find(p => p.id === 'jalapeño-cheddar')
-				].filter(Boolean).map((fav: any) => (
-						<div class="bg-white p-6 rounded-3xl shadow-sm border border-bg hover:shadow-xl transition-all group overflow-hidden relative">
+					{ id: 'abuelita', cat: 'regulares' },
+					{ id: 'fresa-coco', cat: 'regulares' },
+					{ id: 'choco-nuts', cat: 'regulares' },
+					{ id: 'hogaza-natural', cat: 'pan' },
+					{ id: 'pan-semillas', cat: 'pan' },
+					{ id: 'jalapeño-cheddar', cat: 'pan' }
+				].map((item: any) => {
+					const fav = allProducts.find(p => p.id === item.id);
+					if (!fav) return null;
+					return (
+						<div class="bg-white p-6 rounded-3xl shadow-sm border border-bg hover:shadow-xl transition-all group overflow-hidden relative flex flex-col">
 							<div class="relative h-64 -mx-6 -mt-6 mb-6 overflow-hidden">
 								<img src={fav.image} alt={fav.name} class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
 								<div class="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-primary text-xs font-bold shadow-sm">Popular</div>
 							</div>
 							<h4 class="font-serif text-2xl text-primary mb-2">{fav.name}</h4>
-							<p class="text-gray-600 text-sm mb-4 line-clamp-2">{fav.description}</p>
-							<a href="/checkout" class="inline-flex items-center text-primary font-bold gap-2 text-sm text-primary">Agregar al carrito <span class="group-hover:translate-x-1 transition-transform">→</span></a>
+							<p class="text-gray-600 text-sm mb-6 line-clamp-2 flex-1">{fav.description}</p>
+							<div class="flex flex-col gap-4">
+								<a href={`/menu#${item.cat}`} class="w-full">
+									<Button variant="outline" className="w-full text-sm py-2 rounded-xl border-primary/20 hover:bg-primary/5">Ver menú completo →</Button>
+								</a>
+								<a href="/checkout" class="inline-flex items-center justify-center text-primary font-bold gap-2 text-sm">
+									Agregar al carrito <span class="group-hover:translate-x-1 transition-transform">→</span>
+								</a>
+							</div>
 						</div>
-				))}
+					);
+				})}
 			</div>
 		</div>
 	</div>
@@ -196,90 +209,6 @@ const breadHoverPool = [
 			</div>
 		</div>
 	</section>
-
-	<!-- Products Section -->
-	<section id="menu" class="py-20 max-w-7xl mx-auto px-6">
-			<div class="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6 text-center md:text-left">
-				<div>
-					<h2 class="font-serif text-4xl md:text-6xl text-primary mb-2">Nuestro Menú</h2>
-				</div>
-				<a href="/checkout"><Button variant="primary" className="text-xl px-12 h-16 shadow-xl hover:scale-105 transition-transform duration-300">Hacer Pedido Ahora</Button></a>
-		</div>
-
-
-		<!-- Galletas -->
-		<div class="mb-20">
-			<h3 class="font-serif text-3xl text-primary italic mb-2">🍪 Galletas Artesanales</h3>
-			<p class="text-gray-500 mb-8 text-sm">Set de 3 galletas por caja &bull; Horneadas con masa madre</p>
-			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-				{displayCookies.map((flavor: any, i: number) => {
-					const mainImg = flavor.image || cookieFlavors[i % cookieFlavors.length]?.image || '/imagenes/IMG_6657.webp';
-					const hoverImg = cookieHoverPool[i % cookieHoverPool.length];
-					return (
-						<div class="product-card group bg-white rounded-3xl overflow-hidden shadow-md border border-bg flex flex-col hover:scale-[1.02] transition-transform duration-300">
-							<a href={`/product/${flavor.id}`} class="flex-1 flex flex-col">
-								<div class="product-img-wrap relative w-full h-56 overflow-hidden bg-gray-100 flex items-center justify-center">
-									<img src={mainImg || '/logo.png'} alt={flavor.name} class={`product-img-main absolute inset-0 w-full h-full object-cover ${!mainImg ? 'opacity-20 object-contain p-8' : ''}`} loading="lazy" decoding="async" />
-									<img src={hoverImg} alt={flavor.name + ' detalle'} class="product-img-hover absolute inset-0 w-full h-full object-cover opacity-0" loading="lazy" decoding="async" />
-									{flavor.is_sugar_free && (
-										<div class="absolute top-3 right-3 bg-blue-100 text-blue-700 text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded shadow border border-blue-200 z-10">Sugar Free</div>
-									)}
-								</div>
-								<div class="p-6 bg-white relative">
-    <div class="flex justify-between items-start mb-2">
-        <h3 class="font-serif text-2xl text-primary italic leading-tight">{flavor.name}</h3>
-        <span class="text-sm font-bold text-primary">${flavor.price ? (flavor.price / 3).toFixed(2) : '4.00'} c/u</span>
-    </div>
-    <p class="text-xs text-gray-500 line-clamp-2 mb-4 italic font-serif opacity-70">
-        {flavor.description}
-    </p>
-    <div class="flex items-center gap-2 mb-6">
-        <span class="text-[8px] font-black uppercase tracking-widest text-accent bg-accent/5 px-2 py-0.5 rounded-full whitespace-nowrap">Plan de caja disponible</span>
-        <div class="h-[1px] flex-1 bg-accent/10"></div>
-    </div>
-    
-    <AddToCartButton client:load product={{...flavor, category: 'cookie', price: 12, boxSize: 3}} />
-    {flavor.ingredients && <p class="text-[10px] text-gray-400 italic mt-4">{flavor.ingredients}</p>}
-</div>
-							</a>
-						</div>
-					);
-				})}
-			</div>
-		</div>
-
-		<!-- Pan de Masa Madre -->
-		<div class="mb-20">
-			<h3 class="font-serif text-3xl text-primary italic mb-2">🍞 Pan de Masa Madre</h3>
-			<p class="text-gray-500 mb-8 text-sm">Hogaza entera &bull; Fermentación lenta 48 horas</p>
-			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-				{displayBreads.map((bread: any, i: number) => {
-					const mainImg = bread.image || breadFlavors[i % breadFlavors.length]?.image || '/imagenes/IMG_6703.webp';
-					const hoverImg = breadHoverPool[i % breadHoverPool.length];
-					return (
-						<div class="product-card group bg-white rounded-3xl overflow-hidden shadow-md border border-bg flex flex-col hover:scale-[1.02] transition-transform duration-300">
-							<a href={`/product/${bread.id}`} class="flex-1 flex flex-col">
-								<div class="product-img-wrap relative w-full h-56 overflow-hidden bg-gray-100 flex items-center justify-center">
-									<img src={mainImg || '/logo.png'} alt={bread.name} class={`product-img-main absolute inset-0 w-full h-full object-cover ${!mainImg ? 'opacity-20 object-contain p-8' : ''}`} loading="lazy" decoding="async" />
-									<img src={hoverImg} alt={bread.name + ' detalle'} class="product-img-hover absolute inset-0 w-full h-full object-cover opacity-0" loading="lazy" decoding="async" />
-								</div>
-								<div class="p-6 bg-white">
-                                    <div class="flex justify-between items-start mb-2">
-                                        <h3 class="font-serif text-2xl text-primary italic leading-tight">{bread.name}</h3>
-                                        <span class="text-sm font-bold text-primary">${bread.price || 18}</span>
-                                    </div>
-                                    <p class="text-xs text-gray-500 line-clamp-2 mb-6 italic font-serif opacity-70">
-                                        {bread.description}
-                                    </p>
-                                    
-                                    <AddToCartButton client:load product={{...bread, category: 'bread'}} />
-                                </div>
-							</a>
-						</div>
-					);
-				})}
-			</div>
-		</div>
 
 		<!-- Simple 4-column photo grid (Gallery) -->
 		<div class="mb-20">

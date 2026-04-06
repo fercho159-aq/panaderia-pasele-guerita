@@ -37,21 +37,69 @@ const { title, description = "Artisanal Sourdough Dallas, Handmade Cookies" } = 
 	</head>
 	<body class="bg-bg font-sans text-gray-900">
 		<CartDrawer client:load />
-		<nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-bg">
-			<div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-				<a href="/" class="flex flex-col justify-center">
-					<img src="/logo.png" alt="Pásele Güerita" class="h-24 sm:h-28 w-auto drop-shadow-sm" />
+		<nav class="bg-white/90 backdrop-blur-lg sticky top-0 z-50 border-b border-bg/20">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+				<a href="/" class="flex flex-col justify-center relative z-50">
+					<img src="/logo.png" alt="Pásele Güerita" class="h-16 sm:h-24 w-auto drop-shadow-sm" />
 				</a>
-				<div class="flex items-center space-x-8">
-					<div class="hidden md:flex space-x-8 font-sans text-sm border-l border-primary/20 pl-8 uppercase tracking-widest mr-4">
-						<a href="/" class="hover:text-accent transition-colors">Menú</a>
-						<a href="/about" class="hover:text-accent transition-colors">Quiénes somos</a>
-						<a href="/recipes" class="hover:text-accent transition-colors">Recetas</a>
+
+				<!-- Desktop Menu -->
+				<div class="hidden md:flex items-center space-x-8">
+					<div class="flex space-x-8 font-sans text-sm border-l border-primary/10 pl-8 uppercase tracking-widest mr-4">
+						<a href="/" class="hover:text-accent transition-colors font-bold">Menú</a>
+						<a href="/about" class="hover:text-accent transition-colors font-bold">Quiénes somos</a>
+						<a href="/recipes" class="hover:text-accent transition-colors font-bold">Recetas</a>
 					</div>
 					<CartButton client:load />
 				</div>
+
+				<!-- Mobile Controls -->
+				<div class="flex items-center gap-4 md:hidden">
+					<CartButton client:load />
+					<button id="mobile-menu-btn" class="p-2 text-primary focus:outline-none relative z-50" aria-label="Toggle Menu">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+						</svg>
+					</button>
+				</div>
+			</div>
+
+			<!-- Mobile Menu Drawer -->
+			<div id="mobile-menu" class="fixed inset-0 bg-primary z-40 translate-x-full transition-transform duration-300 md:hidden flex flex-col items-center justify-center space-y-8">
+				<a href="/" class="text-bg text-3xl font-serif italic hover:text-accent transition-colors">Menú</a>
+				<a href="/about" class="text-bg text-3xl font-serif italic hover:text-accent transition-colors">Quiénes Somos</a>
+				<a href="/recipes" class="text-bg text-3xl font-serif italic hover:text-accent transition-colors">Recetas</a>
+				<div class="pt-8 border-t border-white/10 w-2/3 flex justify-center">
+					<a href="https://instagram.com/paselegueritatx" target="_blank" class="text-bg text-sm font-sans uppercase tracking-widest">Instagram</a>
+				</div>
 			</div>
 		</nav>
+
+		<script is:inline>
+			const btn = document.getElementById('mobile-menu-btn');
+			const menu = document.getElementById('mobile-menu');
+			let isOpen = false;
+
+			btn?.addEventListener('click', () => {
+				isOpen = !isOpen;
+				if (isOpen) {
+					menu?.classList.remove('translate-x-full');
+					document.body.style.overflow = 'hidden';
+				} else {
+					menu?.classList.add('translate-x-full');
+					document.body.style.overflow = '';
+				}
+			});
+
+			// Close on link click
+			menu?.querySelectorAll('a').forEach(link => {
+				link.addEventListener('click', () => {
+					menu?.classList.add('translate-x-full');
+					document.body.style.overflow = '';
+					isOpen = false;
+				});
+			});
+		</script>
 		<main>
 			<slot />
 		</main>

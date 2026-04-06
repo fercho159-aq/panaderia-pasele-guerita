@@ -20,7 +20,7 @@
 
 @layer base {
   html {
-    font-size: 110%; /* Globally scale REM units for larger typography */
+    font-size: 100%; /* Reduced for better performance and less chunky feel */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -30,11 +30,11 @@
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif;
-    font-weight: 400; /* Alfa Slab One is already thick/black. Do NOT use font-bold/700. */
-    letter-spacing: 0.01em; /* Increased for better legibility */
-    line-height: 1.2;
+    font-weight: 400 !important; /* Alfa Slab One is already black. Avoid faux-bolding. */
+    letter-spacing: -0.01em; /* Tighter for a more premium look */
+    line-height: 1.1;
   }
   strong, .font-bold {
-    font-weight: 500; /* Clean weight for sans-serif, does not bloat the slab-serif */
+    font-weight: 600; /* Cleaner weight for Arvo Bold */
   }
 }

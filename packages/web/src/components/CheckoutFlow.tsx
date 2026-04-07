@@ -243,7 +243,7 @@ export const CheckoutFlow: React.FC = () => {
 
     if (isSoldOut) return (
         <div className="max-w-2xl mx-auto bg-white p-12 rounded-[3rem] shadow-2xl border border-primary/5 text-center">
-            <span className="text-7xl block mb-6">🍞</span>
+            <span className="text-7xl block mb-6"></span>
             <h2 className="font-serif text-5xl text-primary italic mb-4">¡Agotados por hoy!</h2>
             <p className="text-primary/60 font-serif italic text-xl leading-relaxed mb-8">Alcanzamos el límite de pedidos del día. Muy pronto abriremos la siguiente ronda. ¡Síguenos en Instagram para enterarte primero!</p>
             <a href="/"><Button className="h-16 px-12 text-lg font-black rounded-2xl shadow-xl">Volver al Inicio</Button></a>
@@ -319,7 +319,7 @@ export const CheckoutFlow: React.FC = () => {
                     </div>
                     {isSpecialLocation ? (
                         <div className="max-w-md mx-auto bg-primary/5 border border-primary/10 rounded-[2rem] p-10 text-center">
-                            <span className="text-5xl block mb-4">📍</span>
+                            <span className="text-5xl block mb-4"></span>
                             <p className="font-serif text-xl text-primary italic leading-relaxed">
                                 Nos pondremos en contacto contigo para coordinar la mejor fecha y hora de entrega para tu zona.
                             </p>
@@ -356,14 +356,14 @@ export const CheckoutFlow: React.FC = () => {
                                 {/* Box Header */}
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                                     <div>
-                                        <h3 className="font-serif text-3xl md:text-4xl text-primary italic font-bold">Tu Caja de {boxSize} 🍪</h3>
+                                        <h3 className="font-serif text-3xl md:text-4xl text-primary italic font-bold">Tu Caja de {boxSize}</h3>
                                         <div className="flex flex-wrap gap-1.5 mt-3">
                                             {Array.from({ length: boxSize }).map((_, i) => (
                                                 <div key={i} className={`h-2.5 rounded-full transition-all duration-500 ${i < filled ? 'bg-accent w-8 sm:w-10 shadow-sm' : 'bg-primary/15 w-5 sm:w-6'}`} />
                                             ))}
                                         </div>
                                         <p className={`text-xs font-black uppercase tracking-widest mt-3 ${remaining === 0 ? 'text-primary' : 'text-accent'}`}>
-                                            {remaining === 0 ? '✅ ¡Caja completa!' : `⚡ Faltan ${remaining} galleta${remaining !== 1 ? 's' : ''}`}
+                                            {remaining === 0 ? '¡Caja completa!' : `Faltan ${remaining} galleta${remaining !== 1 ? 's' : ''}`}
                                         </p>
                                     </div>
                                     <div className="flex gap-3">
@@ -440,7 +440,7 @@ export const CheckoutFlow: React.FC = () => {
                                         : 'bg-white text-primary border-primary/10 hover:border-primary/30'
                                 }`}
                             >
-                                🍪 Galletas extra
+                                Galletas extra
                             </button>
                             <button
                                 onClick={() => setExtrasTab('breads')}
@@ -450,7 +450,7 @@ export const CheckoutFlow: React.FC = () => {
                                         : 'bg-white text-primary border-primary/10 hover:border-primary/30'
                                 }`}
                             >
-                                🍞 Panes
+                                Panes
                             </button>
                         </div>
 
@@ -525,7 +525,7 @@ export const CheckoutFlow: React.FC = () => {
                     <div className="pt-8 flex flex-col gap-4">
                         {!allBoxesFull && cartItemsList.length > 0 && (
                             <p className="text-center text-xs font-bold text-red-500 bg-red-50 p-3 rounded-xl border border-red-100 animate-pulse">
-                                Por favor llena todas tus cajas con sabores antes de continuar 🍪
+                                Por favor llena todas tus cajas con sabores antes de continuar
                             </p>
                         )}
                         <div className="flex flex-col sm:flex-row gap-6">
@@ -604,7 +604,7 @@ export const CheckoutFlow: React.FC = () => {
                                     className="w-full flex items-center justify-between p-6 text-left"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <span className="text-3xl">🎁</span>
+                                        <span className="text-3xl"></span>
                                         <div>
                                             <p className="font-serif text-xl text-primary italic font-bold">¿Es un regalo?</p>
                                             <p className="text-xs font-black uppercase tracking-widest text-primary/40 mt-0.5">Añadir nota de regalo</p>
@@ -649,7 +649,7 @@ export const CheckoutFlow: React.FC = () => {
                                 
                                 <label className="block p-8 rounded-[2.5rem] border-2 border-dashed border-primary/10 cursor-pointer hover:bg-white transition-all group">
                                     <div className="flex flex-col items-center gap-2">
-                                        <span className="text-2xl">📎</span>
+                                        <span className="text-2xl"></span>
                                         <span className="font-black text-base uppercase tracking-wider text-primary/40 group-hover:text-primary transition-colors text-center truncate max-w-full px-2">
                                             {receiptFile ? receiptFile.name.slice(0, 30) + (receiptFile.name.length > 30 ? '...' : '') : 'Sube tu comprobante (opcional)'}
                                         </span>
@@ -661,7 +661,7 @@ export const CheckoutFlow: React.FC = () => {
                     )}
                     {orderError && (
                         <div className="max-w-lg mx-auto w-full bg-red-50 border border-red-200 rounded-2xl p-4 text-red-700 text-sm font-bold">
-                            <p className="font-black mb-1">⚠️ Error al procesar:</p>
+                            <p className="font-black mb-1">Error al procesar:</p>
                             <p className="font-mono text-xs opacity-80 break-all">{orderError}</p>
                         </div>
                     )}
@@ -678,7 +678,7 @@ export const CheckoutFlow: React.FC = () => {
             {stockLimitFlavor && (
                 <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/50 backdrop-blur-sm">
                     <div className="bg-white rounded-[2.5rem] shadow-2xl p-10 max-w-sm w-full text-center animate-fade-in border border-primary/10">
-                        <span className="text-5xl block mb-4">⚠️</span>
+                        <span className="text-5xl block mb-4"></span>
                         <h3 className="font-serif text-2xl text-primary italic font-bold mb-3">Límite alcanzado</h3>
                         <p className="text-primary/70 font-serif mb-2">
                             Solo quedan <span className="font-black text-primary">{flavorStockMap[stockLimitFlavor]}</span> unidades disponibles de <span className="font-black text-accent italic">{stockLimitFlavor}</span> en este pedido.
@@ -698,7 +698,7 @@ export const CheckoutFlow: React.FC = () => {
             {step === 6 && (
                 <div className="animate-fade-in flex-1 flex flex-col items-center justify-center text-center space-y-12 py-20">
                     <div className="relative">
-                        <span className="text-9xl animate-bounce inline-block">🥐</span>
+                        <span className="text-9xl animate-bounce inline-block"></span>
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-accent/5 rounded-full animate-ping pointer-events-none" />
                     </div>
                     <div>

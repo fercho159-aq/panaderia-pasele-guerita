@@ -98,7 +98,7 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
                                     <span className="absolute bottom-1.5 w-1.5 h-1.5 rounded-full bg-accent group-hover:scale-150 transition-transform"></span>
                                 )}
                                 {isSelected && (
-                                    <span className="absolute -top-1 -right-1 text-[10px] animate-bounce">🥐</span>
+                                    <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-primary"></span>
                                 )}
                             </button>
                         );

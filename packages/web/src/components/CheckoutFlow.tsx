@@ -35,6 +35,11 @@ export const CheckoutFlow: React.FC = () => {
     const [isUploading, setIsUploading] = useState(false);
     const [extrasTab, setExtrasTab] = useState<'cookies' | 'breads'>('cookies');
     const [orderError, setOrderError] = useState<string | null>(null);
+    const [orderId, setOrderId] = useState<string>('');
+    const [flavorStockMap, setFlavorStockMap] = useState<Record<string, number>>({});
+    const [stockLimitFlavor, setStockLimitFlavor] = useState<string | null>(null);
+    const [activeCookieFlavors, setActiveCookieFlavors] = useState(cookieFlavors);
+    const [activeBreadFlavors, setActiveBreadFlavors] = useState(breadFlavors);
 
     const earliestDate = getEarliestAvailableDate();
 
@@ -45,6 +50,30 @@ export const CheckoutFlow: React.FC = () => {
                 // But use hardcoded pickupLocations as source of truth for content
                 const response = await fetch('/api/storefront-data');
                 const data = response.ok ? await response.json() : {};
+                // Use active flavors from API (only active=true come back)
+                if (data.cookies?.length > 0) {
+                    const merged = data.cookies.map((c: any) => {
+                        const s = cookieFlavors.find((sf: any) => sf.id === c.id) || {};
+                        return { ...s, ...c, image: c.image || (s as any).image };
+                    });
+                    setActiveCookieFlavors(merged);
+                }
+                if (data.breads?.length > 0) {
+                    const merged = data.breads.map((b: any) => {
+                        const s = breadFlavors.find((sf: any) => sf.id === b.id) || {};
+                        return { ...s, ...b, image: b.image || (s as any).image };
+                    });
+                    setActiveBreadFlavors(merged);
+                }
+
+                // Build stock limit map from DB flavor data
+                const allDbFlavors = [...(data.cookies || []), ...(data.breads || [])];
+                const stockMap: Record<string, number> = {};
+                allDbFlavors.forEach((f: any) => {
+                    if (f.stock && f.stock > 0) stockMap[f.name] = f.stock;
+                });
+                setFlavorStockMap(stockMap);
+
                 const dbLocations: any[] = data.locations || [];
                 const merged = pickupLocations
                     .map(loc => {
@@ -81,11 +110,22 @@ export const CheckoutFlow: React.FC = () => {
     const handleBoxSelection = (boxId: string, flavorName: string, delta: number) => {
         const item = cartItems[boxId];
         if (!item || !item.boxSize) return;
-        
+
         const currentSelections = item.selections || {};
         const currentTotal = Object.values(currentSelections).reduce((a, b) => a + b, 0);
         if (delta > 0 && currentTotal >= item.boxSize) return;
         if (delta < 0 && (currentSelections[flavorName] || 0) <= 0) return;
+
+        // Check stock limit across ALL boxes in cart
+        if (delta > 0 && flavorStockMap[flavorName] !== undefined) {
+            const totalInCart = Object.values(cartItems).reduce((sum, box) => {
+                return sum + ((box.selections?.[flavorName] || 0) as number);
+            }, 0);
+            if (totalInCart >= flavorStockMap[flavorName]) {
+                setStockLimitFlavor(flavorName);
+                return;
+            }
+        }
 
         const newSelections = { ...currentSelections };
         newSelections[flavorName] = (newSelections[flavorName] || 0) + delta;
@@ -172,7 +212,8 @@ export const CheckoutFlow: React.FC = () => {
                 notes: orderNotes
             };
 
-            await createOrder(orderData);
+            const newOrderId = await createOrder(orderData);
+            setOrderId(newOrderId);
             setStep(6);
             cartStore.set({ items: {}, gift: { is_gift: false, message: '' }, isOpen: false });
         } catch (e: any) { 
@@ -312,7 +353,7 @@ export const CheckoutFlow: React.FC = () => {
 
                                 {/* Flavor Picker Grid */}
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
-                                    {cookieFlavors.map(f => {
+                                    {activeCookieFlavors.map(f => {
                                         const count = box.selections?.[f.name] || 0;
                                         const isAtMax = filled >= boxSize && count === 0;
                                         return (
@@ -419,7 +460,7 @@ export const CheckoutFlow: React.FC = () => {
                         {/* Tab: Breads */}
                         {extrasTab === 'breads' && (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                {breadFlavors.map(b => (
+                                {activeBreadFlavors.map(b => (
                                     <div key={b.id} className="bg-white rounded-[2.5rem] border border-primary/10 overflow-hidden flex flex-col hover:shadow-2xl hover:border-primary/30 transition-all duration-300 group">
                                         <div className="w-full h-44 overflow-hidden relative">
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10 pointer-events-none"></div>
@@ -555,14 +596,14 @@ export const CheckoutFlow: React.FC = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className="flex flex-col items-center gap-8 max-w-lg mx-auto w-full animate-fade-in">
-                            <div className="p-10 rounded-[3.5rem] bg-accent/5 border-2 border-accent/10 text-center w-full shadow-inner">
+                        <div className="flex flex-col items-center gap-8 max-w-2xl mx-auto w-full animate-fade-in">
+                            <div className="p-6 rounded-[3.5rem] bg-accent/5 border-2 border-accent/10 text-center w-full shadow-inner">
                                 <h3 className="font-serif text-4xl text-primary italic mb-6">Pagar vía Transferencia</h3>
                                 
                                 {/* QR Section */}
-                                <div className="bg-white p-6 rounded-[2.5rem] shadow-xl border border-primary/5 flex flex-col items-center gap-4 mb-8">
-                                    <div className="w-72 h-72 rounded-2xl overflow-hidden shadow-inner">
-                                        <img src="/imagenes/zelle.png" alt="Zelle QR" className="w-full h-full object-contain" />
+                                <div className="bg-white p-4 rounded-[2.5rem] shadow-xl border border-primary/5 flex flex-col items-center gap-4 mb-8">
+                                    <div className="w-full rounded-2xl overflow-hidden shadow-inner">
+                                        <img src="/imagenes/zelle.png" alt="Zelle QR" className="w-full object-contain" />
                                     </div>
                                     <div className="text-center">
                                         <p className="text-[10px] font-black uppercase tracking-widest text-primary/40">Zelle / Venmo</p>
@@ -601,6 +642,26 @@ export const CheckoutFlow: React.FC = () => {
                 </div>
             )}
 
+            {/* Stock Limit Modal */}
+            {stockLimitFlavor && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-[2.5rem] shadow-2xl p-10 max-w-sm w-full text-center animate-fade-in border border-primary/10">
+                        <span className="text-5xl block mb-4">⚠️</span>
+                        <h3 className="font-serif text-2xl text-primary italic font-bold mb-3">Límite alcanzado</h3>
+                        <p className="text-primary/70 font-serif mb-2">
+                            Solo quedan <span className="font-black text-primary">{flavorStockMap[stockLimitFlavor]}</span> unidades disponibles de <span className="font-black text-accent italic">{stockLimitFlavor}</span> en este pedido.
+                        </p>
+                        <p className="text-xs text-primary/40 font-sans uppercase tracking-widest mb-8">Producción limitada por el horno</p>
+                        <button
+                            onClick={() => setStockLimitFlavor(null)}
+                            className="w-full h-14 bg-primary text-bg font-black text-sm uppercase tracking-widest rounded-2xl hover:bg-primary/90 transition-all shadow-lg"
+                        >
+                            Entendido
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Step 6: Success */}
             {step === 6 && (
                 <div className="animate-fade-in flex-1 flex flex-col items-center justify-center text-center space-y-12 py-20">
@@ -610,6 +671,11 @@ export const CheckoutFlow: React.FC = () => {
                     </div>
                     <div>
                         <h2 className="font-serif text-6xl md:text-7xl text-primary italic leading-tight mb-6">¡Gracias por<br/>tu pedido!</h2>
+                        {orderId && (
+                            <p className="font-sans font-black text-sm uppercase tracking-[0.2em] text-accent bg-accent/10 border border-accent/20 rounded-2xl px-6 py-3 inline-block mb-4">
+                                Pedido #{orderId.slice(0, 8).toUpperCase()}
+                            </p>
+                        )}
                         <p className="text-primary/60 max-w-sm mx-auto font-serif italic text-xl leading-relaxed">Estamos preparando lo mejor de nuestro horno para ti. Revisa tu email.</p>
                     </div>
                     <a href="/" className="w-full max-w-md"><Button className="w-full h-20 text-xl font-black rounded-[2rem] shadow-2xl">REGRESAR AL INICIO</Button></a>

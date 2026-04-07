@@ -38,3 +38,15 @@
     font-weight: 600; /* Cleaner weight for Arvo Bold */
   }
 }
+
+/* WhatsApp floating button animation */
+@keyframes wa-float {
+  0%, 100% { transform: translateY(0) scale(1); box-shadow: 0 10px 30px rgba(37,211,102,0.4); }
+  50% { transform: translateY(-8px) scale(1.05); box-shadow: 0 20px 40px rgba(37,211,102,0.3); }
+}
+.animate-wa-float {
+  animation: wa-float 3s ease-in-out infinite;
+}
+.animate-wa-float:hover {
+  animation-play-state: paused;
+}

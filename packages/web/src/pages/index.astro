@@ -22,6 +22,12 @@ try {
     }
 } catch (e) {}
 
+// Build set of active flavor IDs (from API data)
+const activeFlavorIds = new Set([
+    ...displayCookies.map((c: any) => c.id),
+    ...displayBreads.map((b: any) => b.id)
+]);
+
 // A fixed pool of extra images for hover swaps — different from the product image pool
 const cookieHoverPool = [
     '/imagenes/cookie-abuelita-2.webp',
@@ -79,8 +85,8 @@ const breadHoverPool = [
 					Nuestras galletas, elaboradas con masa madre, tienen una <strong>complejidad y profundidad de sabor</strong> que las hace únicas. Nuestros panes rústicos pasan por una <strong>fermentación natural de más de 20 horas</strong>.
 				</p>
 				<div class="flex flex-col sm:flex-row gap-4">
-					<a href="#menu"><Button variant="outline" className="w-full sm:w-auto text-lg h-14 px-8">Ver Menú</Button></a>
-					<a href="/checkout"><Button variant="primary" className="w-full sm:w-auto text-lg h-14 px-8 shadow-lg">Comprar Ahora</Button></a>
+					<a href="/menu"><Button variant="outline" className="w-full sm:w-auto text-lg h-14 px-8">Ver Menú</Button></a>
+					<a href="/menu"><Button variant="primary" className="w-full sm:w-auto text-lg h-14 px-8 shadow-lg">Comprar Ahora</Button></a>
 				</div>
 			</div>
 		</div>
@@ -136,7 +142,7 @@ const breadHoverPool = [
 					{ id: 'abuelita', cat: 'regulares' },
 					{ id: 'fresa-coco', cat: 'regulares' },
 					{ id: 'choco-nuts', cat: 'regulares' },
-				].map((item: any) => {
+				].filter((item: any) => activeFlavorIds.has(item.id)).map((item: any) => {
 					const fav = allProducts.find(p => p.id === item.id);
 					if (!fav) return null;
 					return (
@@ -162,7 +168,7 @@ const breadHoverPool = [
 					{ id: 'hogaza-natural', cat: 'pan' },
 					{ id: 'pan-semillas', cat: 'pan' },
 					{ id: 'jalapeño-cheddar', cat: 'pan' }
-				].map((item: any) => {
+				].filter((item: any) => activeFlavorIds.has(item.id)).map((item: any) => {
 					const fav = allProducts.find(p => p.id === item.id);
 					if (!fav) return null;
 					return (

@@ -63,12 +63,14 @@ export async function fetchLocations() {
     }));
 }
 
-export async function createOrder(orderData: any) {
+export async function createOrder(orderData: any): Promise<string> {
     const supabase = createBrowserClient();
-    const { error } = await supabase
+    const { data, error } = await supabase
         .from('orders')
-        .insert([orderData]);
+        .insert([orderData])
+        .select('id')
+        .single();
 
     if (error) throw error;
-    return true;
+    return data.id as string;
 }

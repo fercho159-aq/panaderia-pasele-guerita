@@ -4,8 +4,26 @@ import { Button } from '@pasele-guerita/ui';
 import { AddToCartButton } from '../components/AddToCartButton';
 import { cookieFlavors, breadFlavors } from '@pasele-guerita/core';
 
-const regularCookies = cookieFlavors.filter(c => !c.is_sugar_free);
-const sugarFreeCookies = cookieFlavors.filter(c => c.is_sugar_free);
+let displayCookies: any[] = cookieFlavors;
+let displayBreads: any[] = breadFlavors;
+try {
+    const origin = Astro.url.origin;
+    const res = await fetch(`${origin}/api/storefront-data`);
+    if (res.ok) {
+        const data = await res.json();
+        if (data.cookies?.length > 0) displayCookies = data.cookies.map((c: any) => {
+            const s = cookieFlavors.find((sf: any) => sf.id === c.id) || {};
+            return { ...s, ...c, image: c.image || (s as any).image, description: c.description ?? (s as any).description };
+        });
+        if (data.breads?.length > 0) displayBreads = data.breads.map((b: any) => {
+            const s = breadFlavors.find((sf: any) => sf.id === b.id) || {};
+            return { ...s, ...b, image: b.image || (s as any).image, description: b.description ?? (s as any).description };
+        });
+    }
+} catch (e) {}
+
+const regularCookies = displayCookies.filter((c: any) => !c.is_sugar_free);
+const sugarFreeCookies = displayCookies.filter((c: any) => c.is_sugar_free);
 
 const categories = [
     { id: 'all', name: 'Todos' },
@@ -102,7 +120,7 @@ const categories = [
                     <p class="text-gray-500 font-sans mt-2 tracking-widest uppercase text-xs font-bold">24 horas de fermentación lenta</p>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {breadFlavors.map((flavor) => (
+                    {displayBreads.map((flavor: any) => (
                         <div class="group bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col border border-bg/20">
                             <div class="relative h-72 overflow-hidden bg-gray-50">
                                 <img src={flavor.image} alt={flavor.name} class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />

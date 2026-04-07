@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from './Button';
 
-interface Flavor { id: string; name: string; active: boolean; stock: number; }
+interface Flavor { id: string; name: string; active: boolean; stock: number; category: string; }
 interface Location { id: string; name: string; days: string[]; is_sold_out: boolean; type: string; }
 interface Order { 
     id: string; 
@@ -11,7 +11,9 @@ interface Order {
     email?: string; // New field from DB
     phone?: string; // New field from DB
     notes?: string; // New field from DB
-    box_size: number; 
+    pickup_day?: string;
+    location_id?: string;
+    box_size: number;
     total_price: number; 
     created_at: string; 
     status: string; 
@@ -50,21 +52,23 @@ export const AdminDashboard: React.FC = () => {
         }
     };
 
+    const breadFlavorIds = new Set(flavors.filter(f => f.category === 'bread').map(f => f.id));
+
     const exportToCSV = () => {
         const headers = [
             "ID", "Fecha de Recoleccion", "Cliente", "Telefono", "Email", "Total Pagado",
             "Total Galletas", "Total Panes", "Notas / Mensaje Regalo", "Estado"
         ];
         
-        const cookieFlavorsList = flavors.filter(f => !f.id.includes('hogaza') && !f.id.includes('pan-') && !f.id.includes('multigrano'));
-        const breadFlavorsList = flavors.filter(f => f.id.includes('hogaza') || f.id.includes('pan-') || f.id.includes('multigrano'));
+        const cookieFlavorsList = flavors.filter(f => f.category !== 'bread');
+        const breadFlavorsList = flavors.filter(f => f.category === 'bread');
         
         cookieFlavorsList.forEach(f => headers.push(f.name));
         breadFlavorsList.forEach(f => headers.push(f.name));
 
         const csvRows = orders.map(order => {
-            const cookieCount = Object.entries(order.flavors_selected || {}).reduce((sum, [id, q]) => sum + (!id.includes('hogaza') && !id.includes('pan-') && !id.includes('multigrano') ? q : 0), 0);
-            const breadCount = Object.entries(order.flavors_selected || {}).reduce((sum, [id, q]) => sum + (id.includes('hogaza') || id.includes('pan-') || id.includes('multigrano') ? q : 0), 0);
+            const cookieCount = Object.entries(order.flavors_selected || {}).reduce((sum, [id, q]) => sum + (!breadFlavorIds.has(id) ? q : 0), 0);
+            const breadCount = Object.entries(order.flavors_selected || {}).reduce((sum, [id, q]) => sum + (breadFlavorIds.has(id) ? q : 0), 0);
             
             let displayNotes = order.notes || "";
             let displayName = order.customer_name;
@@ -226,7 +230,7 @@ export const AdminDashboard: React.FC = () => {
                                         <span className="w-1.5 h-1.5 rounded-full bg-pink-400"></span> Galletas Artesanales
                                     </h3>
                                     <div className="space-y-3">
-                                        {flavors.filter(f => !f.id.includes('hogaza') && !f.id.includes('pan-') && !f.id.includes('multigrano')).map(flavor => (
+                                        {flavors.filter(f => f.category !== 'bread').map(flavor => (
                                             <div key={flavor.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
                                                 <span className="font-bold">{flavor.name}</span>
                                                 <button
@@ -246,7 +250,7 @@ export const AdminDashboard: React.FC = () => {
                                         <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Pan de Masa Madre
                                     </h3>
                                     <div className="space-y-3">
-                                        {flavors.filter(f => f.id.includes('hogaza') || f.id.includes('pan-') || f.id.includes('multigrano')).map(flavor => (
+                                        {flavors.filter(f => f.category === 'bread').map(flavor => (
                                             <div key={flavor.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
                                                 <span className="font-bold">{flavor.name}</span>
                                                 <button
@@ -331,11 +335,11 @@ export const AdminDashboard: React.FC = () => {
                                         <th className="p-3 w-32 sticky left-0 bg-gray-50 z-10 border-r border-gray-200">Ubicación</th>
                                         <th className="p-3 w-40 sticky left-32 bg-gray-50 z-10 border-r border-gray-200">Cliente</th>
                                         <th className="p-3 text-center border-r border-gray-200 bg-pink-50/50 w-20">Tot. Galletas</th>
-                                        {flavors.filter(f => !f.id.includes('hogaza') && !f.id.includes('pan-') && !f.id.includes('multigrano')).map(f => (
+                                        {flavors.filter(f => f.category !== 'bread').map(f => (
                                             <th key={f.id} className="p-3 text-center border-r border-gray-200 whitespace-nowrap overflow-hidden text-ellipsis max-w-[80px]" title={f.name}>{f.name.split(' ')[0]}</th>
                                         ))}
                                         <th className="p-3 text-center border-r border-gray-200 bg-amber-50/50 w-20">Tot. Panes</th>
-                                        {flavors.filter(f => f.id.includes('hogaza') || f.id.includes('pan-') || f.id.includes('multigrano')).map(f => (
+                                        {flavors.filter(f => f.category === 'bread').map(f => (
                                             <th key={f.id} className="p-3 text-center border-r border-gray-200 whitespace-nowrap overflow-hidden text-ellipsis max-w-[80px]" title={f.name}>{f.name.split(' ')[0]}</th>
                                         ))}
                                         <th className="p-3 text-center border-r border-gray-200 bg-gray-50">Total $</th>
@@ -356,8 +360,8 @@ export const AdminDashboard: React.FC = () => {
                                             }
 
                                             return filteredOrders.map(order => {
-                                            const cookieCount = Object.entries(order.flavors_selected || {}).reduce((sum, [id, q]) => sum + (!id.includes('hogaza') && !id.includes('pan-') && !id.includes('multigrano') ? q : 0), 0);
-                                            const breadCount = Object.entries(order.flavors_selected || {}).reduce((sum, [id, q]) => sum + (id.includes('hogaza') || id.includes('pan-') || id.includes('multigrano') ? q : 0), 0);
+                                            const cookieCount = Object.entries(order.flavors_selected || {}).reduce((sum, [id, q]) => sum + (!breadFlavorIds.has(id) ? q : 0), 0);
+                                            const breadCount = Object.entries(order.flavors_selected || {}).reduce((sum, [id, q]) => sum + (breadFlavorIds.has(id) ? q : 0), 0);
                                             
                                             return (
                                                 <tr key={order.id} className={`border-b border-gray-100 hover:bg-gray-50/50 transition-colors ${order.status==='Cancelado' ? 'opacity-30' : ''}`}>
@@ -453,7 +457,7 @@ export const AdminDashboard: React.FC = () => {
                                                     <td className="p-3 text-center font-bold text-pink-600 border-r border-gray-100 bg-pink-50/10">{cookieCount > 0 ? cookieCount : '-'}</td>
                                                     
                                                     {/* Cookie Columns */}
-                                                    {flavors.filter(f => !f.id.includes('hogaza') && !f.id.includes('pan-') && !f.id.includes('multigrano')).map(flavor => (
+                                                    {flavors.filter(f => f.category !== 'bread').map(flavor => (
                                                         <td key={flavor.id} className="p-3 text-center font-mono border-r border-gray-100 text-gray-500">
                                                             {order.flavors_selected?.[flavor.id] || ''}
                                                         </td>
@@ -462,7 +466,7 @@ export const AdminDashboard: React.FC = () => {
                                                     <td className="p-3 text-center font-bold text-amber-600 border-r border-gray-100 bg-amber-50/10">{breadCount > 0 ? breadCount : '-'}</td>
                                                     
                                                     {/* Bread Columns */}
-                                                    {flavors.filter(f => f.id.includes('hogaza') || f.id.includes('pan-') || f.id.includes('multigrano')).map(flavor => (
+                                                    {flavors.filter(f => f.category === 'bread').map(flavor => (
                                                         <td key={flavor.id} className="p-3 text-center font-mono border-r border-gray-100 text-gray-500">
                                                             <div className="flex flex-col items-center">
                                                                 <span>{order.flavors_selected?.[flavor.id] || ''}</span>
@@ -495,7 +499,7 @@ export const AdminDashboard: React.FC = () => {
                                                     {totalOrders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + Object.entries(o.flavors_selected||{}).reduce((s, [id, q])=> s + (!id.includes('hogaza')&&!id.includes('pan-')&&!id.includes('multigrano') ? q : 0), 0), 0)}
                                                 </td>
                                                 
-                                                {flavors.filter(f => !f.id.includes('hogaza') && !f.id.includes('pan-') && !f.id.includes('multigrano')).map(flavor => {
+                                                {flavors.filter(f => f.category !== 'bread').map(flavor => {
                                                     const total = totalOrders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + (o.flavors_selected?.[flavor.id] || 0), 0);
                                                     return <td key={flavor.id} className="p-3 text-center border-r border-gray-700">{total}</td>;
                                                 })}
@@ -504,7 +508,7 @@ export const AdminDashboard: React.FC = () => {
                                                     {totalOrders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + Object.entries(o.flavors_selected||{}).reduce((s, [id, q])=> s + (id.includes('hogaza')||id.includes('pan-')||id.includes('multigrano') ? q : 0), 0), 0)}
                                                 </td>
                                                 
-                                                {flavors.filter(f => f.id.includes('hogaza') || f.id.includes('pan-') || f.id.includes('multigrano')).map(flavor => {
+                                                {flavors.filter(f => f.category === 'bread').map(flavor => {
                                                     const total = totalOrders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + (o.flavors_selected?.[flavor.id] || 0), 0);
                                                     return <td key={flavor.id} className="p-3 text-center border-r border-gray-700">{total}</td>;
                                                 })}
@@ -518,7 +522,7 @@ export const AdminDashboard: React.FC = () => {
                                                 <td colSpan={2} className="p-3 text-right sticky left-0 z-10 bg-yellow-100 border-r border-yellow-200">PRODUCCIÓN A REALIZAR</td>
                                                 <td className="p-3 border-r border-yellow-200"></td>
                                                 
-                                                {flavors.filter(f => !f.id.includes('hogaza') && !f.id.includes('pan-') && !f.id.includes('multigrano')).map(flavor => (
+                                                {flavors.filter(f => f.category !== 'bread').map(flavor => (
                                                     <td key={flavor.id} className="p-2 text-center border-r border-yellow-200">
                                                         <input 
                                                             type="number" 
@@ -531,7 +535,7 @@ export const AdminDashboard: React.FC = () => {
                                                 
                                                 <td className="p-3 border-r border-yellow-200"></td>
                                                 
-                                                {flavors.filter(f => f.id.includes('hogaza') || f.id.includes('pan-') || f.id.includes('multigrano')).map(flavor => (
+                                                {flavors.filter(f => f.category === 'bread').map(flavor => (
                                                     <td key={flavor.id} className="p-2 text-center border-r border-yellow-200">
                                                         <input 
                                                             type="number" 
@@ -549,7 +553,7 @@ export const AdminDashboard: React.FC = () => {
                                                 <td colSpan={2} className="p-3 text-right sticky left-0 z-10 bg-gray-100 border-r border-gray-200 text-xs">DIFERENCIA (Faltante / Sobrante)</td>
                                                 <td className="p-3 border-r border-gray-200"></td>
                                                 
-                                                {flavors.filter(f => !f.id.includes('hogaza') && !f.id.includes('pan-') && !f.id.includes('multigrano')).map(flavor => {
+                                                {flavors.filter(f => f.category !== 'bread').map(flavor => {
                                                     const total = totalOrders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + (o.flavors_selected?.[flavor.id] || 0), 0);
                                                     const diff = (flavor.stock || 0) - total;
                                                     return (
@@ -561,7 +565,7 @@ export const AdminDashboard: React.FC = () => {
                                                 
                                                 <td className="p-3 border-r border-gray-200"></td>
                                                 
-                                                {flavors.filter(f => f.id.includes('hogaza') || f.id.includes('pan-') || f.id.includes('multigrano')).map(flavor => {
+                                                {flavors.filter(f => f.category === 'bread').map(flavor => {
                                                     const total = totalOrders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + (o.flavors_selected?.[flavor.id] || 0), 0);
                                                     const diff = (flavor.stock || 0) - total;
                                                     return (
@@ -591,6 +595,27 @@ export const AdminDashboard: React.FC = () => {
                             <p className="text-xs text-primary/60 mt-1 uppercase tracking-widest font-black">ID: #{editingOrder.id.slice(0, 8)}</p>
                         </div>
                         <div className="p-6 space-y-4">
+                            <div className="flex gap-4">
+                                <div className="flex-1">
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Fecha de Recolección</label>
+                                    <input type="date" className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none font-bold text-primary"
+                                        value={(editingOrder as any).pickup_day || ''}
+                                        onChange={(e) => setEditingOrder({...editingOrder, pickup_day: e.target.value})}
+                                    />
+                                </div>
+                                <div className="flex-1">
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Ubicación</label>
+                                    <select className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none font-bold text-primary"
+                                        value={(editingOrder as any).location_id || ''}
+                                        onChange={(e) => setEditingOrder({...editingOrder, location_id: e.target.value})}
+                                    >
+                                        <option value="">— Sin asignar —</option>
+                                        {locations.map(l => (
+                                            <option key={l.id} value={l.id}>{l.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
                             <div>
                                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Nombre del Cliente</label>
                                 <input type="text" className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none" 
@@ -632,15 +657,17 @@ export const AdminDashboard: React.FC = () => {
                         <div className="p-6 bg-gray-50 border-t border-gray-100 flex justify-end gap-3 rounded-b-3xl">
                             <button onClick={() => setEditingOrder(null)} className="px-5 py-2.5 rounded-xl font-bold text-gray-500 hover:bg-gray-200 transition-colors text-sm">Cancelar</button>
                             <button 
-                                onClick={() => updateOrderDetails(editingOrder.id, { 
+                                onClick={() => updateOrderDetails(editingOrder.id, {
                                     customer_name: editingOrder.customer_name,
                                     phone: editingOrder.phone || editingOrder.customer_phone,
                                     customer_phone: editingOrder.phone || editingOrder.customer_phone,
                                     email: editingOrder.email || editingOrder.customer_email,
                                     customer_email: editingOrder.email || editingOrder.customer_email,
                                     total_price: editingOrder.total_price,
-                                    notes: editingOrder.notes
-                                })} 
+                                    notes: editingOrder.notes,
+                                    pickup_day: editingOrder.pickup_day,
+                                    location_id: editingOrder.location_id
+                                })}
                                 className="px-6 py-2.5 rounded-xl font-black bg-primary text-white hover:bg-primary/90 transition-all text-sm uppercase tracking-widest shadow-md"
                             >
                                 Guardar Cambios

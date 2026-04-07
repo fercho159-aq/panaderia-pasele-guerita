@@ -30,6 +30,8 @@ export const AdminDashboard: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [dateFilter, setDateFilter] = useState<string>('all');
     const [editingOrder, setEditingOrder] = useState<Order | null>(null);
+    const [dailyLimit, setDailyLimit] = useState<number>(0);
+    const [dailyLimitInput, setDailyLimitInput] = useState<string>('0');
 
     const updateOrderDetails = async (id: string, updates: Partial<Order>) => {
         setIsLoading(true);
@@ -50,6 +52,15 @@ export const AdminDashboard: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const saveDailyLimit = async (value: number) => {
+        setDailyLimit(value);
+        await fetch('/api/admin/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type: 'daily-limit', value })
+        });
     };
 
     const breadFlavorIds = new Set(flavors.filter(f => f.category === 'bread').map(f => f.id));
@@ -115,7 +126,13 @@ export const AdminDashboard: React.FC = () => {
                 fetch('/api/admin/data?type=orders')
             ]);
 
-            setFlavors(await flavorsRes.json());
+            const allFlavors: Flavor[] = await flavorsRes.json();
+            const limitRow = allFlavors.find(f => f.id === 'daily-limit');
+            if (limitRow) {
+                setDailyLimit(limitRow.stock || 0);
+                setDailyLimitInput(String(limitRow.stock || 0));
+            }
+            setFlavors(allFlavors.filter(f => f.id !== 'daily-limit' && (f as any).category !== 'setting'));
             setLocations(await locationsRes.json());
             const rawOrders = await ordersRes.json();
             setOrders(rawOrders.map((o: any) => {
@@ -219,6 +236,30 @@ export const AdminDashboard: React.FC = () => {
                 </div>
 
                 {activeTab === 'inventory' && (
+                    <div className="space-y-6">
+                    {/* Daily Limit Banner */}
+                    <div className="bg-primary/5 border border-primary/15 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div>
+                            <h3 className="font-serif text-xl text-primary font-bold">Límite de pedidos del día</h3>
+                            <p className="text-sm text-gray-500 mt-1">Máximo de cajas/panes que puedes entregar hoy (0 = sin límite). Se aplica al checkout.</p>
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0">
+                            <input
+                                type="number"
+                                min={0}
+                                value={dailyLimitInput}
+                                onChange={e => setDailyLimitInput(e.target.value)}
+                                className="w-24 text-center text-2xl font-black text-primary border-2 border-primary/20 rounded-xl px-3 py-2 focus:border-primary outline-none"
+                            />
+                            <button
+                                onClick={() => saveDailyLimit(parseInt(dailyLimitInput) || 0)}
+                                className="bg-primary text-white font-black text-sm uppercase tracking-widest px-5 py-2.5 rounded-xl hover:bg-primary/90 transition-all shadow-sm"
+                            >
+                                Guardar
+                            </button>
+                        </div>
+                    </div>
+
                     <div className="grid md:grid-cols-2 gap-8">
                         {/* Sabores */}
                         <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
@@ -286,6 +327,7 @@ export const AdminDashboard: React.FC = () => {
                                 ))}
                             </div>
                         </div>
+                    </div>
                     </div>
                 )}
 

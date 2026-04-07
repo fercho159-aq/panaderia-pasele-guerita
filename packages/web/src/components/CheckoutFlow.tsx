@@ -40,6 +40,8 @@ export const CheckoutFlow: React.FC = () => {
     const [stockLimitFlavor, setStockLimitFlavor] = useState<string | null>(null);
     const [activeCookieFlavors, setActiveCookieFlavors] = useState(cookieFlavors);
     const [activeBreadFlavors, setActiveBreadFlavors] = useState(breadFlavors);
+    const [dailyLimit, setDailyLimit] = useState(0);
+    const [isSoldOut, setIsSoldOut] = useState(false);
 
     const earliestDate = getEarliestAvailableDate();
 
@@ -50,20 +52,27 @@ export const CheckoutFlow: React.FC = () => {
                 // But use hardcoded pickupLocations as source of truth for content
                 const response = await fetch('/api/storefront-data');
                 const data = response.ok ? await response.json() : {};
-                // Use active flavors from API (only active=true come back)
+                // Filter hardcoded lists by active IDs from DB — avoids showing extra/duplicate DB entries
                 if (data.cookies?.length > 0) {
-                    const merged = data.cookies.map((c: any) => {
-                        const s = cookieFlavors.find((sf: any) => sf.id === c.id) || {};
-                        return { ...s, ...c, image: c.image || (s as any).image };
-                    });
-                    setActiveCookieFlavors(merged);
+                    const activeIds = new Set(data.cookies.map((c: any) => c.id));
+                    setActiveCookieFlavors(cookieFlavors.filter(f => activeIds.has(f.id)));
                 }
                 if (data.breads?.length > 0) {
-                    const merged = data.breads.map((b: any) => {
-                        const s = breadFlavors.find((sf: any) => sf.id === b.id) || {};
-                        return { ...s, ...b, image: b.image || (s as any).image };
-                    });
-                    setActiveBreadFlavors(merged);
+                    const activeIds = new Set(data.breads.map((b: any) => b.id));
+                    setActiveBreadFlavors(breadFlavors.filter(f => activeIds.has(f.id)));
+                }
+
+                // Daily limit enforcement
+                const limit = data.dailyLimit || 0;
+                setDailyLimit(limit);
+                if (limit > 0) {
+                    try {
+                        const countRes = await fetch('/api/order-count');
+                        if (countRes.ok) {
+                            const { count } = await countRes.json();
+                            if (count >= limit) setIsSoldOut(true);
+                        }
+                    } catch (_) {}
                 }
 
                 // Build stock limit map from DB flavor data
@@ -226,6 +235,15 @@ export const CheckoutFlow: React.FC = () => {
     };
 
     if (isLoading) return <div className="text-center py-20 animate-pulse text-primary font-serif italic text-2xl font-bold">Iniciando horno...</div>;
+
+    if (isSoldOut) return (
+        <div className="max-w-2xl mx-auto bg-white p-12 rounded-[3rem] shadow-2xl border border-primary/5 text-center">
+            <span className="text-7xl block mb-6">🍞</span>
+            <h2 className="font-serif text-5xl text-primary italic mb-4">¡Agotados por hoy!</h2>
+            <p className="text-primary/60 font-serif italic text-xl leading-relaxed mb-8">Alcanzamos el límite de pedidos del día. Muy pronto abriremos la siguiente ronda. ¡Síguenos en Instagram para enterarte primero!</p>
+            <a href="/"><Button className="h-16 px-12 text-lg font-black rounded-2xl shadow-xl">Volver al Inicio</Button></a>
+        </div>
+    );
 
     const steps = ["Logística", "Fecha", "Personalizar", "Datos", "Pago"];
 

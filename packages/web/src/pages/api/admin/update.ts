@@ -31,7 +31,10 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
         const supabaseAdmin = getSupabaseClient(supabaseUrl as string, serviceKey as string);
 
-        if (type === 'flavor') {
+        if (type === 'daily-limit') {
+            const { error } = await supabaseAdmin.from('flavors').upsert({ id: 'daily-limit', name: 'Límite Diario', active: false, stock: body.value, category: 'setting' });
+            if (error) throw error;
+        } else if (type === 'flavor') {
             const { error } = await supabaseAdmin.from('flavors').update({ active: status }).eq('id', id);
             if (error) throw error;
         } else if (type === 'stock') {

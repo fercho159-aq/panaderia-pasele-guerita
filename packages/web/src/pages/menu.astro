@@ -4,23 +4,22 @@ import { Button } from '@pasele-guerita/ui';
 import { AddToCartButton } from '../components/AddToCartButton';
 import { cookieFlavors, breadFlavors } from '@pasele-guerita/core';
 
-let displayCookies: any[] = cookieFlavors;
-let displayBreads: any[] = breadFlavors;
+// Use hardcoded lists as canonical — DB only determines active/inactive status
+let activeCookieIds: Set<string> | null = null;
+let activeBreadIds: Set<string> | null = null;
 try {
     const origin = Astro.url.origin;
     const res = await fetch(`${origin}/api/storefront-data`);
     if (res.ok) {
         const data = await res.json();
-        if (data.cookies?.length > 0) displayCookies = data.cookies.map((c: any) => {
-            const s = cookieFlavors.find((sf: any) => sf.id === c.id) || {};
-            return { ...s, ...c, image: c.image || (s as any).image, description: c.description ?? (s as any).description };
-        });
-        if (data.breads?.length > 0) displayBreads = data.breads.map((b: any) => {
-            const s = breadFlavors.find((sf: any) => sf.id === b.id) || {};
-            return { ...s, ...b, image: b.image || (s as any).image, description: b.description ?? (s as any).description };
-        });
+        if (data.cookies?.length > 0) activeCookieIds = new Set(data.cookies.map((c: any) => c.id));
+        if (data.breads?.length > 0) activeBreadIds = new Set(data.breads.map((b: any) => b.id));
     }
 } catch (e) {}
+
+// Filter hardcoded lists — preserves correct categorization, images, and descriptions
+const displayCookies = activeCookieIds ? cookieFlavors.filter(c => activeCookieIds!.has(c.id)) : cookieFlavors;
+const displayBreads = activeBreadIds ? breadFlavors.filter(b => activeBreadIds!.has(b.id)) : breadFlavors;
 
 const regularCookies = displayCookies.filter((c: any) => !c.is_sugar_free);
 const sugarFreeCookies = displayCookies.filter((c: any) => c.is_sugar_free);
@@ -142,16 +141,14 @@ const categories = [
 </Layout>
 
 <script>
-    // Smooth scrolling for anchor links
-    document.querySelectorAll('nav a').forEach(anchor => {
+    // Smooth scrolling only for in-page anchor links (href starting with #)
+    document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            const targetId = this.getAttribute('href').substring(1);
+            const targetId = (this as HTMLAnchorElement).getAttribute('href')!.substring(1);
             const targetElement = document.getElementById(targetId);
             if (targetElement) {
-                targetElement.scrollIntoView({
-                    behavior: 'smooth'
-                });
+                targetElement.scrollIntoView({ behavior: 'smooth' });
             }
         });
     });

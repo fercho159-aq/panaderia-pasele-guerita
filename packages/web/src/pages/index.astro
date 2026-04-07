@@ -4,28 +4,21 @@ import { Button, Badge } from '@pasele-guerita/ui';
 import { AddToCartButton } from '../components/AddToCartButton';
 import { cookieFlavors, breadFlavors, monthlySpecial, allProducts } from '@pasele-guerita/core';
 
-let displayCookies: any[] = cookieFlavors;
-let displayBreads: any[] = breadFlavors;
+let activeCookieIds: Set<string> | null = null;
+let activeBreadIds: Set<string> | null = null;
 try {
     const origin = Astro.url.origin;
     const res = await fetch(`${origin}/api/storefront-data`);
     if (res.ok) {
         const data = await res.json();
-        if (data.cookies?.length > 0) displayCookies = data.cookies.map((c: any) => {
-            const s = cookieFlavors.find((sf: any) => sf.id === c.id || sf.name === c.name) || {};
-            return { ...s, ...c, image: c.image || (s as any).image, description: c.description ?? (s as any).description };
-        });
-        if (data.breads?.length > 0) displayBreads = data.breads.map((b: any) => {
-            const s = breadFlavors.find((sf: any) => sf.id === b.id || sf.name === b.name) || {};
-            return { ...s, ...b, image: b.image || (s as any).image, description: b.description ?? (s as any).description };
-        });
+        if (data.cookies?.length > 0) activeCookieIds = new Set(data.cookies.map((c: any) => c.id));
+        if (data.breads?.length > 0) activeBreadIds = new Set(data.breads.map((b: any) => b.id));
     }
 } catch (e) {}
 
-// Build set of active flavor IDs (from API data)
 const activeFlavorIds = new Set([
-    ...displayCookies.map((c: any) => c.id),
-    ...displayBreads.map((b: any) => b.id)
+    ...(activeCookieIds ? cookieFlavors.filter(c => activeCookieIds!.has(c.id)) : cookieFlavors).map(c => c.id),
+    ...(activeBreadIds ? breadFlavors.filter(b => activeBreadIds!.has(b.id)) : breadFlavors).map(b => b.id),
 ]);
 
 // A fixed pool of extra images for hover swaps — different from the product image pool

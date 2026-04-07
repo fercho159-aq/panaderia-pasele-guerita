@@ -19,37 +19,29 @@ export const GET: APIRoute = async () => {
 
         if (!supabaseUrl || !anonKey) {
             // Return static fallback
-            return new Response(JSON.stringify({ 
-                cookies: cookieFlavors, 
-                breads: breadFlavors,
-                locations: [] 
-            }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+            return new Response(JSON.stringify({ cookies: cookieFlavors, breads: breadFlavors, locations: [], dailyLimit: 0 }), { status: 200, headers: { 'Content-Type': 'application/json' } });
         }
 
         const supabase = getSupabaseClient(supabaseUrl as string, anonKey as string);
 
-        const [flavorsRes, locationsRes] = await Promise.all([
+        const [flavorsRes, locationsRes, settingsRes] = await Promise.all([
             supabase.from('flavors').select('*').eq('active', true).order('category'),
-            supabase.from('locations').select('*')
+            supabase.from('locations').select('*'),
+            supabase.from('flavors').select('id,stock').eq('id', 'daily-limit').single()
         ]);
 
         if (flavorsRes.error) throw flavorsRes.error;
         if (locationsRes.error) throw locationsRes.error;
 
-        // Separate by category, merging DB data with static descriptions as fallback
-        const allDbFlavors = flavorsRes.data || [];
-        
-        const mergeWithStatic = (dbItems: any[], staticItems: any[]) =>
-            dbItems.map((dbItem: any) => {
-                const staticMatch = staticItems.find(s => s.id === dbItem.id);
-                return { ...staticMatch, ...dbItem };
-            });
-
+        // Separate by category — only return IDs so frontend filters hardcoded lists
+        const allDbFlavors = (flavorsRes.data || []).filter((f: any) => f.category !== 'setting');
         const dbCookies = allDbFlavors.filter((f: any) => !f.category || f.category === 'cookie');
         const dbBreads = allDbFlavors.filter((f: any) => f.category === 'bread');
 
-        const cookies = dbCookies.length > 0 ? mergeWithStatic(dbCookies, cookieFlavors) : cookieFlavors;
-        const breads = dbBreads.length > 0 ? mergeWithStatic(dbBreads, breadFlavors) : breadFlavors;
+        const cookies = dbCookies.length > 0 ? dbCookies : cookieFlavors;
+        const breads = dbBreads.length > 0 ? dbBreads : breadFlavors;
+
+        const dailyLimit = settingsRes.data?.stock ?? 0;
 
         // Map locations
         const mappedLocations = locationsRes.data.map((loc: any) => ({
@@ -62,12 +54,12 @@ export const GET: APIRoute = async () => {
             isSoldOut: loc.is_sold_out
         }));
 
-        return new Response(JSON.stringify({ cookies, breads, locations: mappedLocations }), { 
-            status: 200, headers: { 'Content-Type': 'application/json' } 
+        return new Response(JSON.stringify({ cookies, breads, locations: mappedLocations, dailyLimit }), {
+            status: 200, headers: { 'Content-Type': 'application/json' }
         });
 
     } catch (e) {
         console.error("Storefront data fetch failed, using fallback", e);
-        return new Response(JSON.stringify({ cookies: cookieFlavors, breads: breadFlavors, locations: [] }), { status: 200 });
+        return new Response(JSON.stringify({ cookies: cookieFlavors, breads: breadFlavors, locations: [], dailyLimit: 0 }), { status: 200 });
     }
 }

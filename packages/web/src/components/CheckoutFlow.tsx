@@ -161,8 +161,14 @@ export const CheckoutFlow: React.FC = () => {
     };
     const nextStep1Ref = React.useRef<HTMLDivElement>(null);
     const nextStep2Ref = React.useRef<HTMLDivElement>(null);
+    const checkoutTopRef = React.useRef<HTMLDivElement>(null);
 
-    // Auto-scroll logic
+    // Scroll to top of checkout when step changes
+    useEffect(() => {
+        checkoutTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, [step]);
+
+    // Auto-scroll within step
     useEffect(() => {
         if (step === 1 && locationId) {
             nextStep1Ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -253,7 +259,7 @@ export const CheckoutFlow: React.FC = () => {
     const steps = ["Logística", "Fecha", "Personalizar", "Datos", "Pago"];
 
     return (
-        <div className="max-w-4xl mx-auto bg-white p-4 sm:p-8 md:p-12 rounded-[2rem] sm:rounded-[3rem] shadow-2xl border border-primary/5 min-h-[700px] flex flex-col font-sans">
+        <div ref={checkoutTopRef} className="max-w-4xl mx-auto bg-white p-4 sm:p-8 md:p-12 rounded-[2rem] sm:rounded-[3rem] shadow-2xl border border-primary/5 min-h-[700px] flex flex-col font-sans">
             {/* Nav — only show current step label on mobile */}
             <div className="hidden md:flex justify-between mb-16 px-4">
                 {steps.map((s, i) => (
@@ -590,9 +596,9 @@ export const CheckoutFlow: React.FC = () => {
                                 </div>
                             </div>
 
-                            <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/20" placeholder="¿A nombre de quién?" value={customer.name} onChange={e => setCustomer({...customer, name: e.target.value})} />
-                            <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/20" placeholder="Tu Email" value={customer.email} onChange={e => setCustomer({...customer, email: e.target.value})} />
-                            <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/20" placeholder="Tu WhatsApp" value={customer.phone} onChange={e => setCustomer({...customer, phone: e.target.value})} />
+                            <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/50" placeholder="¿A nombre de quién?" value={customer.name} onChange={e => setCustomer({...customer, name: e.target.value})} />
+                            <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/50" placeholder="Tu Email" value={customer.email} onChange={e => setCustomer({...customer, email: e.target.value})} />
+                            <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/50" placeholder="Tu WhatsApp" value={customer.phone} onChange={e => setCustomer({...customer, phone: e.target.value})} />
 
                             {/* Gift Note Toggle */}
                             <div className={`rounded-[2rem] border-2 transition-all duration-300 overflow-hidden ${
@@ -668,7 +674,7 @@ export const CheckoutFlow: React.FC = () => {
                     <div className="flex flex-col sm:flex-row gap-6 mt-8 max-w-lg mx-auto w-full">
                         <Button variant="outline" onClick={() => setStep(step - 1)} className="flex-1 h-20 rounded-3xl font-black">ATRÁS</Button>
                         <Button disabled={step === 4 && (!customer.name || !customer.email || !customer.phone)} onClick={step === 4 ? () => setStep(5) : handleSubmitOrder} className={`flex-[2] h-20 rounded-3xl font-black shadow-2xl ${isUploading ? 'opacity-50' : ''}`}>
-                            {isUploading ? '⏳ Horneando...' : (step === 4 ? 'CONTINUAR' : '¡PEDIR AHORA! 💖')}
+                            {isUploading ? 'Horneando...' : (step === 4 ? 'CONTINUAR' : 'PEDIR AHORA')}
                         </Button>
                     </div>
                 </div>

@@ -170,7 +170,7 @@ export const CartDrawer: React.FC = () => {
                                 }
                             }}
                         >
-                            {window.location.pathname.startsWith('/checkout') ? 'CONTINUAR' : 'PEDIR AHORA! 💖'}
+                            {window.location.pathname.startsWith('/checkout') ? 'CONTINUAR' : 'PEDIR AHORA'}
                         </Button>
                         <p className="text-center text-[9px] uppercase font-black text-primary/30 tracking-[0.2em] px-4">
                             Entregas los Sábados en Dallas y alrededores. Revisa disponibilidad en el próximo paso.

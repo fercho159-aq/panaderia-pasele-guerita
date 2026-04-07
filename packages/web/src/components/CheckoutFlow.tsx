@@ -41,8 +41,18 @@ export const CheckoutFlow: React.FC = () => {
     useEffect(() => {
         async function loadData() {
             try {
-                // Always use the hardcoded locations from core as source of truth
-                setLiveLocations(pickupLocations);
+                // Fetch from DB to get is_sold_out status (managed by admin)
+                // But use hardcoded pickupLocations as source of truth for content
+                const response = await fetch('/api/storefront-data');
+                const data = response.ok ? await response.json() : {};
+                const dbLocations: any[] = data.locations || [];
+                const merged = pickupLocations
+                    .map(loc => {
+                        const db = dbLocations.find((d: any) => d.id === loc.id);
+                        return { ...loc, isSoldOut: db?.isSoldOut ?? false };
+                    })
+                    .filter(loc => !loc.isSoldOut);
+                setLiveLocations(merged.length > 0 ? merged : pickupLocations);
             } catch (error) {
                 setLiveLocations(pickupLocations);
             } finally {
@@ -371,22 +381,37 @@ export const CheckoutFlow: React.FC = () => {
                             </button>
                         </div>
 
-                        {/* Tab: Extra Cookies */}
+                        {/* Tab: Extra Cookies — pick a box size, customize flavors above */}
                         {extrasTab === 'cookies' && (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                {cookieFlavors.map(c => (
-                                    <div key={c.id} className="bg-white rounded-[2.5rem] border border-primary/10 overflow-hidden flex items-center p-4 hover:shadow-xl hover:border-primary/30 transition-all duration-300 group cursor-pointer" onClick={() => addToCart({ ...c, category: 'cookie', price: 12, boxSize: 3, name: `Caja de 3` }, '')}>
-                                        <div className="w-20 h-20 rounded-full overflow-hidden flex-shrink-0 border-4 border-white shadow-sm bg-gray-50">
-                                            <img src={c.image || '/imagenes/IMG_6657.webp'} alt={c.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                            <div className="space-y-4">
+                                <p className="text-xs text-primary/50 italic text-center px-4">
+                                    Elige el tamaño de la caja. Podrás personalizar los sabores en la sección de arriba.
+                                </p>
+                                {[
+                                    { id: 'extra-box-3', count: 3, price: 12.00, label: 'Standard Box (3)', sub: '3 galletas artesanales' },
+                                    { id: 'extra-box-6', count: 6, price: 22.00, label: 'Family Box (6)', sub: '6 galletas artesanales' },
+                                    { id: 'extra-box-9', count: 9, price: 31.50, label: 'Party Box (9)', sub: '9 galletas artesanales' }
+                                ].map(plan => (
+                                    <button
+                                        key={plan.id}
+                                        onClick={() => addToCart({
+                                            id: plan.id,
+                                            name: 'Galletas Artesanales',
+                                            category: 'cookie',
+                                            price: plan.price,
+                                            boxSize: plan.count,
+                                            boxLabel: plan.label,
+                                            image: '/imagenes/cookie-choconuts.webp',
+                                            description: 'Mix de sabores a elegir',
+                                        }, '')}
+                                        className="w-full p-5 rounded-2xl border-2 border-primary/10 hover:border-primary bg-white flex justify-between items-center group hover:shadow-md transition-all"
+                                    >
+                                        <div className="text-left">
+                                            <span className="font-serif text-xl text-primary italic font-bold">{plan.label}</span>
+                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-0.5">{plan.sub} · personaliza sabores arriba</p>
                                         </div>
-                                        <div className="ml-5 flex-1 pr-2">
-                                            <h4 className="font-serif text-xl text-primary italic font-bold leading-tight mb-1">{c.name}</h4>
-                                            <p className="text-[10px] text-primary/50 uppercase tracking-widest font-black line-clamp-1">{c.ingredients?.split(',')[0]}...</p>
-                                            <div className="mt-3 text-[10px] font-black uppercase tracking-[0.2em] text-accent flex items-center gap-1.5 group-hover:translate-x-1 transition-transform">
-                                                Añadir (3x) $12 <span>→</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        <span className="font-black text-primary text-2xl group-hover:scale-110 transition-transform">${plan.price.toFixed(2)}</span>
+                                    </button>
                                 ))}
                             </div>
                         )}
@@ -536,7 +561,7 @@ export const CheckoutFlow: React.FC = () => {
                                 
                                 {/* QR Section */}
                                 <div className="bg-white p-6 rounded-[2.5rem] shadow-xl border border-primary/5 flex flex-col items-center gap-4 mb-8">
-                                    <div className="w-48 h-48 rounded-2xl overflow-hidden shadow-inner">
+                                    <div className="w-72 h-72 rounded-2xl overflow-hidden shadow-inner">
                                         <img src="/imagenes/zelle.png" alt="Zelle QR" className="w-full h-full object-contain" />
                                     </div>
                                     <div className="text-center">

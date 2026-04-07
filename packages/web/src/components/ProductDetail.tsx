@@ -137,7 +137,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                     </Button>
 
                     {/* Accordion Sections */}
-                    <div className="divide-y divide-primary/10 border-t border-primary/10 mb-10">
+                    <div className="divide-y divide-primary/10 border-t border-primary/10 mb-4">
                         {[
                             { id: 'Description', label: 'Descripción' },
                             { id: 'Allergens', label: 'Alérgenos' },
@@ -193,7 +193,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
 
             {/* Related Products */}
             {relatedProducts.length > 0 && (
-                <div className="mt-24 pt-16 border-t border-primary/10">
+                <div className="mt-8 pt-8 border-t border-primary/10">
                     <h2 className="font-serif text-3xl text-primary mb-8">
                         {isCookie ? 'Más galletas que te pueden gustar' : 'Más panes de masa madre'}
                     </h2>

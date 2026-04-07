@@ -30,7 +30,7 @@
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif;
-    font-weight: 400 !important; /* Alfa Slab One is already black. Avoid faux-bolding. */
+    font-weight: 600 !important; /* Zilla Slab SemiBold — ~30% lighter than Alfa Slab One */
     letter-spacing: -0.01em; /* Tighter for a more premium look */
     line-height: 1.1;
   }

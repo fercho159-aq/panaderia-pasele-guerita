@@ -90,7 +90,7 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
                                 className={`
                                     relative aspect-square rounded-xl flex flex-col items-center justify-center transition-all
                                     ${enabled ? 'hover:bg-accent/10 cursor-pointer group' : 'opacity-20 cursor-not-allowed'}
-                                    ${isSelected ? 'bg-primary text-white scale-110 z-10 shadow-lg' : 'text-primary/80'}
+                                    ${isSelected ? 'bg-accent/20 border-2 border-primary scale-110 z-10 shadow-lg text-primary' : 'text-primary/80'}
                                 `}
                             >
                                 <span className={`text-lg font-bold ${isSelected ? 'scale-110' : ''}`}>{date.getDate()}</span>

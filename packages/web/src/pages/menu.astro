@@ -43,13 +43,13 @@ const categories = [
         </header>
 
         <!-- Sticky Category Nav -->
-        <nav class="sticky top-[80px] sm:top-[96px] z-30 bg-white/95 backdrop-blur-md border-b border-bg/20 shadow-sm py-4">
-            <div class="max-w-7xl mx-auto px-6 overflow-x-auto">
-                <div class="flex justify-center md:gap-8 gap-4 whitespace-nowrap">
+        <nav class="sticky top-[80px] sm:top-[96px] z-30 bg-white/95 backdrop-blur-md border-b border-bg/20 shadow-sm py-3 md:py-4">
+            <div class="max-w-7xl mx-auto px-4 md:px-6">
+                <div class="flex flex-col md:flex-row md:justify-center gap-2 md:gap-8">
                     {categories.map((cat) => (
-                        <a 
-                            href={`#${cat.id}`} 
-                            class="px-6 py-2 rounded-full font-serif text-lg text-primary hover:bg-primary/5 transition-colors border border-transparent hover:border-primary/10 active:scale-95"
+                        <a
+                            href={`#${cat.id}`}
+                            class="px-5 py-3 md:py-2 rounded-xl md:rounded-full font-serif text-base md:text-lg text-primary bg-primary/5 md:bg-transparent hover:bg-primary hover:text-white transition-all border border-primary/10 md:border-transparent md:hover:border-primary/10 active:scale-95 text-center font-bold"
                         >
                             {cat.name}
                         </a>

@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useStore } from '@nanostores/react';
 import { cartStore, addToCart, removeFromCart, updateQuantity } from '../stores/cartStore';
-import { 
-    createOrder, 
+import {
     PickupLocation,
     isValidHoustonZip,
     getEarliestAvailableDate,
@@ -221,8 +220,14 @@ export const CheckoutFlow: React.FC = () => {
                 notes: orderNotes
             };
 
-            const newOrderId = await createOrder(orderData);
-            setOrderId(newOrderId);
+            const orderRes = await fetch('/api/create-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            });
+            const orderResult = await orderRes.json();
+            if (!orderRes.ok) throw new Error(orderResult.error || 'Error al crear pedido');
+            setOrderId(orderResult.id);
             setStep(6);
             cartStore.set({ items: {}, gift: { is_gift: false, message: '' }, isOpen: false });
         } catch (e: any) { 
@@ -248,15 +253,24 @@ export const CheckoutFlow: React.FC = () => {
     const steps = ["Logística", "Fecha", "Personalizar", "Datos", "Pago"];
 
     return (
-        <div className="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-[3rem] shadow-2xl border border-primary/5 min-h-[700px] flex flex-col font-sans">
-            {/* Nav */}
-            <div className="flex justify-between mb-16 px-4">
+        <div className="max-w-4xl mx-auto bg-white p-4 sm:p-8 md:p-12 rounded-[2rem] sm:rounded-[3rem] shadow-2xl border border-primary/5 min-h-[700px] flex flex-col font-sans">
+            {/* Nav — only show current step label on mobile */}
+            <div className="hidden md:flex justify-between mb-16 px-4">
                 {steps.map((s, i) => (
                     <div key={s} className="flex flex-col items-center flex-1">
                         <div className={`h-1.5 w-full rounded-full transition-all duration-500 ${step >= i+1 ? 'bg-primary shadow-[0_0_10px_rgba(54,111,95,0.3)]' : 'bg-primary/10'}`} />
                         <span className={`text-[10px] font-black uppercase tracking-widest mt-3 ${step === i+1 ? 'text-primary' : 'text-primary/20'}`}>{s}</span>
                     </div>
                 ))}
+            </div>
+            <div className="flex md:hidden items-center justify-center gap-3 mb-8">
+                <span className="text-[10px] font-black uppercase tracking-widest text-primary/40">Paso {step > 5 ? 5 : step} de 5</span>
+                <span className="font-serif text-lg text-primary italic font-bold">{step <= 5 ? steps[step - 1] : ''}</span>
+                <div className="flex gap-1.5 ml-2">
+                    {steps.map((_, i) => (
+                        <div key={i} className={`h-2 rounded-full transition-all ${step >= i+1 ? 'bg-primary w-6' : 'bg-primary/15 w-2'}`} />
+                    ))}
+                </div>
             </div>
 
             {/* Step 1: Logistics */}
@@ -336,16 +350,16 @@ export const CheckoutFlow: React.FC = () => {
                         const filled = Object.values(box.selections || {}).reduce((a, b) => a + b, 0);
                         const remaining = boxSize - filled;
                         return (
-                            <div key={box.id} className="bg-primary/5 p-6 md:p-10 rounded-[3rem] border border-primary/10 relative overflow-hidden">
+                            <div key={box.id} className="bg-primary/5 p-4 sm:p-6 md:p-10 rounded-[2rem] sm:rounded-[3rem] border border-primary/10 relative overflow-hidden">
                                 <div className="absolute top-0 right-0 w-40 h-40 bg-accent/10 rounded-bl-full translate-x-10 -translate-y-10 pointer-events-none" />
 
                                 {/* Box Header */}
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                                     <div>
                                         <h3 className="font-serif text-3xl md:text-4xl text-primary italic font-bold">Tu Caja de {boxSize} 🍪</h3>
-                                        <div className="flex gap-1.5 mt-3">
+                                        <div className="flex flex-wrap gap-1.5 mt-3">
                                             {Array.from({ length: boxSize }).map((_, i) => (
-                                                <div key={i} className={`h-2.5 rounded-full transition-all duration-500 ${i < filled ? 'bg-accent w-10 shadow-sm' : 'bg-primary/15 w-6'}`} />
+                                                <div key={i} className={`h-2.5 rounded-full transition-all duration-500 ${i < filled ? 'bg-accent w-8 sm:w-10 shadow-sm' : 'bg-primary/15 w-5 sm:w-6'}`} />
                                             ))}
                                         </div>
                                         <p className={`text-xs font-black uppercase tracking-widest mt-3 ${remaining === 0 ? 'text-primary' : 'text-accent'}`}>
@@ -615,7 +629,7 @@ export const CheckoutFlow: React.FC = () => {
                         </div>
                     ) : (
                         <div className="flex flex-col items-center gap-8 max-w-2xl mx-auto w-full animate-fade-in">
-                            <div className="p-6 rounded-[3.5rem] bg-accent/5 border-2 border-accent/10 text-center w-full shadow-inner">
+                            <div className="p-4 sm:p-6 rounded-[2rem] sm:rounded-[3.5rem] bg-accent/5 border-2 border-accent/10 text-center w-full shadow-inner">
                                 <h3 className="font-serif text-4xl text-primary italic mb-6">Pagar vía Transferencia</h3>
                                 
                                 {/* QR Section */}
@@ -636,8 +650,8 @@ export const CheckoutFlow: React.FC = () => {
                                 <label className="block p-8 rounded-[2.5rem] border-2 border-dashed border-primary/10 cursor-pointer hover:bg-white transition-all group">
                                     <div className="flex flex-col items-center gap-2">
                                         <span className="text-2xl">📎</span>
-                                        <span className="font-black text-base uppercase tracking-wider text-primary/40 group-hover:text-primary transition-colors text-center">
-                                            {receiptFile ? receiptFile.name : 'Sube tu comprobante (opcional)'}
+                                        <span className="font-black text-base uppercase tracking-wider text-primary/40 group-hover:text-primary transition-colors text-center truncate max-w-full px-2">
+                                            {receiptFile ? receiptFile.name.slice(0, 30) + (receiptFile.name.length > 30 ? '...' : '') : 'Sube tu comprobante (opcional)'}
                                         </span>
                                     </div>
                                     <input type="file" className="hidden" accept="image/*,.pdf" onChange={e => setReceiptFile(e.target.files?.[0] || null)} />

@@ -237,29 +237,6 @@ export const AdminDashboard: React.FC = () => {
 
                 {activeTab === 'inventory' && (
                     <div className="space-y-6">
-                    {/* Daily Limit Banner */}
-                    <div className="bg-primary/5 border border-primary/15 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                        <div>
-                            <h3 className="font-serif text-xl text-primary font-bold">Límite de pedidos del día</h3>
-                            <p className="text-sm text-gray-500 mt-1">Máximo de cajas/panes que puedes entregar hoy (0 = sin límite). Se aplica al checkout.</p>
-                        </div>
-                        <div className="flex items-center gap-3 shrink-0">
-                            <input
-                                type="number"
-                                min={0}
-                                value={dailyLimitInput}
-                                onChange={e => setDailyLimitInput(e.target.value)}
-                                className="w-24 text-center text-2xl font-black text-primary border-2 border-primary/20 rounded-xl px-3 py-2 focus:border-primary outline-none"
-                            />
-                            <button
-                                onClick={() => saveDailyLimit(parseInt(dailyLimitInput) || 0)}
-                                className="bg-primary text-white font-black text-sm uppercase tracking-widest px-5 py-2.5 rounded-xl hover:bg-primary/90 transition-all shadow-sm"
-                            >
-                                Guardar
-                            </button>
-                        </div>
-                    </div>
-
                     <div className="grid md:grid-cols-2 gap-8">
                         {/* Sabores */}
                         <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
@@ -272,13 +249,24 @@ export const AdminDashboard: React.FC = () => {
                                     </h3>
                                     <div className="space-y-3">
                                         {flavors.filter(f => f.category !== 'bread').map(flavor => (
-                                            <div key={flavor.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
-                                                <span className="font-bold">{flavor.name}</span>
+                                            <div key={flavor.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                                                <span className="font-bold flex-1 min-w-0 truncate">{flavor.name}</span>
+                                                <div className="flex items-center gap-1 shrink-0">
+                                                    <span className="text-[9px] font-bold text-gray-400 uppercase">Máx:</span>
+                                                    <input
+                                                        type="number"
+                                                        min={0}
+                                                        value={flavor.stock || ''}
+                                                        placeholder="∞"
+                                                        onChange={e => updateStock(flavor.id, parseInt(e.target.value) || 0)}
+                                                        className="w-14 text-center text-sm font-black text-primary border border-gray-200 rounded-lg px-1 py-1 focus:border-primary outline-none bg-white"
+                                                    />
+                                                </div>
                                                 <button
                                                     onClick={() => toggleFlavor(flavor.id, flavor.active)}
-                                                    className={`px-5 py-1.5 rounded-full font-bold text-xs transition-colors ${flavor.active ? 'bg-pink-100 text-pink-700' : 'bg-gray-200 text-gray-400'}`}
+                                                    className={`px-4 py-1.5 rounded-full font-bold text-xs transition-colors shrink-0 ${flavor.active ? 'bg-pink-100 text-pink-700' : 'bg-gray-200 text-gray-400'}`}
                                                 >
-                                                    {flavor.active ? 'Disponible' : 'Apagado'}
+                                                    {flavor.active ? 'ON' : 'OFF'}
                                                 </button>
                                             </div>
                                         ))}
@@ -292,13 +280,24 @@ export const AdminDashboard: React.FC = () => {
                                     </h3>
                                     <div className="space-y-3">
                                         {flavors.filter(f => f.category === 'bread').map(flavor => (
-                                            <div key={flavor.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
-                                                <span className="font-bold">{flavor.name}</span>
+                                            <div key={flavor.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                                                <span className="font-bold flex-1 min-w-0 truncate">{flavor.name}</span>
+                                                <div className="flex items-center gap-1 shrink-0">
+                                                    <span className="text-[9px] font-bold text-gray-400 uppercase">Máx:</span>
+                                                    <input
+                                                        type="number"
+                                                        min={0}
+                                                        value={flavor.stock || ''}
+                                                        placeholder="∞"
+                                                        onChange={e => updateStock(flavor.id, parseInt(e.target.value) || 0)}
+                                                        className="w-14 text-center text-sm font-black text-primary border border-gray-200 rounded-lg px-1 py-1 focus:border-primary outline-none bg-white"
+                                                    />
+                                                </div>
                                                 <button
                                                     onClick={() => toggleFlavor(flavor.id, flavor.active)}
-                                                    className={`px-5 py-1.5 rounded-full font-bold text-xs transition-colors ${flavor.active ? 'bg-amber-100 text-amber-800' : 'bg-gray-200 text-gray-400'}`}
+                                                    className={`px-4 py-1.5 rounded-full font-bold text-xs transition-colors shrink-0 ${flavor.active ? 'bg-amber-100 text-amber-800' : 'bg-gray-200 text-gray-400'}`}
                                                 >
-                                                    {flavor.active ? 'Disponible' : 'Apagado'}
+                                                    {flavor.active ? 'ON' : 'OFF'}
                                                 </button>
                                             </div>
                                         ))}

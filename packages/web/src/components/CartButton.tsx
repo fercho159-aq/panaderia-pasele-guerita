@@ -22,7 +22,6 @@ export const CartButton: React.FC = () => {
             style={{ transitionDuration: '300ms' }}
             aria-label="Open Cart"
         >
-            <span className="hidden md:inline font-sans font-bold uppercase tracking-widest text-sm">Carrito</span>
             <div className="relative">
                 <svg viewBox="0 0 24 24" className="w-8 h-8 fill-none stroke-current" strokeWidth="2">
                     <path d="M4 6h16l-1.5 13H5.5L4 6z" />

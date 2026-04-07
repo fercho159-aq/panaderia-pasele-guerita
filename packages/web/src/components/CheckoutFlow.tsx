@@ -41,10 +41,8 @@ export const CheckoutFlow: React.FC = () => {
     useEffect(() => {
         async function loadData() {
             try {
-                const response = await fetch('/api/storefront-data');
-                if (!response.ok) throw new Error('Failed to fetch from /api/storefront-data');
-                const data = await response.json();
-                setLiveLocations(data.locations?.length > 0 ? data.locations : pickupLocations);
+                // Always use the hardcoded locations from core as source of truth
+                setLiveLocations(pickupLocations);
             } catch (error) {
                 setLiveLocations(pickupLocations);
             } finally {
@@ -56,7 +54,10 @@ export const CheckoutFlow: React.FC = () => {
 
     const cartItemsList = Object.values(cartItems);
     const totalAmount = cartItemsList.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-    const isStep2Valid = selectedDate && (locationId === 'special-coordination' || (isWednesdayOrSaturday(selectedDate)));
+    const selectedLocation = liveLocations.find(l => l.id === locationId);
+    const isSpecialLocation = locationId === 'special-coordination';
+    const allowedCalendarDays = selectedLocation?.days || ['Wednesday', 'Saturday'];
+    const isStep2Valid = isSpecialLocation || (selectedDate && isWednesdayOrSaturday(selectedDate));
 
     const allBoxesFull = useMemo(() => {
         return cartItemsList
@@ -198,13 +199,22 @@ export const CheckoutFlow: React.FC = () => {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {liveLocations.map(l => (
-                            <button key={l.id} onClick={() => setLocationId(l.id)} className={`p-6 rounded-3xl border-2 text-left transition-all ${locationId === l.id ? 'border-primary bg-white shadow-lg' : 'border-primary/5 bg-bg/5 hover:bg-white'}`}>
+                        {liveLocations.filter(l => l.id !== 'special-coordination').map(l => (
+                            <button key={l.id} onClick={() => { setLocationId(l.id); setSelectedDate(''); }} className={`p-6 rounded-3xl border-2 text-left transition-all ${locationId === l.id ? 'border-primary bg-white shadow-lg' : 'border-primary/5 bg-bg/5 hover:bg-white'}`}>
                                 <h4 className="font-serif text-lg text-primary">{l.name}</h4>
-                                <p className="text-xs text-primary/40 truncate mt-1">{l.address}</p>
+                                <p className="text-xs text-primary/60 mt-1 font-bold">{l.hours}</p>
+                                <p className="text-xs text-primary/40 truncate mt-0.5">{l.address}</p>
                             </button>
                         ))}
                     </div>
+                    {/* Special coordination option */}
+                    <button
+                        onClick={() => { setLocationId('special-coordination'); setSelectedDate('coordination'); }}
+                        className={`w-full p-6 rounded-3xl border-2 text-left transition-all ${locationId === 'special-coordination' ? 'border-primary bg-white shadow-lg' : 'border-dashed border-primary/20 bg-bg/5 hover:bg-white'}`}
+                    >
+                        <h4 className="font-serif text-lg text-primary">Lavon · Princeton · Wylie</h4>
+                        <p className="text-xs text-primary/60 mt-1">Si eres de estas áreas, selecciona esta opción y te haremos llegar los días donde podemos coordinar tu entrega.</p>
+                    </button>
 
                     <div className="pt-10" ref={nextStep1Ref}>
                         <Button disabled={!locationId} onClick={() => setStep(2)} className="w-full h-20 text-xl font-black rounded-3xl shadow-xl">SIGUIENTE PASO</Button>
@@ -217,11 +227,25 @@ export const CheckoutFlow: React.FC = () => {
                 <div className="animate-fade-in space-y-10">
                     <div className="text-center">
                         <h2 className="font-serif text-5xl text-primary italic">¿Cuándo?</h2>
-                        <p className="text-primary/40 text-xs font-black uppercase tracking-widest mt-4">Entregas Miércoles y Sábados</p>
+                        <p className="text-primary/40 text-xs font-black uppercase tracking-widest mt-4">
+                            {isSpecialLocation ? 'Coordinaremos tu fecha de entrega' :
+                                allowedCalendarDays.length === 1
+                                    ? `Solo ${allowedCalendarDays[0] === 'Wednesday' ? 'Miércoles' : 'Sábados'}`
+                                    : 'Miércoles y Sábados'}
+                        </p>
                     </div>
-                    <div className="max-w-md mx-auto">
-                        <CustomCalendar selectedDate={selectedDate} onDateSelect={setSelectedDate} minDate={earliestDate} allowedDays={['Wednesday', 'Saturday']} />
-                    </div>
+                    {isSpecialLocation ? (
+                        <div className="max-w-md mx-auto bg-primary/5 border border-primary/10 rounded-[2rem] p-10 text-center">
+                            <span className="text-5xl block mb-4">📍</span>
+                            <p className="font-serif text-xl text-primary italic leading-relaxed">
+                                Nos pondremos en contacto contigo para coordinar la mejor fecha y hora de entrega para tu zona.
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="max-w-md mx-auto">
+                            <CustomCalendar selectedDate={selectedDate} onDateSelect={setSelectedDate} minDate={earliestDate} allowedDays={allowedCalendarDays as ('Wednesday' | 'Saturday')[]} />
+                        </div>
+                    )}
                     <div className="flex gap-6 mt-10" ref={nextStep2Ref}>
                         <Button variant="outline" onClick={() => setStep(1)} className="flex-1 h-16 border-primary/20 text-primary/60 rounded-2xl">ATRÁS</Button>
                         <Button disabled={!isStep2Valid} onClick={() => setStep(3)} className="flex-[2] h-16 rounded-2xl shadow-lg">ARMAR TU PEDIDO</Button>

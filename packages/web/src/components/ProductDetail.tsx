@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { addToCart } from '../stores/cartStore';
 import { Button } from '@pasele-guerita/ui';
+import { allProducts } from '@pasele-guerita/core';
 
 interface ProductDetailProps {
     product: any;
@@ -17,7 +18,6 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     const [selectedPlan, setSelectedPlan] = useState(cookiePlans[0]);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-    // Mock additional gallery images if they don't exist
     const images = [
         product.image,
         product.category === 'cookie' ? '/imagenes/IMG_6654.webp' : '/imagenes/IMG_6753.webp',
@@ -27,14 +27,20 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     const isCookie = product.category === 'cookie';
     const displayPrice = isCookie ? selectedPlan.price : (product.price || 18.00);
 
+    // Related products: same category, excluding current
+    const relatedCategory = isCookie ? 'cookie' : 'bread';
+    const relatedProducts = allProducts.filter(
+        p => p.category === relatedCategory && p.id !== product.id
+    ).slice(0, 4);
+
     const handleAddToBag = () => {
         if (isCookie) {
-            // Start with empty selections — user picks flavors in Step 3
-            addToCart({ 
-                ...product, 
+            addToCart({
+                ...product,
                 price: selectedPlan.price,
                 boxSize: selectedPlan.count,
-                name: `Caja de ${selectedPlan.count}`
+                boxLabel: selectedPlan.label,
+                // product.name preserved (not overridden)
             }, '');
         } else {
             addToCart({ ...product, price: displayPrice });
@@ -47,12 +53,12 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                 {/* Visuals - Left Column */}
                 <div className="space-y-8">
                     <div className="relative aspect-square rounded-[3rem] overflow-hidden bg-white shadow-2xl border border-primary/5 group">
-                        <img 
-                            src={images[currentImageIndex]} 
-                            alt={product.name} 
-                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
+                        <img
+                            src={images[currentImageIndex]}
+                            alt={product.name}
+                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                         />
-                        
+
                         {/* Rotating Badge */}
                         <div className="absolute top-10 right-10 w-28 h-28 flex items-center justify-center pointer-events-none">
                             <svg viewBox="0 0 100 100" className="w-full h-full animate-spin-slow">
@@ -84,7 +90,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                 {/* Details - Right Column */}
                 <div className="py-4">
                     <h1 className="font-serif text-5xl md:text-7xl text-primary mb-6 font-bold tracking-tight">{product.name}</h1>
-                    
+
                     <div className="prose prose-lg text-gray-700 font-serif italic mb-10 leading-relaxed border-l-4 border-accent/30 pl-6">
                         <p className="font-medium text-xl leading-relaxed">{product.description || "Deléitate con lo mejor de nuestra panadería artesanal. Hecho fresco cada día con ingredientes de la más alta calidad y un proceso de fermentación lenta que garantiza un sabor inigualable."}</p>
                     </div>
@@ -95,7 +101,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                             <label className="block text-[11px] font-black uppercase tracking-[0.25em] text-primary/60 mb-6">Selecciona tu Plan de Galletas</label>
                             <div className="grid grid-cols-1 gap-4">
                                 {cookiePlans.map((plan) => (
-                                    <button 
+                                    <button
                                         key={plan.count}
                                         onClick={() => setSelectedPlan(plan)}
                                         className={`p-6 rounded-[2rem] border-2 transition-all flex justify-between items-center ${selectedPlan.count === plan.count ? 'border-primary bg-primary/5 shadow-inner' : 'border-bg hover:border-primary/20 bg-white'}`}
@@ -108,7 +114,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                      </button>
                                 ))}
                             </div>
-                            <p className="text-xs text-primary/60 italic mt-4 px-2">✨ Podrás personalizar y mezclar los sabores de tu caja en el siguiente paso.</p>
+                            <p className="text-xs text-primary/60 italic mt-4 px-2">Podrás personalizar y mezclar los sabores de tu caja en el siguiente paso.</p>
                         </div>
                     ) : (
                         <div className="mb-12">
@@ -122,8 +128,8 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                         </div>
                     )}
 
-                    <Button 
-                        variant="primary" 
+                    <Button
+                        variant="primary"
                         className="w-full h-20 text-xl shadow-2xl hover:scale-[1.02] active:scale-95 transition-all mb-16 rounded-[2.5rem] bg-primary text-bg hover:shadow-primary/20 font-black tracking-widest"
                         onClick={handleAddToBag}
                     >
@@ -133,17 +139,14 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                     {/* Accordion Sections */}
                     <div className="divide-y divide-primary/10 border-t border-primary/10 mb-10">
                         {[
-                            { id: 'Description', label: 'Descripción', icon: '✨' },
-                            { id: 'Allergens', label: 'Alérgenos', icon: '🛡️' },
-                            { id: 'Care', label: 'Cuidados y Conservación', icon: '🏠' }
+                            { id: 'Description', label: 'Descripción' },
+                            { id: 'Allergens', label: 'Alérgenos' },
+                            { id: 'Care', label: 'Cuidados y Conservación' }
                         ].map((section) => (
-                            <details key={section.id} className="group py-8" open={section.id === 'Description'}>
-                                <summary className="flex justify-between items-center cursor-pointer list-none font-sans font-black uppercase tracking-[0.2em] text-[11px] text-primary">
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-xl opacity-80">{section.icon}</span>
-                                        {section.label}
-                                    </div>
-                                    <span className="transition-transform group-open:rotate-180 opacity-40 text-lg">↓</span>
+                            <details key={section.id} className="group py-6" open={section.id === 'Description'}>
+                                <summary className="flex justify-between items-center cursor-pointer list-none font-sans font-black uppercase tracking-[0.15em] text-sm text-primary">
+                                    {section.label}
+                                    <span className="transition-transform group-open:rotate-180 text-primary/50 text-lg">↓</span>
                                 </summary>
                                 <div className="mt-6 text-gray-600 leading-relaxed font-sans text-base max-w-xl">
                                     {section.id === 'Description' && (
@@ -187,6 +190,29 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                     </div>
                 </div>
             </div>
+
+            {/* Related Products */}
+            {relatedProducts.length > 0 && (
+                <div className="mt-24 pt-16 border-t border-primary/10">
+                    <h2 className="font-serif text-3xl text-primary mb-8">
+                        {isCookie ? 'Más galletas que te pueden gustar' : 'Más panes de masa madre'}
+                    </h2>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        {relatedProducts.map(p => (
+                            <a key={p.id} href={`/product/${p.id}`} className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-bg/20 flex flex-col">
+                                <div className="h-40 overflow-hidden bg-gray-50">
+                                    <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                </div>
+                                <div className="p-4 flex-1 flex flex-col">
+                                    <h3 className="font-serif text-lg text-primary italic mb-1">{p.name}</h3>
+                                    <p className="text-xs text-gray-500 line-clamp-2 flex-1">{p.description}</p>
+                                    <span className="text-sm font-bold text-primary mt-3 group-hover:text-accent transition-colors">Ver producto →</span>
+                                </div>
+                            </a>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

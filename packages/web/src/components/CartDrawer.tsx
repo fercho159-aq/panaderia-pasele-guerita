@@ -37,7 +37,7 @@ export const CartDrawer: React.FC = () => {
             />
             
             {/* Drawer */}
-            <div className={`absolute right-0 top-0 h-full w-full max-w-md bg-[#FDF5E6] shadow-2xl flex flex-col transition-transform duration-300 transform ${isClosing ? 'translate-x-full' : 'translate-x-0'}`}>
+            <div className={`absolute right-0 top-0 h-full w-full sm:max-w-sm md:max-w-md bg-[#FDF5E6] shadow-2xl flex flex-col transition-transform duration-300 transform ${isClosing ? 'translate-x-full' : 'translate-x-0'}`}>
                 {/* Header */}
                 <div className="p-6 flex justify-between items-center border-b border-primary/10">
                     <div className="flex items-center gap-3">
@@ -61,7 +61,7 @@ export const CartDrawer: React.FC = () => {
                 </div>
 
                 {/* Items List */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-8">
+                <div className="flex-1 overflow-y-auto p-4 space-y-4">
                     {cartItemsList.length === 0 ? (
                         <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
                             <span className="text-7xl mb-6">🍪</span>
@@ -69,29 +69,32 @@ export const CartDrawer: React.FC = () => {
                         </div>
                     ) : (
                         cartItemsList.map(([id, item]) => (
-                            <div key={id} className="flex gap-5 group animate-fade-in">
-                                <div className="w-24 h-24 rounded-2xl overflow-hidden bg-white shadow-sm border border-primary/5 flex-shrink-0">
-                                    <img 
-                                        src={item.image || '/imagenes/IMG_6657.webp'} 
-                                        alt={item.name} 
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                            <div key={id} className="flex gap-3 group animate-fade-in bg-white rounded-2xl p-3 border border-primary/5 shadow-sm">
+                                <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-50 flex-shrink-0">
+                                    <img
+                                        src={item.image || '/imagenes/IMG_6657.webp'}
+                                        alt={item.name}
+                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                         onError={(e) => (e.currentTarget.src = '/imagenes/IMG_6657.webp')}
                                     />
                                 </div>
-                                <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
-                                    <div className="flex justify-between items-start">
-                                        <div className="pr-4">
-                                            <h3 className="font-serif text-xl text-primary leading-tight font-bold italic">{item.name}</h3>
-                                            {item.selections ? (
-                                                <div className="mt-2 space-y-1">
+                                <div className="flex-1 min-w-0 flex flex-col justify-between">
+                                    <div className="flex justify-between items-start gap-2">
+                                        <div className="min-w-0">
+                                            <h3 className="font-serif text-base text-primary leading-tight font-bold italic truncate">{item.name}</h3>
+                                            {item.boxLabel && (
+                                                <p className="text-[10px] font-sans text-primary/60 font-bold uppercase tracking-widest mt-0.5">{item.boxLabel}</p>
+                                            )}
+                                            {item.selections && Object.keys(item.selections).length > 0 ? (
+                                                <div className="mt-1 flex flex-wrap gap-1">
                                                     {Object.entries(item.selections).map(([flavor, count]) => (
-                                                        <p key={flavor} className="text-[10px] font-sans text-accent font-black uppercase tracking-widest bg-accent/5 px-2 py-0.5 rounded-full inline-block mr-2 mt-1">
+                                                        <p key={flavor} className="text-[9px] font-sans text-accent font-black uppercase tracking-wider bg-accent/5 px-1.5 py-0.5 rounded-full">
                                                             {count}x {flavor}
                                                         </p>
                                                     ))}
                                                 </div>
-                                            ) : (
-                                                <p className="text-xs font-sans text-primary/50 font-bold uppercase tracking-widest mt-1.5">{item.category === 'bread' ? 'Hogaza' : 'Unidad'}</p>
+                                            ) : !item.boxLabel && (
+                                                <p className="text-[10px] font-sans text-primary/50 font-bold uppercase tracking-widest mt-0.5">{item.category === 'bread' ? 'Hogaza' : 'Unidad'}</p>
                                             )}
                                         </div>
                                         <button 
@@ -103,8 +106,8 @@ export const CartDrawer: React.FC = () => {
                                             </svg>
                                         </button>
                                     </div>
-                                    <div className="flex justify-between items-center mt-3">
-                                        <div className="flex items-center gap-4 bg-white rounded-full border border-primary/10 px-3 py-1 scale-90 -ml-1 shadow-sm">
+                                    <div className="flex justify-between items-center mt-2">
+                                        <div className="flex items-center gap-3 bg-bg rounded-full border border-primary/10 px-2 py-0.5 shadow-sm">
                                             <button 
                                                 onClick={() => updateQuantity(id, item.quantity - 1)}
                                                 className="text-primary font-black px-1.5 hover:scale-125 transition-transform"
@@ -124,15 +127,13 @@ export const CartDrawer: React.FC = () => {
                 </div>
 
                 {/* Footer Section */}
-                <div className="p-6 bg-white shadow-[0_-20px_50px_rgba(45,90,78,0.1)] border-t border-primary/5 space-y-6">
+                <div className="p-4 bg-white shadow-[0_-20px_50px_rgba(45,90,78,0.1)] border-t border-primary/5 space-y-4">
                     {/* Gift Section */}
-                    <div className="bg-accent/5 border border-accent/10 rounded-[2rem] p-6 relative overflow-hidden group">
+                    <div className="bg-accent/5 border border-accent/10 rounded-2xl p-4 relative overflow-hidden group">
                         <div className="relative z-10">
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm text-2xl">
-                                    🎁
-                                </div>
-                                <h3 className="font-serif text-2xl text-primary font-bold italic">¿Es un regalo?</h3>
+                            <div className="flex items-center gap-3 mb-2">
+                                <span className="text-xl">🎁</span>
+                                <h3 className="font-serif text-lg text-primary font-bold italic">¿Es un regalo?</h3>
                             </div>
                             <button 
                                 onClick={() => setGiftMessage(!gift.is_gift, gift.message)}
@@ -152,14 +153,14 @@ export const CartDrawer: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="space-y-4 pt-2">
-                        <div className="flex justify-between font-serif text-3xl text-primary items-end">
+                    <div className="space-y-3 pt-1">
+                        <div className="flex justify-between font-serif text-2xl text-primary items-end">
                             <span className="italic font-medium">Subtotal</span>
                             <span className="font-sans font-black text-primary">${subtotal.toFixed(2)}</span>
                         </div>
-                        <Button 
+                        <Button
                             variant="primary"
-                            className="w-full h-20 text-xl shadow-2xl flex items-center justify-center gap-3 rounded-[1.5rem] font-black tracking-widest"
+                            className="w-full h-14 text-base shadow-2xl flex items-center justify-center gap-3 rounded-2xl font-black tracking-widest"
                             disabled={cartItemsList.length === 0}
                             onClick={() => {
                                 if (window.location.pathname.startsWith('/checkout')) {

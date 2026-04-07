@@ -1,73 +1,65 @@
 import { PickupLocation } from './types';
 
-// Total: 2 POS, 2 Pickup, 4 Delivery
-// Total: 2 Pickup, 6 Delivery/Special
 export const pickupLocations: PickupLocation[] = [
-    // --- Pickups ---
+    // --- Miércoles y Sábado ---
     {
-        id: 'pickup-dallas',
-        name: 'Dallas: Huitzizilin Café (Pick-up)',
+        id: 'huitzizilin-dallas',
+        name: 'Huitzizilin Café — Dallas',
         address: '1836 W Jefferson Blvd #120, Dallas, TX 75208',
         days: ['Wednesday', 'Saturday'],
-        hours: 'Wed 7am-4pm, Sat 7am-3pm',
+        hours: 'Mié 7am–4pm · Sáb 7am–3pm',
         type: 'pickup'
     },
+
+    // --- Solo Miércoles ---
     {
-        id: 'pickup-hurst',
-        name: 'Hurst Tx: Tutti Frutti (Pick-up)',
+        id: 'tutti-frutti-hurst',
+        name: 'Tutti Frutti — Hurst, TX',
         address: '394 E Pipeline Rd, Hurst, TX 76053',
         days: ['Wednesday'],
-        hours: 'Wed 2pm-8pm',
+        hours: 'Mié 2pm–8pm',
         type: 'pickup'
     },
 
-    // --- Deliveries (Saturday Only) ---
+    // --- Solo Sábado (ruta) ---
     {
-        id: 'del-dallas',
-        name: 'Dallas: Huitzizilin Café (Delivery)',
-        address: '1836 W Jefferson Blvd #120, Dallas, TX 75208',
-        days: ['Saturday'],
-        hours: '10:00 AM',
-        type: 'delivery'
-    },
-    {
-        id: 'del-irving',
-        name: 'Irving (Delivery Point)',
+        id: 'irving-sat',
+        name: 'Irving',
         address: '6440 N MacArthur Blvd, Irving, TX 75039',
         days: ['Saturday'],
-        hours: '10:50 AM',
-        type: 'delivery'
+        hours: 'Sáb 10:50am',
+        type: 'pickup'
     },
     {
-        id: 'del-carrollton',
-        name: 'Carrollton (Delivery Point)',
+        id: 'carrollton-sat',
+        name: 'Carrollton',
         address: '2150 N Josey Ln, Carrollton, TX 75006',
         days: ['Saturday'],
-        hours: '11:20 AM',
-        type: 'delivery'
+        hours: 'Sáb 11:20am',
+        type: 'pickup'
     },
     {
-        id: 'del-plano',
-        name: 'Plano (Delivery Point)',
+        id: 'plano-sat',
+        name: 'Plano',
         address: '1001 14th St, Plano, TX 75074',
         days: ['Saturday'],
-        hours: '12:10 PM',
-        type: 'delivery'
+        hours: 'Sáb 12:10pm',
+        type: 'pickup'
     },
     {
-        id: 'del-garland',
-        name: 'Garland (Delivery Point)',
+        id: 'garland-sat',
+        name: 'Garland',
         address: '500 W Miller Rd, Garland, TX 75041',
         days: ['Saturday'],
-        hours: '1:00 PM',
-        type: 'delivery'
+        hours: 'Sáb 1:00pm',
+        type: 'pickup'
     },
 
-    // --- Special ---
+    // --- Opción especial ---
     {
         id: 'special-coordination',
-        name: 'Lavon, Princeton, Wylie',
-        address: 'Si eres de Lavon, Princeton o Wylie, selecciona esta opción para coordinar tu entrega.',
+        name: 'Lavon · Princeton · Wylie',
+        address: 'Selecciona esta opción y te haremos llegar los días donde podemos coordinar tu entrega.',
         days: ['Wednesday', 'Saturday'],
         hours: 'Coordinación personalizada',
         type: 'delivery'

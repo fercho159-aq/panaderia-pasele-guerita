@@ -23,7 +23,7 @@ export const CheckoutFlow: React.FC = () => {
 
     // Flow states
     const [step, setStep] = useState(1);
-    const [logistics, setLogistics] = useState<'pickup' | 'delivery' | null>(null);
+    const [logistics, setLogistics] = useState<'pickup' | 'delivery' | null>('pickup');
     const [zipCode, setZipCode] = useState('');
     const [selectedDate, setSelectedDate] = useState('');
     const [locationId, setLocationId] = useState('');
@@ -105,7 +105,7 @@ export const CheckoutFlow: React.FC = () => {
 
     // Auto-scroll logic
     useEffect(() => {
-        if (step === 1 && (logistics === 'delivery' || (logistics === 'pickup' && locationId))) {
+        if (step === 1 && locationId) {
             nextStep1Ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     }, [logistics, locationId, step]);
@@ -194,31 +194,20 @@ export const CheckoutFlow: React.FC = () => {
                 <div className="animate-fade-in space-y-10">
                     <div className="text-center max-w-md mx-auto">
                         <h2 className="font-serif text-5xl text-primary italic mb-3">Tu Entrega</h2>
-                        <p className="text-primary/60 font-serif line-clamp-2">Elige cómo quieres recibir tu pedido.</p>
+                        <p className="text-primary/60 font-serif">Elige tu punto de recolección.</p>
                     </div>
-                    
-                    <div className="grid grid-cols-2 gap-8">
-                        {['pickup', 'delivery'].map(type => (
-                            <button key={type} onClick={() => setLogistics(type as any)} className={`p-10 rounded-[2.5rem] border-2 transition-all flex flex-col items-center gap-6 group ${logistics === type ? 'border-primary bg-primary/5 shadow-xl' : 'border-primary/5 hover:border-primary/20 bg-bg/20'}`}>
-                                <span className="text-5xl group-hover:scale-110 transition-transform">{type === 'pickup' ? '🛍️' : '🚚'}</span>
-                                <span className="font-serif text-2xl text-primary italic">{type === 'pickup' ? 'Recoger' : 'Envío'}</span>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {liveLocations.map(l => (
+                            <button key={l.id} onClick={() => setLocationId(l.id)} className={`p-6 rounded-3xl border-2 text-left transition-all ${locationId === l.id ? 'border-primary bg-white shadow-lg' : 'border-primary/5 bg-bg/5 hover:bg-white'}`}>
+                                <h4 className="font-serif text-lg text-primary">{l.name}</h4>
+                                <p className="text-xs text-primary/40 truncate mt-1">{l.address}</p>
                             </button>
                         ))}
                     </div>
 
-                    {logistics === 'pickup' && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-slide-up">
-                            {liveLocations.map(l => (
-                                <button key={l.id} onClick={() => setLocationId(l.id)} className={`p-6 rounded-3xl border-2 text-left transition-all ${locationId === l.id ? 'border-primary bg-white shadow-lg' : 'border-primary/5 bg-bg/5 hover:bg-white'}`}>
-                                    <h4 className="font-serif text-lg text-primary">{l.name}</h4>
-                                    <p className="text-xs text-primary/40 truncate mt-1">{l.address}</p>
-                                </button>
-                            ))}
-                        </div>
-                    )}
-
                     <div className="pt-10" ref={nextStep1Ref}>
-                        <Button disabled={!logistics || (logistics === 'pickup' && !locationId)} onClick={() => setStep(2)} className="w-full h-20 text-xl font-black rounded-3xl shadow-xl">SIGUIENTE PASO</Button>
+                        <Button disabled={!locationId} onClick={() => setStep(2)} className="w-full h-20 text-xl font-black rounded-3xl shadow-xl">SIGUIENTE PASO</Button>
                     </div>
                 </div>
             )}

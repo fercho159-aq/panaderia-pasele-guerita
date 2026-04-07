@@ -129,11 +129,36 @@ const breadHoverPool = [
 					<p class="text-gray-500 uppercase tracking-widest font-bold text-xs">Recomendaciones de la casa</p>
 				</div>
 			</div>
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+			{/* --- Galletas --- */}
+			<h3 class="font-serif text-2xl text-primary mb-5 mt-2">🍪 Galletas</h3>
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
 				{[
 					{ id: 'abuelita', cat: 'regulares' },
 					{ id: 'fresa-coco', cat: 'regulares' },
 					{ id: 'choco-nuts', cat: 'regulares' },
+				].map((item: any) => {
+					const fav = allProducts.find(p => p.id === item.id);
+					if (!fav) return null;
+					return (
+						<div class="bg-white p-6 rounded-3xl shadow-sm border border-bg hover:shadow-xl transition-all group overflow-hidden relative flex flex-col">
+							<div class="relative h-64 -mx-6 -mt-6 mb-6 overflow-hidden">
+								<img src={fav.image} alt={fav.name} class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+								<div class="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-primary text-xs font-bold shadow-sm">Popular</div>
+							</div>
+							<h4 class="font-serif text-2xl text-primary mb-2">{fav.name}</h4>
+							<p class="text-gray-600 text-sm mb-6 line-clamp-2 flex-1">{fav.description}</p>
+							<a href={`/menu#${item.cat}`} class="w-full">
+								<Button variant="outline" className="w-full text-sm py-2 rounded-xl border-primary/20">Ver menú completo →</Button>
+							</a>
+						</div>
+					);
+				})}
+			</div>
+
+			{/* --- Pan de Masa Madre --- */}
+			<h3 class="font-serif text-2xl text-primary mb-5">🥖 Pan de Masa Madre</h3>
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+				{[
 					{ id: 'hogaza-natural', cat: 'pan' },
 					{ id: 'pan-semillas', cat: 'pan' },
 					{ id: 'jalapeño-cheddar', cat: 'pan' }
@@ -148,11 +173,9 @@ const breadHoverPool = [
 							</div>
 							<h4 class="font-serif text-2xl text-primary mb-2">{fav.name}</h4>
 							<p class="text-gray-600 text-sm mb-6 line-clamp-2 flex-1">{fav.description}</p>
-							<div class="flex flex-col gap-4">
-								<a href={`/menu#${item.cat}`} class="w-full">
-									<Button variant="outline" className="w-full text-sm py-2 rounded-xl border-primary/20">Ver menú completo →</Button>
-								</a>
-							</div>
+							<a href={`/menu#${item.cat}`} class="w-full">
+								<Button variant="outline" className="w-full text-sm py-2 rounded-xl border-primary/20">Ver menú completo →</Button>
+							</a>
 						</div>
 					);
 				})}

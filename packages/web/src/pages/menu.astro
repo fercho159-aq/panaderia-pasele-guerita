@@ -57,12 +57,12 @@ const categories = [
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             </div>
                             <div class="p-8 flex-1 flex flex-col">
-                                <h3 class="font-serif text-2xl text-primary mb-2 italic">{flavor.name}</h3>
-                                <p class="text-sm text-gray-600 mb-6 flex-1 line-clamp-3">{flavor.description}</p>
-                                <div class="flex items-center justify-between pt-6 border-t border-bg/10">
-                                    <span class="text-lg font-bold text-primary font-serif italic">${flavor.price ? (flavor.price/3).toFixed(2) : '4.00'} c/u</span>
-                                    <AddToCartButton client:load product={{...flavor, category: 'cookie', price: 12, boxSize: 3}} />
-                                </div>
+                                <h3 class="font-serif text-2xl text-primary mb-1 italic">{flavor.name}</h3>
+                                <span class="text-lg font-bold text-primary font-serif italic mb-3">${flavor.price ? (flavor.price/3).toFixed(2) : '4.00'} c/u</span>
+                                <p class="text-sm text-gray-600 flex-1 line-clamp-3">{flavor.description}</p>
+                                <a href={`/product/${flavor.id}`} class="block mt-6 w-full text-center text-sm font-bold bg-primary text-white hover:bg-accent hover:scale-[1.02] active:scale-95 transition-all duration-200 py-3 px-6 rounded-xl shadow-sm hover:shadow-md">
+                                    Agregar al pedido →
+                                </a>
                             </div>
                         </div>
                     ))}
@@ -83,12 +83,12 @@ const categories = [
                                 <div class="absolute top-4 right-4 bg-accent/90 text-white text-[10px] font-bold uppercase px-3 py-1 rounded-full shadow-sm">Sugar Free</div>
                             </div>
                             <div class="p-8 flex-1 flex flex-col">
-                                <h3 class="font-serif text-2xl text-primary mb-2 italic">{flavor.name}</h3>
-                                <p class="text-sm text-gray-600 mb-6 flex-1 line-clamp-3">{flavor.description}</p>
-                                <div class="flex items-center justify-between pt-6 border-t border-bg/10">
-                                    <span class="text-lg font-bold text-primary font-serif italic">${flavor.price ? (flavor.price/3).toFixed(2) : '4.50'} c/u</span>
-                                    <AddToCartButton client:load product={{...flavor, category: 'cookie', price: flavor.price || 13.50, boxSize: 3}} />
-                                </div>
+                                <h3 class="font-serif text-2xl text-primary mb-1 italic">{flavor.name}</h3>
+                                <span class="text-lg font-bold text-primary font-serif italic mb-3">${flavor.price ? (flavor.price/3).toFixed(2) : '4.50'} c/u</span>
+                                <p class="text-sm text-gray-600 flex-1 line-clamp-3">{flavor.description}</p>
+                                <a href={`/product/${flavor.id}`} class="block mt-6 w-full text-center text-sm font-bold bg-primary text-white hover:bg-accent hover:scale-[1.02] active:scale-95 transition-all duration-200 py-3 px-6 rounded-xl shadow-sm hover:shadow-md">
+                                    Agregar al pedido →
+                                </a>
                             </div>
                         </div>
                     ))}
@@ -108,12 +108,12 @@ const categories = [
                                 <img src={flavor.image} alt={flavor.name} class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                             </div>
                             <div class="p-8 flex-1 flex flex-col text-center">
-                                <h3 class="font-serif text-3xl text-primary mb-2 italic">{flavor.name}</h3>
-                                <p class="text-sm text-gray-600 mb-8 flex-1">{flavor.description}</p>
-                                <div class="flex flex-col items-center gap-4">
-                                    <span class="text-2xl font-bold text-primary font-serif italic">${flavor.price}</span>
-                                    <AddToCartButton client:load product={{...flavor, category: 'bread'}} />
-                                </div>
+                                <h3 class="font-serif text-3xl text-primary mb-1 italic">{flavor.name}</h3>
+                                <span class="text-2xl font-bold text-primary font-serif italic mb-3">${flavor.price}</span>
+                                <p class="text-sm text-gray-600 flex-1">{flavor.description}</p>
+                                <a href={`/product/${flavor.id}`} class="block mt-6 w-full text-center text-sm font-bold bg-primary text-white hover:bg-accent hover:scale-[1.02] active:scale-95 transition-all duration-200 py-3 px-6 rounded-xl shadow-sm hover:shadow-md">
+                                    Agregar al pedido →
+                                </a>
                             </div>
                         </div>
                     ))}

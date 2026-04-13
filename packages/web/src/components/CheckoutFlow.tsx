@@ -102,6 +102,8 @@ export const CheckoutFlow: React.FC = () => {
     const cartItemsList = Object.values(cartItems);
     const totalAmount = cartItemsList.reduce((acc, item) => acc + (item.price * item.quantity), 0);
     const isRecipeOnly = cartItemsList.length > 0 && cartItemsList.every(i => (i as any).isRecipe);
+    const regularCookieFlavors = activeCookieFlavors.filter((f: any) => !f.is_sugar_free);
+    const sugarFreeCookieFlavors = activeCookieFlavors.filter((f: any) => f.is_sugar_free);
     const selectedLocation = liveLocations.find(l => l.id === locationId);
     const isSpecialLocation = locationId === 'special-coordination';
     const allowedCalendarDays = selectedLocation?.days || ['Wednesday', 'Saturday'];
@@ -374,14 +376,17 @@ export const CheckoutFlow: React.FC = () => {
                         const boxSize = box.boxSize || 3;
                         const filled = Object.values(box.selections || {}).reduce((a, b) => a + b, 0);
                         const remaining = boxSize - filled;
+                        const boxIsSF = !!(box as any).isSugarFree;
+                        const availableFlavors = boxIsSF ? sugarFreeCookieFlavors : regularCookieFlavors;
                         return (
-                            <div key={box.id} className="bg-primary/5 p-4 sm:p-6 md:p-10 rounded-[2rem] sm:rounded-[3rem] border border-primary/10 relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-40 h-40 bg-accent/10 rounded-bl-full translate-x-10 -translate-y-10 pointer-events-none" />
+                            <div key={box.id} className={`p-4 sm:p-6 md:p-10 rounded-[2rem] sm:rounded-[3rem] border relative overflow-hidden ${boxIsSF ? 'bg-accent/5 border-accent/20' : 'bg-primary/5 border-primary/10'}`}>
+                                <div className={`absolute top-0 right-0 w-40 h-40 rounded-bl-full translate-x-10 -translate-y-10 pointer-events-none ${boxIsSF ? 'bg-accent/10' : 'bg-accent/10'}`} />
 
                                 {/* Box Header */}
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                                     <div>
-                                        <h3 className="font-serif text-3xl md:text-4xl text-primary italic font-bold">Tu Caja de {boxSize}</h3>
+                                        <h3 className="font-serif text-3xl md:text-4xl text-primary italic font-bold">Tu Caja {boxIsSF ? 'Sugar Free' : ''} de {boxSize}</h3>
+                                        {boxIsSF && <span className="text-[10px] font-black uppercase tracking-widest text-accent bg-accent/10 px-3 py-1 rounded-full border border-accent/20 mt-1 inline-block">Solo sabores Sugar Free</span>}
                                         <div className="flex flex-wrap gap-1.5 mt-3">
                                             {Array.from({ length: boxSize }).map((_, i) => (
                                                 <div key={i} className={`h-2.5 rounded-full transition-all duration-500 ${i < filled ? 'bg-accent w-8 sm:w-10 shadow-sm' : 'bg-primary/15 w-5 sm:w-6'}`} />
@@ -410,7 +415,7 @@ export const CheckoutFlow: React.FC = () => {
 
                                 {/* Flavor Picker Grid */}
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
-                                    {activeCookieFlavors.map(f => {
+                                    {availableFlavors.map(f => {
                                         const count = box.selections?.[f.name] || 0;
                                         const isAtMax = filled >= boxSize && count === 0;
                                         return (
@@ -479,38 +484,76 @@ export const CheckoutFlow: React.FC = () => {
                             </button>
                         </div>
 
-                        {/* Tab: Extra Cookies — pick a box size, customize flavors above */}
+                        {/* Tab: Extra Cookies — Regular + Sugar Free box options */}
                         {extrasTab === 'cookies' && (
-                            <div className="space-y-4">
+                            <div className="space-y-6">
                                 <p className="text-xs text-primary/50 italic text-center px-4">
                                     Elige el tamaño de la caja. Podrás personalizar los sabores en la sección de arriba.
                                 </p>
-                                {[
-                                    { id: 'extra-box-3', count: 3, price: 12.00, label: 'Standard Box (3)', sub: '3 galletas artesanales' },
-                                    { id: 'extra-box-6', count: 6, price: 22.00, label: 'Family Box (6)', sub: '6 galletas artesanales' },
-                                    { id: 'extra-box-9', count: 9, price: 31.50, label: 'Party Box (9)', sub: '9 galletas artesanales' }
-                                ].map(plan => (
-                                    <button
-                                        key={plan.id}
-                                        onClick={() => addToCart({
-                                            id: plan.id,
-                                            name: 'Galletas Artesanales',
-                                            category: 'cookie',
-                                            price: plan.price,
-                                            boxSize: plan.count,
-                                            boxLabel: plan.label,
-                                            image: '/imagenes/cookie-choconuts.webp',
-                                            description: 'Mix de sabores a elegir',
-                                        }, '')}
-                                        className="w-full p-5 rounded-2xl border-2 border-primary/10 hover:border-primary bg-white flex justify-between items-center group hover:shadow-md transition-all"
-                                    >
-                                        <div className="text-left">
-                                            <span className="font-serif text-xl text-primary italic font-bold">{plan.label}</span>
-                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-0.5">{plan.sub} · personaliza sabores arriba</p>
-                                        </div>
-                                        <span className="font-black text-primary text-2xl group-hover:scale-110 transition-transform">${plan.price.toFixed(2)}</span>
-                                    </button>
-                                ))}
+
+                                {/* Regular boxes */}
+                                <div className="space-y-3">
+                                    <h4 className="text-xs font-black uppercase tracking-widest text-primary/40">Galletas Regulares</h4>
+                                    {[
+                                        { id: 'extra-box-3', count: 3, price: 12.00, label: 'Standard Box (3)', sub: '3 galletas' },
+                                        { id: 'extra-box-6', count: 6, price: 22.00, label: 'Family Box (6)', sub: '6 galletas' },
+                                        { id: 'extra-box-9', count: 9, price: 31.50, label: 'Party Box (9)', sub: '9 galletas' }
+                                    ].map(plan => (
+                                        <button
+                                            key={plan.id}
+                                            onClick={() => addToCart({
+                                                id: plan.id,
+                                                name: 'Galletas Artesanales',
+                                                category: 'cookie',
+                                                price: plan.price,
+                                                boxSize: plan.count,
+                                                boxLabel: plan.label,
+                                                isSugarFree: false,
+                                                image: '/imagenes/cookie-choconuts.webp',
+                                                description: 'Mix de sabores a elegir',
+                                            }, '')}
+                                            className="w-full p-4 rounded-2xl border-2 border-primary/10 hover:border-primary bg-white flex justify-between items-center group hover:shadow-md transition-all"
+                                        >
+                                            <div className="text-left">
+                                                <span className="font-serif text-lg text-primary italic font-bold">{plan.label}</span>
+                                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-0.5">{plan.sub}</p>
+                                            </div>
+                                            <span className="font-black text-primary text-xl group-hover:scale-110 transition-transform">${plan.price.toFixed(2)}</span>
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {/* Sugar Free boxes */}
+                                <div className="space-y-3">
+                                    <h4 className="text-xs font-black uppercase tracking-widest text-accent">Sugar Free</h4>
+                                    {[
+                                        { id: 'sf-box-3', count: 3, price: 13.50, label: 'SF Box (3)', sub: '3 galletas sugar free' },
+                                        { id: 'sf-box-6', count: 6, price: 25.00, label: 'SF Box (6)', sub: '6 galletas sugar free' },
+                                        { id: 'sf-box-9', count: 9, price: 36.00, label: 'SF Box (9)', sub: '9 galletas sugar free' }
+                                    ].map(plan => (
+                                        <button
+                                            key={plan.id}
+                                            onClick={() => addToCart({
+                                                id: plan.id,
+                                                name: 'Galletas Sugar Free',
+                                                category: 'cookie',
+                                                price: plan.price,
+                                                boxSize: plan.count,
+                                                boxLabel: plan.label,
+                                                isSugarFree: true,
+                                                image: '/imagenes/IMG_6759.webp',
+                                                description: 'Solo sabores Sugar Free',
+                                            }, '')}
+                                            className="w-full p-4 rounded-2xl border-2 border-accent/20 hover:border-accent bg-accent/5 flex justify-between items-center group hover:shadow-md transition-all"
+                                        >
+                                            <div className="text-left">
+                                                <span className="font-serif text-lg text-accent italic font-bold">{plan.label}</span>
+                                                <p className="text-[10px] font-black text-accent/60 uppercase tracking-widest mt-0.5">{plan.sub}</p>
+                                            </div>
+                                            <span className="font-black text-accent text-xl group-hover:scale-110 transition-transform">${plan.price.toFixed(2)}</span>
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         )}
 

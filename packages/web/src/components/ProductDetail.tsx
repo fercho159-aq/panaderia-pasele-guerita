@@ -8,8 +8,13 @@ interface ProductDetailProps {
 }
 
 export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
-    // Plans for cookies
-    const cookiePlans = [
+    const isSugarFree = !!(product as any).is_sugar_free;
+    // Plans for cookies — different prices for Sugar Free
+    const cookiePlans = isSugarFree ? [
+        { count: 3, price: 13.50, label: 'SF Box (3)' },
+        { count: 6, price: 25.00, label: 'SF Box (6)' },
+        { count: 9, price: 36.00, label: 'SF Box (9)' }
+    ] : [
         { count: 3, price: 12.00, label: 'Standard Box (3)' },
         { count: 6, price: 22.00, label: 'Family Box (6)' },
         { count: 9, price: 31.50, label: 'Party Box (9)' }
@@ -40,7 +45,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                 price: selectedPlan.price,
                 boxSize: selectedPlan.count,
                 boxLabel: selectedPlan.label,
-                // product.name preserved (not overridden)
+                isSugarFree: !!(product as any).is_sugar_free,
             }, '');
         } else {
             addToCart({ ...product, price: displayPrice });

@@ -369,9 +369,9 @@ export const AdminDashboard: React.FC = () => {
                             </div>
                         </div>
                         
-                        <div className="overflow-x-auto custom-scrollbar pb-6 rounded-xl border border-gray-100">
+                        <div className="overflow-x-scroll overflow-y-auto max-h-[70vh] rounded-xl border border-gray-100" style={{scrollbarWidth: 'auto', scrollbarColor: '#366f5f #f3f4f6'}}>
                             <table className="w-full text-left border-collapse text-sm min-w-[1200px]">
-                                <thead>
+                                <thead className="sticky top-0 z-20">
                                     <tr className="text-gray-500 uppercase font-bold tracking-widest bg-gray-50 border-b border-gray-200">
                                         <th className="p-3 w-32 sticky left-0 bg-gray-50 z-10 border-r border-gray-200">Ubicación</th>
                                         <th className="p-3 w-40 sticky left-32 bg-gray-50 z-10 border-r border-gray-200">Cliente</th>
@@ -472,13 +472,26 @@ export const AdminDashboard: React.FC = () => {
                                                                         )}
                                                                         {displayEmail && <a href={`mailto:${displayEmail}`} className="text-[10px] text-gray-400 hover:text-primary transition-colors mt-1">{displayEmail}</a>}
                                                                         {displayPhone && <a href={`tel:${displayPhone}`} className="text-[10px] text-gray-400 hover:text-primary transition-colors">{displayPhone}</a>}
-                                                                        {(displayNotes || (order.notes)) && (
+                                                                        {(displayNotes || order.notes) && (() => {
+                                                                            const noteText = displayNotes || order.notes || '';
+                                                                            // Extract any URLs from notes to make them clickable
+                                                                            const urlRegex = /(https?:\/\/\S+)/g;
+                                                                            const parts = noteText.split(urlRegex);
+                                                                            return (
                                                                             <div className="mt-2 p-2 bg-accent/5 rounded-lg border border-accent/10">
-                                                                                <p className="text-[11px] text-accent font-medium leading-relaxed italic">
-                                                                                    📝 {displayNotes || order.notes}
+                                                                                <p className="text-[11px] text-accent font-medium leading-relaxed italic break-all">
+                                                                                    {parts.map((part: string, idx: number) =>
+                                                                                        urlRegex.test(part) ? null : part.match(/^https?:\/\//) ? (
+                                                                                            <a key={idx} href={part} target="_blank" rel="noopener noreferrer" className="text-emerald-700 underline font-bold hover:text-emerald-900 not-italic">VER RECIBO</a>
+                                                                                        ) : <span key={idx}>{part}</span>
+                                                                                    )}
+                                                                                    {noteText.match(urlRegex)?.map((url: string, idx: number) => (
+                                                                                        <a key={`url-${idx}`} href={url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 ml-1 text-emerald-700 underline font-bold hover:text-emerald-900 not-italic">VER RECIBO</a>
+                                                                                    ))}
                                                                                 </p>
                                                                             </div>
-                                                                        )}
+                                                                            );
+                                                                        })()}
                                                                     </>
                                                                 );
                                                             })()}

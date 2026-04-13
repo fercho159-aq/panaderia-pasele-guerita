@@ -1,26 +1,30 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { Button } from '@pasele-guerita/ui';
+import { RecipeBuyButton } from '../components/RecipeBuyButton';
 
 const recipes = [
     {
+        id: 'recipe-starter',
         title: "Guía: Inicia tu propia Masa Madre",
         description: "Un PDF paso a paso para crear, alimentar y mantener tu Sourdough Starter desde cero hasta tu primer pan.",
-        pdf: "/dummy-recipe.pdf",
+        price: 5.00,
         tag: "Básico",
         image: "/imagenes/IMG_6703.webp",
     },
     {
+        id: 'recipe-cookies',
         title: "Receta: Classic Sourdough Cookies",
         description: "Nuestra receta secreta base para que intentes hornear nuestras famosas galletas en casa.",
-        pdf: "/dummy-recipe.pdf",
+        price: 5.00,
         tag: "Intermedio",
         image: "/imagenes/IMG_6657.webp",
     },
     {
+        id: 'recipe-tips',
         title: "Tips de Horneado y Tiempos Largos",
         description: "Información valiosa sobre fermentación en frío, autolisis y desarrollo de sabor para panaderos caseros.",
-        pdf: "/dummy-recipe.pdf",
+        price: 5.00,
         tag: "Avanzado",
         image: "/imagenes/IMG_6751.webp",
     }
@@ -69,9 +73,7 @@ const inspirationImages = [
                         </span>
                         <h2 class="font-serif text-3xl text-white font-bold mb-4 leading-tight">{recipe.title}</h2>
                         <p class="text-white/80 mb-8 font-sans text-base leading-relaxed">{recipe.description}</p>
-                        <a href={recipe.pdf} download>
-                            <Button className="w-full h-14 font-serif text-xl bg-white/20 backdrop-blur-sm border border-white/40 text-white hover:bg-white hover:text-primary transition-all">Descargar PDF →</Button>
-                        </a>
+                        <RecipeBuyButton client:load recipeId={recipe.id} recipeName={recipe.title} recipePrice={recipe.price} recipeImage={recipe.image} />
                     </div>
                 </div>
             ))}

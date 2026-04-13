@@ -10,6 +10,7 @@ export type CartItem = {
     flavor?: string;
     boxSize?: number; // 3, 6, 9
     selections?: Record<string, number>; // flavor -> quantity within the box
+    isRecipe?: boolean; // digital product — skip location/date/customize steps
 };
 
 export type CartStore = {

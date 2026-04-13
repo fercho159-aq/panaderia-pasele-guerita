@@ -409,12 +409,13 @@ export const AdminDashboard: React.FC = () => {
                                                     <td className="p-3 font-medium text-gray-600 sticky left-0 bg-white z-10 border-r border-gray-100">
                                                         <div className="flex flex-col gap-1">
                                                             <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Fecha de Recolección</span>
-                                                            <input 
-                                                                type="date" 
-                                                                value={(order as any).pickup_day || ''} 
+                                                            <input
+                                                                type="date"
+                                                                value={(order as any).pickup_day || ''}
                                                                 onChange={(e) => updateOrderDate(order.id, e.target.value)}
                                                                 className="text-xs font-bold text-primary border-b border-dashed border-primary/20 bg-transparent hover:border-primary transition-colors cursor-pointer outline-none"
                                                             />
+                                                            <span className="text-[9px] font-mono text-primary/40 mt-1 select-all">#{order.id.slice(0,8).toUpperCase()}</span>
                                                         </div>
                                                     </td>
                                                     <td className="p-3 font-bold text-gray-800 sticky left-32 bg-white z-10 border-r border-gray-100">
@@ -537,7 +538,7 @@ export const AdminDashboard: React.FC = () => {
                                                 <td colSpan={2} className="p-3 text-right sticky left-0 z-10 bg-gray-800 border-r border-gray-700">TOTAL VENDIDO</td>
                                                 
                                                 <td className="p-3 text-center bg-pink-900 border-r border-gray-700">
-                                                    {totalOrders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + Object.entries(o.flavors_selected||{}).reduce((s, [id, q])=> s + (!id.includes('hogaza')&&!id.includes('pan-')&&!id.includes('multigrano') ? q : 0), 0), 0)}
+                                                    {totalOrders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + Object.entries(o.flavors_selected||{}).reduce((s, [id, q])=> s + (!breadFlavorIds.has(id) ? q : 0), 0), 0)}
                                                 </td>
                                                 
                                                 {flavors.filter(f => f.category !== 'bread').map(flavor => {
@@ -546,7 +547,7 @@ export const AdminDashboard: React.FC = () => {
                                                 })}
                                                 
                                                 <td className="p-3 text-center bg-amber-900 border-r border-gray-700">
-                                                    {totalOrders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + Object.entries(o.flavors_selected||{}).reduce((s, [id, q])=> s + (id.includes('hogaza')||id.includes('pan-')||id.includes('multigrano') ? q : 0), 0), 0)}
+                                                    {totalOrders.filter(o=>o.status!=='Cancelado').reduce((sum, o) => sum + Object.entries(o.flavors_selected||{}).reduce((s, [id, q])=> s + (breadFlavorIds.has(id) ? q : 0), 0), 0)}
                                                 </td>
                                                 
                                                 {flavors.filter(f => f.category === 'bread').map(flavor => {

@@ -81,7 +81,11 @@ export const CartDrawer: React.FC = () => {
                                 <div className="flex-1 min-w-0 flex flex-col justify-between">
                                     <div className="flex justify-between items-start gap-2">
                                         <div className="min-w-0">
-                                            <h3 className="font-serif text-base text-primary leading-tight font-bold italic truncate">{item.name}</h3>
+                                            <h3 className="font-serif text-base text-primary leading-tight font-bold italic truncate">{
+                                        item.boxSize && item.selections && Object.keys(item.selections).length > 0
+                                            ? (Object.keys(item.selections).length === 1 ? Object.keys(item.selections)[0] : 'Sabores Mixtos')
+                                            : item.name
+                                    }</h3>
                                             {item.boxLabel && (
                                                 <p className="text-[10px] font-sans text-primary/60 font-bold uppercase tracking-widest mt-0.5">{item.boxLabel}</p>
                                             )}

@@ -101,6 +101,7 @@ export const CheckoutFlow: React.FC = () => {
 
     const cartItemsList = Object.values(cartItems);
     const totalAmount = cartItemsList.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    const isRecipeOnly = cartItemsList.length > 0 && cartItemsList.every(i => (i as any).isRecipe);
     const selectedLocation = liveLocations.find(l => l.id === locationId);
     const isSpecialLocation = locationId === 'special-coordination';
     const allowedCalendarDays = selectedLocation?.days || ['Wednesday', 'Saturday'];
@@ -162,6 +163,15 @@ export const CheckoutFlow: React.FC = () => {
     const nextStep1Ref = React.useRef<HTMLDivElement>(null);
     const nextStep2Ref = React.useRef<HTMLDivElement>(null);
     const checkoutTopRef = React.useRef<HTMLDivElement>(null);
+
+    // Recipe-only cart: skip directly to data entry (step 4)
+    useEffect(() => {
+        if (isRecipeOnly && step < 4) {
+            setLocationId('digital');
+            setSelectedDate('digital');
+            setStep(4);
+        }
+    }, [isRecipeOnly]);
 
     // Scroll to top of checkout when step changes
     useEffect(() => {
@@ -247,6 +257,14 @@ export const CheckoutFlow: React.FC = () => {
 
     if (isLoading) return <div className="text-center py-20 animate-pulse text-primary font-serif italic text-2xl font-bold">Iniciando horno...</div>;
 
+    if (cartItemsList.length === 0 && step !== 6) return (
+        <div className="max-w-2xl mx-auto bg-white p-12 rounded-[3rem] shadow-2xl border border-primary/5 text-center">
+            <h2 className="font-serif text-4xl text-primary italic mb-4">Tu canasta está vacía</h2>
+            <p className="text-primary/60 font-serif italic text-lg leading-relaxed mb-8">Agrega galletas o panes para comenzar tu pedido.</p>
+            <a href="/menu"><Button className="h-16 px-12 text-lg font-black rounded-2xl shadow-xl">Ver el Menú</Button></a>
+        </div>
+    );
+
     if (isSoldOut) return (
         <div className="max-w-2xl mx-auto bg-white p-12 rounded-[3rem] shadow-2xl border border-primary/5 text-center">
             <span className="text-7xl block mb-6"></span>
@@ -256,7 +274,8 @@ export const CheckoutFlow: React.FC = () => {
         </div>
     );
 
-    const steps = ["Logística", "Fecha", "Personalizar", "Datos", "Pago"];
+    const steps = isRecipeOnly ? ["Datos", "Pago"] : ["Logística", "Fecha", "Personalizar", "Datos", "Pago"];
+    const displayStep = isRecipeOnly ? step - 3 : step; // map step 4→1, 5→2 for recipe flow
 
     return (
         <div ref={checkoutTopRef} className="max-w-4xl mx-auto bg-white p-4 sm:p-8 md:p-12 rounded-[2rem] sm:rounded-[3rem] shadow-2xl border border-primary/5 min-h-[700px] flex flex-col font-sans">
@@ -264,17 +283,17 @@ export const CheckoutFlow: React.FC = () => {
             <div className="hidden md:flex justify-between mb-16 px-4">
                 {steps.map((s, i) => (
                     <div key={s} className="flex flex-col items-center flex-1">
-                        <div className={`h-1.5 w-full rounded-full transition-all duration-500 ${step >= i+1 ? 'bg-primary shadow-[0_0_10px_rgba(54,111,95,0.3)]' : 'bg-primary/10'}`} />
-                        <span className={`text-[10px] font-black uppercase tracking-widest mt-3 ${step === i+1 ? 'text-primary' : 'text-primary/20'}`}>{s}</span>
+                        <div className={`h-1.5 w-full rounded-full transition-all duration-500 ${displayStep >= i+1 ? 'bg-primary shadow-[0_0_10px_rgba(54,111,95,0.3)]' : 'bg-primary/10'}`} />
+                        <span className={`text-[10px] font-black uppercase tracking-widest mt-3 ${displayStep === i+1 ? 'text-primary' : 'text-primary/20'}`}>{s}</span>
                     </div>
                 ))}
             </div>
             <div className="flex md:hidden items-center justify-center gap-3 mb-8">
-                <span className="text-[10px] font-black uppercase tracking-widest text-primary/40">Paso {step > 5 ? 5 : step} de 5</span>
-                <span className="font-serif text-lg text-primary italic font-bold">{step <= 5 ? steps[step - 1] : ''}</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-primary/40">Paso {Math.min(displayStep, steps.length)} de {steps.length}</span>
+                <span className="font-serif text-lg text-primary italic font-bold">{displayStep <= steps.length ? steps[displayStep - 1] : ''}</span>
                 <div className="flex gap-1.5 ml-2">
                     {steps.map((_, i) => (
-                        <div key={i} className={`h-2 rounded-full transition-all ${step >= i+1 ? 'bg-primary w-6' : 'bg-primary/15 w-2'}`} />
+                        <div key={i} className={`h-2 rounded-full transition-all ${displayStep >= i+1 ? 'bg-primary w-6' : 'bg-primary/15 w-2'}`} />
                     ))}
                 </div>
             </div>
@@ -498,7 +517,9 @@ export const CheckoutFlow: React.FC = () => {
                         {/* Tab: Breads */}
                         {extrasTab === 'breads' && (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                {activeBreadFlavors.map(b => (
+                                {activeBreadFlavors.map(b => {
+                                    const wantSliced = slicedBreads[b.id] || 0;
+                                    return (
                                     <div key={b.id} className="bg-white rounded-[2.5rem] border border-primary/10 overflow-hidden flex flex-col hover:shadow-2xl hover:border-primary/30 transition-all duration-300 group">
                                         <div className="w-full h-44 overflow-hidden relative">
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10 pointer-events-none"></div>
@@ -507,23 +528,29 @@ export const CheckoutFlow: React.FC = () => {
                                         </div>
                                         <div className="p-6 bg-gradient-to-b from-white to-primary/5 flex flex-col justify-between gap-5 flex-1">
                                             <p className="text-sm text-primary/60 leading-relaxed line-clamp-2">{b.description}</p>
-                                            <div className="flex gap-3">
-                                                <button
-                                                    onClick={() => addToCart({ ...b, category: 'bread' })}
-                                                    className="flex-[3] bg-primary text-bg text-[11px] font-black uppercase tracking-widest py-3.5 rounded-[1.2rem] hover:bg-primary/90 hover:-translate-y-0.5 shadow-md hover:shadow-lg transition-all flex items-center justify-center"
-                                                >
-                                                    Hogaza ${b.price}
-                                                </button>
-                                                <button
-                                                    onClick={() => addToCart({ ...b, id: `${b.id}-slice`, name: `Rebanada de ${b.name}`, price: 1, category: 'bread' })}
-                                                    className="flex-[2] bg-accent/10 text-accent text-[11px] font-black uppercase tracking-widest py-3.5 rounded-[1.2rem] hover:bg-accent hover:text-white hover:-translate-y-0.5 transition-all border border-accent/20 flex items-center justify-center"
-                                                >
-                                                    Rebanada $1
-                                                </button>
-                                            </div>
+                                            <button
+                                                onClick={() => {
+                                                    const sliced = wantSliced ? 0 : 1;
+                                                    setSlicedBreads({ ...slicedBreads, [b.id]: sliced });
+                                                    addToCart({ ...b, id: b.id, price: b.price + sliced, category: 'bread', name: sliced ? `${b.name} (Rebanado)` : b.name });
+                                                }}
+                                                className="w-full bg-primary text-bg text-[11px] font-black uppercase tracking-widest py-3.5 rounded-[1.2rem] hover:bg-primary/90 hover:-translate-y-0.5 shadow-md hover:shadow-lg transition-all flex items-center justify-center"
+                                            >
+                                                Hogaza ${b.price}
+                                            </button>
+                                            <label className="flex items-center gap-3 cursor-pointer select-none">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={!!wantSliced}
+                                                    onChange={() => setSlicedBreads({ ...slicedBreads, [b.id]: wantSliced ? 0 : 1 })}
+                                                    className="w-5 h-5 rounded border-2 border-primary/30 text-primary accent-primary"
+                                                />
+                                                <span className="text-xs font-bold text-primary/70">Rebanado (+$1.00)</span>
+                                            </label>
                                         </div>
                                     </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         )}
                     </div>
@@ -553,6 +580,9 @@ export const CheckoutFlow: React.FC = () => {
                 <div className="animate-fade-in space-y-12">
                     <div className="text-center">
                         <h2 className="font-serif text-5xl text-primary italic">{step === 4 ? 'Tus Datos' : 'El Pago'}</h2>
+                        {isRecipeOnly && step === 4 && (
+                            <p className="text-primary/50 font-serif italic mt-2">Recibirás tu receta por correo electrónico.</p>
+                        )}
                     </div>
                     {step === 4 ? (
                         <div className="space-y-6 max-w-2xl mx-auto w-full">
@@ -672,9 +702,11 @@ export const CheckoutFlow: React.FC = () => {
                         </div>
                     )}
                     <div className="flex flex-col sm:flex-row gap-6 mt-8 max-w-lg mx-auto w-full">
-                        <Button variant="outline" onClick={() => setStep(step - 1)} className="flex-1 h-20 rounded-3xl font-black">ATRÁS</Button>
+                        {!(isRecipeOnly && step === 4) && (
+                            <Button variant="outline" onClick={() => setStep(step - 1)} className="flex-1 h-20 rounded-3xl font-black">ATRÁS</Button>
+                        )}
                         <Button disabled={step === 4 && (!customer.name || !customer.email || !customer.phone)} onClick={step === 4 ? () => setStep(5) : handleSubmitOrder} className={`flex-[2] h-20 rounded-3xl font-black shadow-2xl ${isUploading ? 'opacity-50' : ''}`}>
-                            {isUploading ? 'Horneando...' : (step === 4 ? 'CONTINUAR' : 'PEDIR AHORA')}
+                            {isUploading ? 'Procesando...' : (step === 4 ? 'CONTINUAR' : 'PEDIR AHORA')}
                         </Button>
                     </div>
                 </div>
@@ -714,7 +746,7 @@ export const CheckoutFlow: React.FC = () => {
                                 Pedido #{orderId.slice(0, 8).toUpperCase()}
                             </p>
                         )}
-                        <p className="text-primary/60 max-w-sm mx-auto font-serif italic text-xl leading-relaxed">Estamos preparando lo mejor de nuestro horno para ti. Revisa tu email.</p>
+                        <p className="text-primary/60 max-w-sm mx-auto font-serif italic text-xl leading-relaxed">Estamos preparando lo mejor de nuestro horno para ti.</p>
                     </div>
                     <a href="/" className="w-full max-w-md"><Button className="w-full h-20 text-xl font-black rounded-[2rem] shadow-2xl">REGRESAR AL INICIO</Button></a>
                 </div>

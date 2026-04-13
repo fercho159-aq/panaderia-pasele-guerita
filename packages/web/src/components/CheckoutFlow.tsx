@@ -217,11 +217,29 @@ export const CheckoutFlow: React.FC = () => {
             });
 
             const firstBox = cartItemsList.find(i => i.boxSize);
+
+            // Upload receipt file if present
+            let receiptUrl = '';
+            if (receiptFile) {
+                const formData = new FormData();
+                formData.append('receipt', receiptFile);
+                formData.append('customer_name', customer.name);
+                try {
+                    const uploadRes = await fetch('/api/upload-receipt', { method: 'POST', body: formData });
+                    if (uploadRes.ok) {
+                        const uploadData = await uploadRes.json();
+                        receiptUrl = uploadData.url || '';
+                    }
+                } catch (uploadErr) {
+                    console.error('Receipt upload failed:', uploadErr);
+                }
+            }
+
             const orderNotes = [
                 ...boxGroups,
-                cartGift.is_gift ? `\uD83C\uDF81 REGALO: ${cartGift.message}` : '',
+                cartGift.is_gift ? `REGALO: ${cartGift.message}` : '',
                 remarks,
-                receiptFile ? '\uD83D\uDCCE Comprobante adjunto' : ''
+                receiptUrl ? `Comprobante: ${receiptUrl}` : ''
             ].filter(Boolean).join(' | ');
 
             const orderData = {

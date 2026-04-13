@@ -226,9 +226,11 @@ export const CheckoutFlow: React.FC = () => {
                 formData.append('customer_name', customer.name);
                 try {
                     const uploadRes = await fetch('/api/upload-receipt', { method: 'POST', body: formData });
-                    if (uploadRes.ok) {
-                        const uploadData = await uploadRes.json();
-                        receiptUrl = uploadData.url || '';
+                    const uploadData = await uploadRes.json();
+                    if (uploadRes.ok && uploadData.url) {
+                        receiptUrl = uploadData.url;
+                    } else {
+                        console.error('Receipt upload response:', uploadData);
                     }
                 } catch (uploadErr) {
                     console.error('Receipt upload failed:', uploadErr);

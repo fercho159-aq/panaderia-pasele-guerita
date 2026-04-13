@@ -429,24 +429,24 @@ export const AdminDashboard: React.FC = () => {
                                                                 let displayName = order.customer_name;
                                                                 let receiptUrl = null;
 
-                                                                // Legacy parsing for packed customer_name
-                                                                if (!order.notes) {
-                                                                    const urlMatch = order.customer_name.match(/📎 Comprobante adjunto \((https:\/\/[^)]+)\)/);
-                                                                    if (urlMatch) {
-                                                                        receiptUrl = urlMatch[1];
-                                                                        displayName = displayName.replace(urlMatch[0], '');
-                                                                    }
-                                                                    displayName = displayName.replace(/\| 📝\s*\|/g, '|').replace(/\| 📝\s*$/, '').replace(/\|\s*$/, '').trim();
-                                                                    
-                                                                    // Extract notes if packed
-                                                                    const notesMatch = order.customer_name.match(/📝\s*(.*)/);
-                                                                    if (notesMatch && !displayNotes) {
-                                                                        // displayNotes is handled below
-                                                                    }
-                                                                } else {
-                                                                    // Extract receipt URL from notes if present
-                                                                    const urlMatch = order.notes.match(/Comprobante: (https:\/\/\S+)/);
-                                                                    if (urlMatch) receiptUrl = urlMatch[1];
+                                                                // Extract receipt URL from ANY field
+                                                                // 1) Legacy: URL packed in customer_name
+                                                                const legacyUrlMatch = order.customer_name.match(/📎 Comprobante adjunto \((https:\/\/[^)]+)\)/);
+                                                                if (legacyUrlMatch) {
+                                                                    receiptUrl = legacyUrlMatch[1];
+                                                                    displayName = displayName.replace(legacyUrlMatch[0], '');
+                                                                }
+                                                                displayName = displayName.replace(/\| 📝\s*\|/g, '|').replace(/\| 📝\s*$/, '').replace(/\|\s*$/, '').trim();
+
+                                                                // 2) New format: URL in notes field
+                                                                if (!receiptUrl && order.notes) {
+                                                                    const notesUrlMatch = order.notes.match(/Comprobante:\s*(https?:\/\/\S+)/);
+                                                                    if (notesUrlMatch) receiptUrl = notesUrlMatch[1];
+                                                                }
+                                                                // 3) Fallback: any https URL in notes
+                                                                if (!receiptUrl && order.notes) {
+                                                                    const anyUrlMatch = order.notes.match(/(https?:\/\/\S*(?:storage|receipt|recibo|comprobante)\S*)/i);
+                                                                    if (anyUrlMatch) receiptUrl = anyUrlMatch[1];
                                                                 }
 
                                                                 return (
@@ -473,22 +473,13 @@ export const AdminDashboard: React.FC = () => {
                                                                         {displayEmail && <a href={`mailto:${displayEmail}`} className="text-[10px] text-gray-400 hover:text-primary transition-colors mt-1">{displayEmail}</a>}
                                                                         {displayPhone && <a href={`tel:${displayPhone}`} className="text-[10px] text-gray-400 hover:text-primary transition-colors">{displayPhone}</a>}
                                                                         {(displayNotes || order.notes) && (() => {
-                                                                            const noteText = displayNotes || order.notes || '';
-                                                                            // Extract any URLs from notes to make them clickable
-                                                                            const urlRegex = /(https?:\/\/\S+)/g;
-                                                                            const parts = noteText.split(urlRegex);
+                                                                            const noteText = (displayNotes || order.notes || '')
+                                                                                .replace(/Comprobante:\s*https?:\/\/\S+/g, '') // Remove URL from display text (shown as button above)
+                                                                                .replace(/📎\s*/g, '').trim();
+                                                                            if (!noteText) return null;
                                                                             return (
                                                                             <div className="mt-2 p-2 bg-accent/5 rounded-lg border border-accent/10">
-                                                                                <p className="text-[11px] text-accent font-medium leading-relaxed italic break-all">
-                                                                                    {parts.map((part: string, idx: number) =>
-                                                                                        urlRegex.test(part) ? null : part.match(/^https?:\/\//) ? (
-                                                                                            <a key={idx} href={part} target="_blank" rel="noopener noreferrer" className="text-emerald-700 underline font-bold hover:text-emerald-900 not-italic">VER RECIBO</a>
-                                                                                        ) : <span key={idx}>{part}</span>
-                                                                                    )}
-                                                                                    {noteText.match(urlRegex)?.map((url: string, idx: number) => (
-                                                                                        <a key={`url-${idx}`} href={url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 ml-1 text-emerald-700 underline font-bold hover:text-emerald-900 not-italic">VER RECIBO</a>
-                                                                                    ))}
-                                                                                </p>
+                                                                                <p className="text-[11px] text-accent font-medium leading-relaxed italic">{noteText}</p>
                                                                             </div>
                                                                             );
                                                                         })()}

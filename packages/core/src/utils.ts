@@ -7,9 +7,7 @@ export const isValidHoustonZip = (zip: string) => {
 };
 
 export const getEarliestAvailableDate = () => {
-    const date = new Date();
-    date.setDate(date.getDate() + 2); // 48h lead time
-    return date;
+    return new Date();
 };
 
 export const isWednesdayOrSaturday = (dateStr: string) => {

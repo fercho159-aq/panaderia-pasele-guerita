@@ -11,13 +11,13 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     const isSugarFree = !!(product as any).is_sugar_free;
     // Plans for cookies — different prices for Sugar Free
     const cookiePlans = isSugarFree ? [
-        { count: 3, price: 13.50, label: 'SF Box (3)' },
-        { count: 6, price: 25.00, label: 'SF Box (6)' },
-        { count: 9, price: 36.00, label: 'SF Box (9)' }
+        { count: 3, price: 13.50, label: 'SF Chica (3)' },
+        { count: 6, price: 27.00, label: 'SF Mediana (6)' },
+        { count: 9, price: 40.50, label: 'SF Grande (9)' }
     ] : [
-        { count: 3, price: 12.00, label: 'Standard Box (3)' },
-        { count: 6, price: 22.00, label: 'Family Box (6)' },
-        { count: 9, price: 31.50, label: 'Party Box (9)' }
+        { count: 3, price: 12.00, label: 'Caja Chica (3)' },
+        { count: 6, price: 24.00, label: 'Caja Mediana (6)' },
+        { count: 9, price: 31.50, label: 'Caja Grande (9)' }
     ];
 
     const [selectedPlan, setSelectedPlan] = useState(cookiePlans[0]);
@@ -168,7 +168,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                     {section.id === 'Allergens' && (
                                         <div className="bg-bg/40 p-6 rounded-2xl border border-primary/5">
                                             <p className="font-bold text-primary mb-2">Información importante para tu salud:</p>
-                                            <p>Contiene gluten (trigo) y derivados lácteos. Nuestros productos son elaborados en una cocina artesanal que también procesa nueces, cacahuates, almendras y semillas. Si tienes alguna alergia severa, por favor contáctanos vía WhatsApp antes de realizar tu pedido.</p>
+                                            <p>Contiene gluten (trigo). Nuestros productos son elaborados en una cocina artesanal que también procesa nueces, cacahuates, almendras y semillas. Si tienes alguna alergia severa, por favor contáctanos vía WhatsApp antes de realizar tu pedido.</p>
                                         </div>
                                     )}
                                     {section.id === 'Care' && (
@@ -184,7 +184,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                                 </tr>
                                                 <tr>
                                                     <td className="font-bold py-3 text-primary">Congelación</td>
-                                                    <td className="py-3 italic opacity-80 text-right">Hasta 1 mes. Cortar en rebanadas antes.</td>
+                                                    <td className="py-3 italic opacity-80 text-right">{isCookie ? 'Hasta 2 meses.' : 'Hasta 2 meses. Cortar en rebanadas antes.'}</td>
                                                 </tr>
                                             </tbody>
                                         </table>

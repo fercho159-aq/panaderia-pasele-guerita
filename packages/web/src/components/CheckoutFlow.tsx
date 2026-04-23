@@ -28,6 +28,7 @@ export const CheckoutFlow: React.FC = () => {
     const [locationId, setLocationId] = useState('');
     const [customer, setCustomer] = useState({ name: '', phone: '', email: '' });
     const [remarks, setRemarks] = useState('');
+    const [zelleName, setZelleName] = useState('');
     const [paymentMethod, setPaymentMethod] = useState<'transfer' | 'cash' | null>(null);
     const [slicedBreads, setSlicedBreads] = useState<Record<string, number>>({});
     const [receiptFile, setReceiptFile] = useState<File | null>(null);
@@ -239,6 +240,7 @@ export const CheckoutFlow: React.FC = () => {
 
             const orderNotes = [
                 ...boxGroups,
+                zelleName ? `Zelle: ${zelleName}` : '',
                 cartGift.is_gift ? `REGALO: ${cartGift.message}` : '',
                 remarks,
                 receiptUrl ? `Comprobante: ${receiptUrl}` : ''
@@ -515,9 +517,9 @@ export const CheckoutFlow: React.FC = () => {
                                 <div className="space-y-3">
                                     <h4 className="text-xs font-black uppercase tracking-widest text-primary/40">Galletas Regulares</h4>
                                     {[
-                                        { id: 'extra-box-3', count: 3, price: 12.00, label: 'Standard Box (3)', sub: '3 galletas' },
-                                        { id: 'extra-box-6', count: 6, price: 22.00, label: 'Family Box (6)', sub: '6 galletas' },
-                                        { id: 'extra-box-9', count: 9, price: 31.50, label: 'Party Box (9)', sub: '9 galletas' }
+                                        { id: 'extra-box-3', count: 3, price: 12.00, label: 'Caja Chica (3)', sub: '3 galletas' },
+                                        { id: 'extra-box-6', count: 6, price: 24.00, label: 'Caja Mediana (6)', sub: '6 galletas' },
+                                        { id: 'extra-box-9', count: 9, price: 31.50, label: 'Caja Grande (9)', sub: '9 galletas' }
                                     ].map(plan => (
                                         <button
                                             key={plan.id}
@@ -547,9 +549,9 @@ export const CheckoutFlow: React.FC = () => {
                                 <div className="space-y-3">
                                     <h4 className="text-xs font-black uppercase tracking-widest text-accent">Sugar Free</h4>
                                     {[
-                                        { id: 'sf-box-3', count: 3, price: 13.50, label: 'SF Box (3)', sub: '3 galletas sugar free' },
-                                        { id: 'sf-box-6', count: 6, price: 25.00, label: 'SF Box (6)', sub: '6 galletas sugar free' },
-                                        { id: 'sf-box-9', count: 9, price: 36.00, label: 'SF Box (9)', sub: '9 galletas sugar free' }
+                                        { id: 'sf-box-3', count: 3, price: 13.50, label: 'SF Chica (3)', sub: '3 galletas sugar free' },
+                                        { id: 'sf-box-6', count: 6, price: 27.00, label: 'SF Mediana (6)', sub: '6 galletas sugar free' },
+                                        { id: 'sf-box-9', count: 9, price: 40.50, label: 'SF Grande (9)', sub: '9 galletas sugar free' }
                                     ].map(plan => (
                                         <button
                                             key={plan.id}
@@ -692,6 +694,7 @@ export const CheckoutFlow: React.FC = () => {
                             <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/50" placeholder="¿A nombre de quién?" value={customer.name} onChange={e => setCustomer({...customer, name: e.target.value})} />
                             <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/50" placeholder="Tu Email" value={customer.email} onChange={e => setCustomer({...customer, email: e.target.value})} />
                             <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/50" placeholder="Tu WhatsApp" value={customer.phone} onChange={e => setCustomer({...customer, phone: e.target.value})} />
+                            <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/50" placeholder="¿Bajo qué nombre aparecerá tu pago en Zelle?" value={zelleName} onChange={e => setZelleName(e.target.value)} />
 
                             {/* Gift Note Toggle */}
                             <div className={`rounded-[2rem] border-2 transition-all duration-300 overflow-hidden ${
@@ -736,14 +739,15 @@ export const CheckoutFlow: React.FC = () => {
                                     <div className="w-full rounded-2xl overflow-hidden shadow-inner">
                                         <img src="/imagenes/zelle.png" alt="Zelle QR" className="w-full object-contain" />
                                     </div>
-                                    <div className="text-center">
+                                    <div className="text-center space-y-1">
                                         <p className="text-[10px] font-black uppercase tracking-widest text-primary/40">Zelle / Venmo</p>
-                                        <p className="font-serif text-2xl text-primary italic mt-1">Maria Soto</p>
+                                        <p className="font-serif text-2xl text-primary italic">Maria Soto</p>
+                                        <p className="font-sans text-lg font-bold text-primary/70">430 324 2593</p>
                                     </div>
                                 </div>
 
                                 <p className="text-primary/60 mb-10 leading-relaxed font-serif text-lg">
-                                    Escanea el código de arriba en tu app bancaria para completar el pago.
+                                    Escanea el código o envía tu pago al número de arriba.
                                 </p>
                                 
                                 <label className="block p-8 rounded-[2.5rem] border-2 border-dashed border-primary/10 cursor-pointer hover:bg-white transition-all group">

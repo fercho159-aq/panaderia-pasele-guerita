@@ -13,6 +13,8 @@ export const CartDrawer: React.FC = () => {
         } else {
             document.body.style.overflow = 'auto';
         }
+        // Always restore on unmount so we never leave the page locked
+        return () => { document.body.style.overflow = 'auto'; };
     }, [isOpen]);
 
     const handleClose = () => {

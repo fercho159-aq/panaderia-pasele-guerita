@@ -26,10 +26,20 @@ const initialState: CartStore = {
     isOpen: false,
 };
 
-// Persistent store with JSON encoding
+// Persistent store with JSON encoding.
+// Note: `isOpen` is intentionally NOT persisted — the drawer should always
+// start closed on a fresh page load. Otherwise users can get stuck if the
+// drawer was open when they last navigated away.
 export const cartStore = persistentAtom<CartStore>('cart', initialState, {
-    encode: JSON.stringify,
-    decode: JSON.parse,
+    encode: (value) => JSON.stringify({ ...value, isOpen: false }),
+    decode: (raw) => {
+        try {
+            const parsed = JSON.parse(raw);
+            return { ...parsed, isOpen: false };
+        } catch {
+            return initialState;
+        }
+    },
 });
 
 export const toggleCart = () => {

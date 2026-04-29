@@ -136,14 +136,28 @@ export const CheckoutFlow: React.FC = () => {
         if (delta > 0 && currentTotal >= item.boxSize) return;
         if (delta < 0 && (currentSelections[flavorName] || 0) <= 0) return;
 
-        // Check stock limit across ALL boxes in cart
-        if (delta > 0 && flavorStockMap[flavorName] !== undefined) {
-            const totalInCart = Object.values(cartItems).reduce((sum, box) => {
-                return sum + ((box.selections?.[flavorName] || 0) as number);
-            }, 0);
-            if (totalInCart >= flavorStockMap[flavorName]) {
-                setStockLimitFlavor(flavorName);
-                return;
+        // Check stock limit across ALL boxes in cart.
+        // Primary lookup: by flavor name (DB name). Fallback: by flavor ID from
+        // the hardcoded list (handles name mismatches like "Abuelita" vs
+        // "Chocolate Abuelita Mexicano" in the DB).
+        if (delta > 0) {
+            const flavorId = cookieFlavors.find(f => f.name === flavorName)?.id;
+            const limitByName = flavorStockMap[flavorName];
+            const limitById = flavorId !== undefined ? cartStore.get().stockLimits[flavorId] : undefined;
+            const limit = limitByName ?? limitById;
+
+            if (limit !== undefined) {
+                const totalInCart = Object.values(cartItems).reduce((sum, box) => {
+                    return sum + ((box.selections?.[flavorName] || 0) as number);
+                }, 0);
+                if (totalInCart >= limit) {
+                    // Ensure modal has the correct max value
+                    if (!flavorStockMap[flavorName] && limit) {
+                        setFlavorStockMap(prev => ({ ...prev, [flavorName]: limit }));
+                    }
+                    setStockLimitFlavor(flavorName);
+                    return;
+                }
             }
         }
 

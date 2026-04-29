@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { addToCart } from '../stores/cartStore';
+import React, { useState, useEffect } from 'react';
+import { addToCart, setStockLimits } from '../stores/cartStore';
 import { Button } from '@pasele-guerita/ui';
 import { allProducts } from '@pasele-guerita/core';
 
@@ -22,6 +22,35 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
 
     const [selectedPlan, setSelectedPlan] = useState(cookiePlans[0]);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [stockLimitMsg, setStockLimitMsg] = useState<{ flavor: string; max: number } | null>(null);
+
+    // Fetch fresh stock limits from the server so addToCart can enforce them.
+    // Also listen for the global stock-limit event to show feedback.
+    useEffect(() => {
+        let cancelled = false;
+        fetch('/api/storefront-data')
+            .then(r => r.ok ? r.json() : null)
+            .then(data => {
+                if (cancelled || !data) return;
+                const all = [...(data.cookies || []), ...(data.breads || [])];
+                const stockById: Record<string, number> = {};
+                all.forEach((f: any) => {
+                    if (f.stock && f.stock > 0 && f.id) stockById[f.id] = f.stock;
+                });
+                setStockLimits(stockById);
+            })
+            .catch(() => { /* fail silent */ });
+
+        const handler = (e: Event) => {
+            const detail = (e as CustomEvent<{ flavor: string; max: number }>).detail;
+            if (detail?.flavor) setStockLimitMsg(detail);
+        };
+        window.addEventListener('cart:stock-limit', handler);
+        return () => {
+            cancelled = true;
+            window.removeEventListener('cart:stock-limit', handler);
+        };
+    }, []);
 
     const images = [
         product.image,
@@ -215,6 +244,25 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                 </div>
                             </a>
                         ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Stock Limit Modal */}
+            {stockLimitMsg && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-[2.5rem] shadow-2xl p-10 max-w-sm w-full text-center animate-fade-in border border-primary/10">
+                        <h3 className="font-serif text-2xl text-primary italic font-bold mb-3">Límite alcanzado</h3>
+                        <p className="text-primary/70 font-serif mb-2">
+                            Solo quedan <span className="font-black text-primary">{stockLimitMsg.max}</span> unidades disponibles de <span className="font-black text-accent italic">{stockLimitMsg.flavor}</span> en este pedido.
+                        </p>
+                        <p className="text-xs text-primary/40 font-sans uppercase tracking-widest mb-8">Producción limitada por el horno</p>
+                        <button
+                            onClick={() => setStockLimitMsg(null)}
+                            className="w-full h-14 bg-primary text-bg font-black text-sm uppercase tracking-widest rounded-2xl hover:bg-primary/90 transition-all shadow-lg"
+                        >
+                            Entendido
+                        </button>
                     </div>
                 </div>
             )}

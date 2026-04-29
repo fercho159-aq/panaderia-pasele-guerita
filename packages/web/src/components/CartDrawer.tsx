@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useStore } from '@nanostores/react';
-import { cartStore, toggleCart, updateQuantity, removeFromCart, setGiftMessage } from '../stores/cartStore';
+import { cartStore, toggleCart, updateQuantity, removeFromCart, setGiftMessage, setStockLimits } from '../stores/cartStore';
 import { Button } from '@pasele-guerita/ui';
 
 export const CartDrawer: React.FC = () => {
     const { items, isOpen, gift } = useStore(cartStore);
     const [isClosing, setIsClosing] = useState(false);
+    const [stockLimitMsg, setStockLimitMsg] = useState<{ flavor: string; max: number } | null>(null);
 
     useEffect(() => {
         if (isOpen) {
@@ -17,6 +18,38 @@ export const CartDrawer: React.FC = () => {
         return () => { document.body.style.overflow = 'auto'; };
     }, [isOpen]);
 
+    // Global listener for stock-limit blocks. Mounted in CartDrawer because
+    // it's the only React island present on every page.
+    useEffect(() => {
+        const handler = (e: Event) => {
+            const detail = (e as CustomEvent<{ flavor: string; max: number }>).detail;
+            if (detail?.flavor) setStockLimitMsg(detail);
+        };
+        window.addEventListener('cart:stock-limit', handler);
+        return () => window.removeEventListener('cart:stock-limit', handler);
+    }, []);
+
+    // Fetch fresh stock limits on every page load. CartDrawer is mounted
+    // globally, so this guarantees addToCart/updateQuantity always have the
+    // current admin-configured limits — no matter which page the customer
+    // lands on first.
+    useEffect(() => {
+        let cancelled = false;
+        fetch('/api/storefront-data')
+            .then(r => r.ok ? r.json() : null)
+            .then(data => {
+                if (cancelled || !data) return;
+                const all = [...(data.cookies || []), ...(data.breads || [])];
+                const stockById: Record<string, number> = {};
+                all.forEach((f: any) => {
+                    if (f.stock && f.stock > 0 && f.id) stockById[f.id] = f.stock;
+                });
+                setStockLimits(stockById);
+            })
+            .catch(() => { /* fail silent */ });
+        return () => { cancelled = true; };
+    }, []);
+
     const handleClose = () => {
         setIsClosing(true);
         setTimeout(() => {
@@ -25,12 +58,33 @@ export const CartDrawer: React.FC = () => {
         }, 300);
     };
 
-    if (!isOpen && !isClosing) return null;
+    // Stock-limit modal renders independently so it works even when the drawer is closed.
+    const stockLimitModal = stockLimitMsg ? (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/50 backdrop-blur-sm">
+            <div className="bg-white rounded-[2.5rem] shadow-2xl p-10 max-w-sm w-full text-center animate-fade-in border border-primary/10">
+                <h3 className="font-serif text-2xl text-primary italic font-bold mb-3">Límite alcanzado</h3>
+                <p className="text-primary/70 font-serif mb-2">
+                    Solo quedan <span className="font-black text-primary">{stockLimitMsg.max}</span> unidades disponibles de <span className="font-black text-accent italic">{stockLimitMsg.flavor}</span> en este pedido.
+                </p>
+                <p className="text-xs text-primary/40 font-sans uppercase tracking-widest mb-8">Producción limitada por el horno</p>
+                <button
+                    onClick={() => setStockLimitMsg(null)}
+                    className="w-full h-14 bg-primary text-bg font-black text-sm uppercase tracking-widest rounded-2xl hover:bg-primary/90 transition-all shadow-lg"
+                >
+                    Entendido
+                </button>
+            </div>
+        </div>
+    ) : null;
+
+    if (!isOpen && !isClosing) return stockLimitModal;
 
     const cartItemsList = Object.entries(items);
     const subtotal = cartItemsList.reduce((acc, [_, item]) => acc + item.price * item.quantity, 0);
 
     return (
+        <>
+        {stockLimitModal}
         <div className={`fixed inset-0 z-[100] transition-opacity duration-300 ${isClosing ? 'opacity-0' : 'opacity-100'}`}>
             {/* Backdrop */}
             <div 
@@ -185,5 +239,6 @@ export const CartDrawer: React.FC = () => {
                 </div>
             </div>
         </div>
+        </>
     );
 };

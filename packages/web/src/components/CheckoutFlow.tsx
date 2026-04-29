@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useStore } from '@nanostores/react';
-import { cartStore, addToCart, removeFromCart, updateQuantity } from '../stores/cartStore';
+import { cartStore, addToCart, removeFromCart, updateQuantity, setStockLimits } from '../stores/cartStore';
 import {
     PickupLocation,
     isValidHoustonZip,
@@ -75,13 +75,21 @@ export const CheckoutFlow: React.FC = () => {
                     } catch (_) {}
                 }
 
-                // Build stock limit map from DB flavor data
+                // Build stock limit map from DB flavor data.
+                // We populate two views:
+                //   - by NAME: used by cookie box selections (handleBoxSelection works in flavor names)
+                //   - by ID: used globally via the cart store for direct addToCart (breads, etc.)
                 const allDbFlavors = [...(data.cookies || []), ...(data.breads || [])];
-                const stockMap: Record<string, number> = {};
+                const stockByName: Record<string, number> = {};
+                const stockById: Record<string, number> = {};
                 allDbFlavors.forEach((f: any) => {
-                    if (f.stock && f.stock > 0) stockMap[f.name] = f.stock;
+                    if (f.stock && f.stock > 0) {
+                        if (f.name) stockByName[f.name] = f.stock;
+                        if (f.id) stockById[f.id] = f.stock;
+                    }
                 });
-                setFlavorStockMap(stockMap);
+                setFlavorStockMap(stockByName);
+                setStockLimits(stockById);
 
                 const dbLocations: any[] = data.locations || [];
                 const merged = pickupLocations
@@ -176,6 +184,24 @@ export const CheckoutFlow: React.FC = () => {
         }
     }, [isRecipeOnly]);
 
+    // Listen for stock-limit blocks dispatched by the cart store
+    // (e.g. when a customer clicks a bread that's already at max).
+    useEffect(() => {
+        const handler = (e: Event) => {
+            const detail = (e as CustomEvent<{ flavor: string; max: number }>).detail;
+            if (detail?.flavor) {
+                // Make sure the flavor appears in the lookup so the modal
+                // shows the correct max (handleBoxSelection's stockMap is by name).
+                if (detail.max && !flavorStockMap[detail.flavor]) {
+                    setFlavorStockMap(prev => ({ ...prev, [detail.flavor]: detail.max }));
+                }
+                setStockLimitFlavor(detail.flavor);
+            }
+        };
+        window.addEventListener('cart:stock-limit', handler);
+        return () => window.removeEventListener('cart:stock-limit', handler);
+    }, [flavorStockMap]);
+
     // Scroll to top of checkout when step changes
     useEffect(() => {
         checkoutTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -269,7 +295,7 @@ export const CheckoutFlow: React.FC = () => {
             if (!orderRes.ok) throw new Error(orderResult.error || 'Error al crear pedido');
             setOrderId(orderResult.id);
             setStep(6);
-            cartStore.set({ items: {}, gift: { is_gift: false, message: '' }, isOpen: false });
+            cartStore.set({ ...cartStore.get(), items: {}, gift: { is_gift: false, message: '' }, isOpen: false });
         } catch (e: any) { 
             console.error('Order error:', e);
             const msg = e?.message || JSON.stringify(e) || 'Error desconocido';

@@ -688,7 +688,13 @@ export const CheckoutFlow: React.FC = () => {
                                             <div key={item.id} className="w-full flex flex-col justify-between bg-white p-5 rounded-[2rem] shadow-sm border border-primary/5 hover:border-primary/20 transition-all">
                                                 <div className="mb-4">
                                                     <div className="flex justify-between items-start gap-2 mb-2">
-                                                        <p className="font-serif text-xl text-primary italic font-bold leading-tight">{item.name}</p>
+                                                        <p className="font-serif text-xl text-primary italic font-bold leading-tight">
+                                                            {item.boxSize && item.selections && Object.keys(item.selections).length > 0
+                                                                ? (Object.keys(item.selections).length === 1
+                                                                    ? Object.keys(item.selections)[0]
+                                                                    : 'Sabores Mixtos')
+                                                                : item.name}
+                                                        </p>
                                                         <span className="font-black text-primary text-lg">${(item.price * item.quantity).toFixed(2)}</span>
                                                     </div>
                                                     {item.boxSize && (

@@ -685,13 +685,34 @@ export const AdminDashboard: React.FC = () => {
                                     />
                                 </div>
                             </div>
-                            <div>
-                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Total Pagado ($)</label>
-                                <input type="number" step="0.01" className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none font-bold text-primary" 
-                                    value={editingOrder.total_price} 
-                                    onChange={(e) => setEditingOrder({...editingOrder, total_price: parseFloat(e.target.value) || 0})} 
-                                />
+                            <div className="flex gap-4">
+                                <div className="flex-1">
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Total del Pedido ($)</label>
+                                    <input type="number" step="0.01" className="w-full px-4 py-2 bg-gray-100 border border-gray-200 rounded-xl outline-none font-bold text-primary/60 cursor-not-allowed"
+                                        value={editingOrder.total_price}
+                                        readOnly
+                                    />
+                                </div>
+                                <div className="flex-1">
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Anticipo Recibido ($)</label>
+                                    <input type="number" step="0.01" min="0" className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none font-bold text-primary"
+                                        value={(editingOrder as any).amount_paid ?? 0}
+                                        onChange={(e) => setEditingOrder({...editingOrder, amount_paid: parseFloat(e.target.value) || 0} as any)}
+                                    />
+                                </div>
                             </div>
+                            {/* Resto a cobrar */}
+                            {(() => {
+                                const paid = (editingOrder as any).amount_paid ?? 0;
+                                const remaining = editingOrder.total_price - paid;
+                                if (remaining <= 0) return null;
+                                return (
+                                    <div className="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+                                        <span className="text-xs font-black uppercase tracking-widest text-amber-700">Resta cobrar en entrega</span>
+                                        <span className="font-black text-xl text-amber-700">${remaining.toFixed(2)}</span>
+                                    </div>
+                                );
+                            })()}
                             <div>
                                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Notas / Menaje Regalo</label>
                                 <textarea className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none min-h-[100px]" 
@@ -710,6 +731,7 @@ export const AdminDashboard: React.FC = () => {
                                     email: editingOrder.email || editingOrder.customer_email,
                                     customer_email: editingOrder.email || editingOrder.customer_email,
                                     total_price: editingOrder.total_price,
+                                    amount_paid: (editingOrder as any).amount_paid ?? 0,
                                     notes: editingOrder.notes,
                                     pickup_day: editingOrder.pickup_day,
                                     location_id: editingOrder.location_id

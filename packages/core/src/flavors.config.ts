@@ -130,6 +130,7 @@ export const cookieFlavors = [
         name: 'Chai y Nueces',
         active: true,
         category: 'cookie',
+        price: 12.00,
         image: '/imagenes/galleta-chai-walnuts.webp',
         description: 'Especias aromáticas de chai con trozos de nuez y base de masa madre.',
         ingredients: 'Alérgenos: trigo, almendras, nuez.',

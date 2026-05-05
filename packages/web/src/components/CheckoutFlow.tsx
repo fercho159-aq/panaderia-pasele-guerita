@@ -630,7 +630,12 @@ export const CheckoutFlow: React.FC = () => {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 {activeBreadFlavors.map(b => {
                                     const noSlice = !!(b as any).no_slice;
-                                    const wantSliced = slicedBreads[b.id] || 0;
+                                    // Derive sliced state from cart if bread is already there;
+                                    // otherwise fall back to local pre-add selection state.
+                                    const inCart = cartItems[b.id];
+                                    const wantSliced = inCart
+                                        ? (inCart.name?.includes('(Rebanado)') ? 1 : 0)
+                                        : (slicedBreads[b.id] || 0);
                                     return (
                                     <div key={b.id} className="bg-white rounded-[2.5rem] border border-primary/10 overflow-hidden flex flex-col hover:shadow-2xl hover:border-primary/30 transition-all duration-300 group">
                                         <div className="w-full h-44 overflow-hidden relative">
@@ -642,8 +647,7 @@ export const CheckoutFlow: React.FC = () => {
                                             <p className="text-sm text-primary/60 leading-relaxed line-clamp-2">{b.description}</p>
                                             <button
                                                 onClick={() => {
-                                                    const sliced = noSlice ? 0 : (wantSliced ? 1 : 0);
-                                                    if (!noSlice) setSlicedBreads({ ...slicedBreads, [b.id]: 0 });
+                                                    const sliced = noSlice ? 0 : wantSliced;
                                                     addToCart({ ...b, id: b.id, price: b.price + sliced, category: 'bread', name: sliced ? `${b.name} (Rebanado)` : b.name });
                                                 }}
                                                 className="w-full bg-primary text-bg text-[11px] font-black uppercase tracking-widest py-3.5 rounded-[1.2rem] hover:bg-primary/90 hover:-translate-y-0.5 shadow-md hover:shadow-lg transition-all flex items-center justify-center"
@@ -655,7 +659,26 @@ export const CheckoutFlow: React.FC = () => {
                                                     <input
                                                         type="checkbox"
                                                         checked={!!wantSliced}
-                                                        onChange={() => setSlicedBreads({ ...slicedBreads, [b.id]: wantSliced ? 0 : 1 })}
+                                                        onChange={() => {
+                                                            const newWantSliced = wantSliced ? 0 : 1;
+                                                            setSlicedBreads({ ...slicedBreads, [b.id]: newWantSliced });
+                                                            // If bread is already in cart, update price/name
+                                                            // for ALL units in the cart to match new slice state.
+                                                            const existing = cartItems[b.id];
+                                                            if (existing) {
+                                                                cartStore.set({
+                                                                    ...cartStore.get(),
+                                                                    items: {
+                                                                        ...cartItems,
+                                                                        [b.id]: {
+                                                                            ...existing,
+                                                                            price: b.price + newWantSliced,
+                                                                            name: newWantSliced ? `${b.name} (Rebanado)` : b.name
+                                                                        }
+                                                                    }
+                                                                });
+                                                            }
+                                                        }}
                                                         className="w-5 h-5 rounded border-2 border-primary/30 text-primary accent-primary"
                                                     />
                                                     <span className="text-xs font-bold text-primary/70">Rebanado (+$1.00)</span>

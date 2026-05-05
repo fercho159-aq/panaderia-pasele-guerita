@@ -124,6 +124,18 @@ export const cookieFlavors = [
         is_gluten_free: false,
         is_sugar_free: true,
         conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.'
+    },
+    {
+        id: 'chai-walnuts',
+        name: 'Chai y Nueces',
+        active: true,
+        category: 'cookie',
+        image: '/imagenes/galleta-chai-walnuts.webp',
+        description: 'Especias aromáticas de chai con trozos de nuez y base de masa madre.',
+        ingredients: 'Alérgenos: trigo, almendras, nuez.',
+        is_sourdough: true,
+        is_gluten_free: false,
+        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.'
     }
 ];
 

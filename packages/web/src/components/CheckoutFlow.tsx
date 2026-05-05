@@ -278,8 +278,14 @@ export const CheckoutFlow: React.FC = () => {
                 }
             }
 
+            const slicedBreadNotes = cartItemsList
+                .filter(item => item.category === 'bread' && item.name?.includes('(Rebanado)'))
+                .map(item => item.name)
+                .join(', ');
+
             const orderNotes = [
                 ...boxGroups,
+                slicedBreadNotes ? `Rebanado: ${slicedBreadNotes}` : '',
                 zelleName ? `Zelle: ${zelleName}` : '',
                 cartGift.is_gift ? `REGALO: ${cartGift.message}` : '',
                 remarks,
@@ -636,8 +642,8 @@ export const CheckoutFlow: React.FC = () => {
                                             <p className="text-sm text-primary/60 leading-relaxed line-clamp-2">{b.description}</p>
                                             <button
                                                 onClick={() => {
-                                                    const sliced = noSlice ? 0 : (wantSliced ? 0 : 1);
-                                                    if (!noSlice) setSlicedBreads({ ...slicedBreads, [b.id]: sliced });
+                                                    const sliced = noSlice ? 0 : (wantSliced ? 1 : 0);
+                                                    if (!noSlice) setSlicedBreads({ ...slicedBreads, [b.id]: 0 });
                                                     addToCart({ ...b, id: b.id, price: b.price + sliced, category: 'bread', name: sliced ? `${b.name} (Rebanado)` : b.name });
                                                 }}
                                                 className="w-full bg-primary text-bg text-[11px] font-black uppercase tracking-widest py-3.5 rounded-[1.2rem] hover:bg-primary/90 hover:-translate-y-0.5 shadow-md hover:shadow-lg transition-all flex items-center justify-center"

@@ -192,6 +192,20 @@ export const breadFlavors = [
         is_sourdough: true,
         is_gluten_free: false,
         conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses. Cortar en rebanadas antes.'
+    },
+    {
+        id: 'panque-platano',
+        name: 'Panqué Premium de Plátano',
+        active: true,
+        category: 'bread',
+        price: 16.00,
+        image: '/imagenes/panque-platano.webp',
+        description: 'Panqué de plátano ultra húmedo con masa madre, mantequilla tostada y yogurt griego. Endulzado con allulose, con chocolate 55% cacao sin azúcar y pepita de calabaza.',
+        ingredients: 'Alérgenos: trigo (gluten), huevo y lácteos.',
+        is_sourdough: true,
+        is_gluten_free: false,
+        no_slice: true,
+        conservation: 'Temp. Ambiente: 1–2 días en recipiente hermético. Refrigeración: 7 días. Calentar antes de consumir. Congelación: Hasta 2 meses.'
     }
 ];
 

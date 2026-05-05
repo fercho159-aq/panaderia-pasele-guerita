@@ -623,6 +623,7 @@ export const CheckoutFlow: React.FC = () => {
                         {extrasTab === 'breads' && (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 {activeBreadFlavors.map(b => {
+                                    const noSlice = !!(b as any).no_slice;
                                     const wantSliced = slicedBreads[b.id] || 0;
                                     return (
                                     <div key={b.id} className="bg-white rounded-[2.5rem] border border-primary/10 overflow-hidden flex flex-col hover:shadow-2xl hover:border-primary/30 transition-all duration-300 group">
@@ -635,23 +636,25 @@ export const CheckoutFlow: React.FC = () => {
                                             <p className="text-sm text-primary/60 leading-relaxed line-clamp-2">{b.description}</p>
                                             <button
                                                 onClick={() => {
-                                                    const sliced = wantSliced ? 0 : 1;
-                                                    setSlicedBreads({ ...slicedBreads, [b.id]: sliced });
+                                                    const sliced = noSlice ? 0 : (wantSliced ? 0 : 1);
+                                                    if (!noSlice) setSlicedBreads({ ...slicedBreads, [b.id]: sliced });
                                                     addToCart({ ...b, id: b.id, price: b.price + sliced, category: 'bread', name: sliced ? `${b.name} (Rebanado)` : b.name });
                                                 }}
                                                 className="w-full bg-primary text-bg text-[11px] font-black uppercase tracking-widest py-3.5 rounded-[1.2rem] hover:bg-primary/90 hover:-translate-y-0.5 shadow-md hover:shadow-lg transition-all flex items-center justify-center"
                                             >
-                                                Hogaza ${b.price}
+                                                {noSlice ? b.name : `Hogaza $${b.price}`}
                                             </button>
-                                            <label className="flex items-center gap-3 cursor-pointer select-none">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={!!wantSliced}
-                                                    onChange={() => setSlicedBreads({ ...slicedBreads, [b.id]: wantSliced ? 0 : 1 })}
-                                                    className="w-5 h-5 rounded border-2 border-primary/30 text-primary accent-primary"
-                                                />
-                                                <span className="text-xs font-bold text-primary/70">Rebanado (+$1.00)</span>
-                                            </label>
+                                            {!noSlice && (
+                                                <label className="flex items-center gap-3 cursor-pointer select-none">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={!!wantSliced}
+                                                        onChange={() => setSlicedBreads({ ...slicedBreads, [b.id]: wantSliced ? 0 : 1 })}
+                                                        className="w-5 h-5 rounded border-2 border-primary/30 text-primary accent-primary"
+                                                    />
+                                                    <span className="text-xs font-bold text-primary/70">Rebanado (+$1.00)</span>
+                                                </label>
+                                            )}
                                         </div>
                                     </div>
                                     );
@@ -740,7 +743,7 @@ export const CheckoutFlow: React.FC = () => {
                             <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/50" placeholder="¿A nombre de quién?" value={customer.name} onChange={e => setCustomer({...customer, name: e.target.value})} />
                             <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/50" placeholder="Tu Email" value={customer.email} onChange={e => setCustomer({...customer, email: e.target.value})} />
                             <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/50" placeholder="Tu WhatsApp" value={customer.phone} onChange={e => setCustomer({...customer, phone: e.target.value})} />
-                            <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/50" placeholder="¿Bajo qué nombre aparecerá tu pago en Zelle?" value={zelleName} onChange={e => setZelleName(e.target.value)} />
+                            <input className="w-full bg-bg/10 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-primary/5 border border-primary/5 font-serif text-xl placeholder:text-primary/50" placeholder="Nombre en Zelle" value={zelleName} onChange={e => setZelleName(e.target.value)} />
 
                             {/* Gift Note Toggle */}
                             <div className={`rounded-[2rem] border-2 transition-all duration-300 overflow-hidden ${

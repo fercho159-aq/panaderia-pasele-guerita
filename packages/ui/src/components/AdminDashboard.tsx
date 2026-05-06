@@ -688,9 +688,9 @@ export const AdminDashboard: React.FC = () => {
                             <div className="flex gap-4">
                                 <div className="flex-1">
                                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Total del Pedido ($)</label>
-                                    <input type="number" step="0.01" className="w-full px-4 py-2 bg-gray-100 border border-gray-200 rounded-xl outline-none font-bold text-primary/60 cursor-not-allowed"
+                                    <input type="number" step="0.01" min="0" className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none font-bold text-primary"
                                         value={editingOrder.total_price}
-                                        readOnly
+                                        onChange={(e) => setEditingOrder({...editingOrder, total_price: parseFloat(e.target.value) || 0})}
                                     />
                                 </div>
                                 <div className="flex-1">

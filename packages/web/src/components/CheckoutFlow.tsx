@@ -283,8 +283,14 @@ export const CheckoutFlow: React.FC = () => {
                 .map(item => item.name)
                 .join(', ');
 
+            const breadNotes = cartItemsList
+                .filter(item => item.category === 'bread')
+                .map(item => `${item.quantity > 1 ? `${item.quantity}x ` : ''}${item.name} ($${item.price})`)
+                .join(', ');
+
             const orderNotes = [
                 ...boxGroups,
+                breadNotes ? `Panes: ${breadNotes}` : '',
                 slicedBreadNotes ? `Rebanado: ${slicedBreadNotes}` : '',
                 zelleName ? `Zelle: ${zelleName}` : '',
                 cartGift.is_gift ? `REGALO: ${cartGift.message}` : '',

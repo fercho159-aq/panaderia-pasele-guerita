@@ -52,12 +52,15 @@ export const CheckoutFlow: React.FC = () => {
                 // But use hardcoded pickupLocations as source of truth for content
                 const response = await fetch('/api/storefront-data');
                 const data = response.ok ? await response.json() : {};
-                // Filter hardcoded lists by active IDs from DB — avoids showing extra/duplicate DB entries
-                if (data.cookies?.length > 0) {
+                // Filter hardcoded lists by active IDs from DB — avoids showing extra/duplicate DB entries.
+                // An empty array from the API is a legitimate state (admin turned all OFF) — respect it
+                // by clearing the visible list. We only fall back to the hardcoded list if the API
+                // didn't return an array at all (e.g. fetch failed).
+                if (Array.isArray(data.cookies)) {
                     const activeIds = new Set(data.cookies.map((c: any) => c.id));
                     setActiveCookieFlavors(cookieFlavors.filter(f => activeIds.has(f.id)));
                 }
-                if (data.breads?.length > 0) {
+                if (Array.isArray(data.breads)) {
                     const activeIds = new Set(data.breads.map((b: any) => b.id));
                     setActiveBreadFlavors(breadFlavors.filter(f => activeIds.has(f.id)));
                 }

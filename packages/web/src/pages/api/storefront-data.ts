@@ -33,13 +33,13 @@ export const GET: APIRoute = async () => {
         if (flavorsRes.error) throw flavorsRes.error;
         if (locationsRes.error) throw locationsRes.error;
 
-        // Separate by category — only return IDs so frontend filters hardcoded lists
+        // Separate by category — only return IDs so frontend filters hardcoded lists.
+        // IMPORTANT: an empty array is a legitimate state (admin turned all OFF) and
+        // must be respected. The hardcoded list is only used when the DB query itself
+        // fails (caught below).
         const allDbFlavors = (flavorsRes.data || []).filter((f: any) => f.category !== 'setting');
-        const dbCookies = allDbFlavors.filter((f: any) => !f.category || f.category === 'cookie');
-        const dbBreads = allDbFlavors.filter((f: any) => f.category === 'bread');
-
-        const cookies = dbCookies.length > 0 ? dbCookies : cookieFlavors;
-        const breads = dbBreads.length > 0 ? dbBreads : breadFlavors;
+        const cookies = allDbFlavors.filter((f: any) => !f.category || f.category === 'cookie');
+        const breads = allDbFlavors.filter((f: any) => f.category === 'bread');
 
         const dailyLimit = settingsRes.data?.stock ?? 0;
 

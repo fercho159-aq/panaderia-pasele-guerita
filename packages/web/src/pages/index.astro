@@ -4,6 +4,9 @@ import { Button, Badge } from '@pasele-guerita/ui';
 import { AddToCartButton } from '../components/AddToCartButton';
 import { cookieFlavors, breadFlavors, monthlySpecial, allProducts } from '@pasele-guerita/core';
 
+// `null` means the API failed and we fall back to showing all hardcoded
+// products. An empty array from the API is a legitimate state (admin turned
+// everything OFF) and must be respected.
 let activeCookieIds: Set<string> | null = null;
 let activeBreadIds: Set<string> | null = null;
 try {
@@ -11,8 +14,8 @@ try {
     const res = await fetch(`${origin}/api/storefront-data`);
     if (res.ok) {
         const data = await res.json();
-        if (data.cookies?.length > 0) activeCookieIds = new Set(data.cookies.map((c: any) => c.id));
-        if (data.breads?.length > 0) activeBreadIds = new Set(data.breads.map((b: any) => b.id));
+        if (Array.isArray(data.cookies)) activeCookieIds = new Set(data.cookies.map((c: any) => c.id));
+        if (Array.isArray(data.breads)) activeBreadIds = new Set(data.breads.map((b: any) => b.id));
     }
 } catch (e) {}
 

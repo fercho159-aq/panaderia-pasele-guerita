@@ -7,7 +7,7 @@ export const pickupLocations: PickupLocation[] = [
         name: 'Huitzizilin Café — Dallas',
         address: '1836 W Jefferson Blvd #120, Dallas, TX 75208',
         days: ['Wednesday', 'Saturday'],
-        hours: 'Mié 7am–4pm · Sáb 7am–3pm',
+        hours: 'Mié 1pm–4pm · Sáb 10am–3pm',
         type: 'pickup'
     },
 
@@ -25,7 +25,7 @@ export const pickupLocations: PickupLocation[] = [
     {
         id: 'irving-sat',
         name: 'Irving',
-        address: '6440 N MacArthur Blvd, Irving, TX 75039',
+        address: '6440 N MacArthur Blvd, Ste 110, Irving, TX 75039',
         days: ['Saturday'],
         hours: 'Sáb 10:50am',
         type: 'pickup'
@@ -33,7 +33,7 @@ export const pickupLocations: PickupLocation[] = [
     {
         id: 'carrollton-sat',
         name: 'Carrollton',
-        address: '2150 N Josey Ln, Carrollton, TX 75006',
+        address: '2150 N Josey Ln, Suite 132, Carrollton, TX',
         days: ['Saturday'],
         hours: 'Sáb 11:20am',
         type: 'pickup'
@@ -41,9 +41,9 @@ export const pickupLocations: PickupLocation[] = [
     {
         id: 'plano-sat',
         name: 'Plano',
-        address: '1001 14th St, Plano, TX 75074',
+        address: '1001 14th St #100, Plano, TX 75074',
         days: ['Saturday'],
-        hours: 'Sáb 12:10pm',
+        hours: 'Sáb 12:20pm',
         type: 'pickup'
     },
     {

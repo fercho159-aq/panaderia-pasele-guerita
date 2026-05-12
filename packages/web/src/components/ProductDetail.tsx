@@ -23,6 +23,8 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     const [selectedPlan, setSelectedPlan] = useState(cookiePlans[0]);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [stockLimitMsg, setStockLimitMsg] = useState<{ flavor: string; max: number } | null>(null);
+    const [wantSliced, setWantSliced] = useState(false);
+    const noSlice = !!(product as any).no_slice;
 
     // Fetch fresh stock limits from the server so addToCart can enforce them.
     // Also listen for the global stock-limit event to show feedback.
@@ -59,7 +61,9 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     ].filter(Boolean);
 
     const isCookie = product.category === 'cookie';
-    const displayPrice = isCookie ? selectedPlan.price : (product.price || 18.00);
+    const basePrice = isCookie ? selectedPlan.price : (product.price || 18.00);
+    const sliceUpcharge = (!isCookie && !noSlice && wantSliced) ? 1 : 0;
+    const displayPrice = basePrice + sliceUpcharge;
 
     // Related products: same category, excluding current
     const relatedCategory = isCookie ? 'cookie' : 'bread';
@@ -77,7 +81,15 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                 isSugarFree: !!(product as any).is_sugar_free,
             }, '');
         } else {
-            addToCart({ ...product, price: displayPrice });
+            // Breads: include slicing info in name/price so it propagates
+            // through cart drawer, checkout review, and admin notes.
+            const sliced = !noSlice && wantSliced;
+            addToCart({
+                ...product,
+                price: basePrice + (sliced ? 1 : 0),
+                name: sliced ? `${product.name} (Rebanado)` : product.name,
+                category: 'bread'
+            });
         }
     };
 
@@ -132,6 +144,13 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                     {/* Options: Plan Selection for Cookies */}
                     {isCookie ? (
                         <div className="mb-12">
+                            {/* Promo text — moved ABOVE the plan picker and emphasized so users notice it */}
+                            <div className="mb-8 p-5 rounded-2xl bg-accent/10 border-l-4 border-accent">
+                                <p className="font-serif text-lg sm:text-xl text-primary italic leading-snug">
+                                    Podrás <span className="font-bold not-italic text-accent">personalizar y mezclar los sabores</span> de tu caja en el siguiente paso.
+                                </p>
+                            </div>
+
                             <label className="block text-[11px] font-black uppercase tracking-[0.25em] text-primary/60 mb-6">Selecciona tu Plan de Galletas</label>
                             <div className="grid grid-cols-1 gap-4">
                                 {cookiePlans.map((plan) => (
@@ -148,17 +167,35 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                      </button>
                                 ))}
                             </div>
-                            <p className="text-xs text-primary/60 italic mt-4 px-2">Podrás personalizar y mezclar los sabores de tu caja en el siguiente paso.</p>
                         </div>
                     ) : (
-                        <div className="mb-12">
+                        <div className="mb-12 space-y-4">
                             <div className="flex justify-between items-center p-8 bg-white rounded-[2rem] border-2 border-primary/10 shadow-sm">
                                 <div>
-                                    <span className="font-serif text-2xl text-primary italic font-bold">Hogaza Individual</span>
-                                    <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mt-1">Fermentación natural +48h</p>
+                                    <span className="font-serif text-2xl text-primary italic font-bold">Hogaza grande 950 gr</span>
+                                    <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mt-1">Fermentación natural +24h</p>
                                 </div>
-                                <span className="font-black text-primary text-3xl">${displayPrice.toFixed(2)}</span>
+                                <span className="font-black text-primary text-3xl">${basePrice.toFixed(2)}</span>
                             </div>
+
+                            {/* Slice option — hidden for products marked no_slice (e.g. Panqué) */}
+                            {!noSlice && (
+                                <label className="flex items-center justify-between gap-4 p-5 rounded-2xl border-2 border-primary/10 bg-white hover:border-primary/30 cursor-pointer transition-all">
+                                    <div className="flex items-center gap-3">
+                                        <input
+                                            type="checkbox"
+                                            checked={wantSliced}
+                                            onChange={(e) => setWantSliced(e.target.checked)}
+                                            className="w-5 h-5 rounded border-2 border-primary/30 text-primary accent-primary"
+                                        />
+                                        <div>
+                                            <span className="font-serif text-base text-primary italic font-bold">¿Deseas el pan rebanado?</span>
+                                            <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mt-0.5">Lo cortamos en rebanadas antes de empacar</p>
+                                        </div>
+                                    </div>
+                                    <span className="font-black text-accent text-lg whitespace-nowrap">+$1.00</span>
+                                </label>
+                            )}
                         </div>
                     )}
 
@@ -167,7 +204,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                         className="w-full h-20 text-xl shadow-2xl hover:scale-[1.02] active:scale-95 transition-all mb-16 rounded-[2.5rem] bg-primary text-bg hover:shadow-primary/20 font-black tracking-widest"
                         onClick={handleAddToBag}
                     >
-                        AGREGAR A LA BOLSA — ${displayPrice.toFixed(2)}
+                        AGREGAR A LA BOLSA{!isCookie && !noSlice && wantSliced ? ' (REBANADO)' : ''} — ${displayPrice.toFixed(2)}
                     </Button>
 
                     {/* Accordion Sections */}

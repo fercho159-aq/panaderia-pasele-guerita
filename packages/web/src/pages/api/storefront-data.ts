@@ -19,7 +19,13 @@ export const GET: APIRoute = async () => {
 
         if (!supabaseUrl || !anonKey) {
             // Return static fallback
-            return new Response(JSON.stringify({ cookies: cookieFlavors, breads: breadFlavors, locations: [], dailyLimit: 0 }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+            return new Response(JSON.stringify({ cookies: cookieFlavors, breads: breadFlavors, locations: [], dailyLimit: 0 }), {
+                status: 200,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0'
+                }
+            });
         }
 
         const supabase = getSupabaseClient(supabaseUrl as string, anonKey as string);
@@ -55,11 +61,23 @@ export const GET: APIRoute = async () => {
         }));
 
         return new Response(JSON.stringify({ cookies, breads, locations: mappedLocations, dailyLimit }), {
-            status: 200, headers: { 'Content-Type': 'application/json' }
+            status: 200,
+            headers: {
+                'Content-Type': 'application/json',
+                // Force fresh data on every request — admin toggles must propagate
+                // to all users immediately, regardless of CDN/edge caches.
+                'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0'
+            }
         });
 
     } catch (e) {
         console.error("Storefront data fetch failed, using fallback", e);
-        return new Response(JSON.stringify({ cookies: cookieFlavors, breads: breadFlavors, locations: [], dailyLimit: 0 }), { status: 200 });
+        return new Response(JSON.stringify({ cookies: cookieFlavors, breads: breadFlavors, locations: [], dailyLimit: 0 }), {
+            status: 200,
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0'
+            }
+        });
     }
 }

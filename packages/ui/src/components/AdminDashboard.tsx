@@ -67,20 +67,23 @@ export const AdminDashboard: React.FC = () => {
 
     const exportToCSV = () => {
         const headers = [
-            "ID", "Fecha de Recoleccion", "Cliente", "Telefono", "Email", "Total Pagado",
+            "ID", "Fecha de Recoleccion", "Ubicacion Pickup", "Cliente", "Telefono", "Email", "Total Pagado",
             "Total Galletas", "Total Panes", "Notas / Mensaje Regalo", "Estado"
         ];
-        
+
         const cookieFlavorsList = flavors.filter(f => f.category !== 'bread');
         const breadFlavorsList = flavors.filter(f => f.category === 'bread');
-        
+
         cookieFlavorsList.forEach(f => headers.push(f.name));
         breadFlavorsList.forEach(f => headers.push(f.name));
+
+        // Build a quick lookup so we can show the human name instead of the raw id
+        const locationNameById = new Map(locations.map(l => [l.id, l.name]));
 
         const csvRows = orders.map(order => {
             const cookieCount = Object.entries(order.flavors_selected || {}).reduce((sum, [id, q]) => sum + (!breadFlavorIds.has(id) ? q : 0), 0);
             const breadCount = Object.entries(order.flavors_selected || {}).reduce((sum, [id, q]) => sum + (breadFlavorIds.has(id) ? q : 0), 0);
-            
+
             let displayNotes = order.notes || "";
             let displayName = order.customer_name;
             if (!order.notes) {
@@ -91,9 +94,13 @@ export const AdminDashboard: React.FC = () => {
                 if (notesMatch) displayNotes = notesMatch[1];
             }
 
+            const locationId = (order as any).location_id || '';
+            const locationLabel = locationNameById.get(locationId) || locationId || '';
+
             const row = [
                 order.id.slice(0,6),
                 (order as any).pickup_day || "",
+                locationLabel,
                 displayName,
                 order.phone || order.customer_phone || "",
                 order.email || order.customer_email || "",

@@ -1,0 +1,129 @@
+{
+  "meta": {
+    "siteName": "Pásele Güerita",
+    "defaultDescription": "Pan artesanal de masa madre en Dallas, galletas hechas a mano"
+  },
+  "nav": {
+    "home": "Inicio",
+    "menu": "Menú",
+    "locations": "Ubicaciones",
+    "about": "Quiénes Somos",
+    "recipes": "Recetas",
+    "checkout": "Comprar"
+  },
+  "footer": {
+    "tagline": "Hecho con masa madre y mucho amor.",
+    "links": {
+      "home": "Inicio",
+      "story": "Historia",
+      "policies": "Políticas",
+      "legal": "Aviso Legal"
+    },
+    "rights": "Todos los derechos reservados."
+  },
+  "whatsapp": {
+    "ariaLabel": "Contactar por WhatsApp",
+    "tooltip": "¡Ordena tus galletas aquí!"
+  },
+  "home": {
+    "announcement": "🍪 Próxima entrega: este Sábado",
+    "hero": {
+      "badge": "Lotes Pequeños",
+      "title": "Pan y galletas naturales, sin conservadores y con ingredientes de verdad.",
+      "subtitle": "<strong>En Dallas</strong>, encontrar pan artesanal de calidad y postres hechos con ingredientes reales es todo un reto… hasta que llegó <strong>nuestra Güerita</strong>.",
+      "description": "Nuestras galletas, elaboradas con masa madre, tienen una <strong>complejidad y profundidad de sabor</strong> que las hace únicas. Nuestros panes rústicos pasan por una <strong>fermentación natural de más de 20 horas</strong>.",
+      "ctaSeeMenu": "Ver Menú",
+      "ctaBuyNow": "Comprar Ahora"
+    },
+    "scarcity": {
+      "title": "Producción artesanal en pequeños lotes.",
+      "text": "No te quedes sin tu pan y galletas de masa madre.",
+      "highlight": "Si parpadeas, te quedas sin tu Sourdough.",
+      "badge": "Cupos limitados por punto de entrega"
+    },
+    "favorites": {
+      "title": "Los Favoritos",
+      "subtitle": "Recomendaciones de la casa",
+      "cookiesHeading": "Galletas",
+      "breadsHeading": "Pan de Masa Madre",
+      "popularBadge": "Popular",
+      "seeFullMenu": "Ver menú completo →"
+    },
+    "occasions": {
+      "title": "Sourdough para cada ocasión",
+      "events": {
+        "title": "Para tus eventos",
+        "text": "¿Tienes una cena o reunión especial? Personalizamos nuestras cajas de galletas y hogazas para que tu evento tenga el toque artesanal único de Pásele Güerita."
+      },
+      "business": {
+        "title": "Para tu negocio",
+        "label": "Venta Wholesale",
+        "text": "Lleva la magia de nuestra masa madre a tu café o restaurante. Ofrecemos precios de mayoreo para aliados comerciales que buscan calidad superior."
+      }
+    },
+    "testimonials": {
+      "quote": "\"Desde Farmersville Texas, compartimos este pedacito de tradición y sabor consciente. Para Dallas y alrededores.\"",
+      "items": [
+        {
+          "text": "El primer pan en años que no me inflama. Las galletas de Matcha son espectaculares.",
+          "author": "— Mariana L., Uptown"
+        },
+        {
+          "text": "Vale cada centavo. Se nota el amor y las 24 horas de fermentación. No vuelvo al pan de caja.",
+          "author": "— Roberto C., Oak Cliff"
+        }
+      ]
+    },
+    "gallery": {
+      "caption": "Del horno al corazón"
+    },
+    "contact": {
+      "title": "Escríbenos",
+      "subtitle": "En nuestro horno creemos que las mejores decisiones son las que alimentan el alma.",
+      "cta": "Contáctanos",
+      "subscriptions": {
+        "title": "Suscripciones Semanales",
+        "text": "Pregunta por nuestras suscripciones: te entregamos tu pan rebanado sin costo adicional."
+      },
+      "labels": {
+        "whatsapp": "WhatsApp",
+        "location": "Ubicación",
+        "social": "Redes"
+      }
+    }
+  },
+  "menu": {
+    "title": "Menú Completo",
+    "heading": "Nuestro Menú",
+    "subtitle": "Horneamos lotes pequeños cada semana. Selecciona tus favoritos y recíbelos frescos en Dallas.",
+    "categories": {
+      "all": "Todos",
+      "regulares": "Galletas Regulares",
+      "sugarFree": "Galletas Sugar Free",
+      "pan": "Pan de Masa Madre"
+    },
+    "sections": {
+      "regulares": {
+        "title": "Galletas Regulares",
+        "subtitle": "Crujientes por fuera, suaves por dentro"
+      },
+      "sugarFree": {
+        "title": "Galletas Sugar Free",
+        "subtitle": "Endulzadas naturalmente con Allulose"
+      },
+      "pan": {
+        "title": "Pan de Masa Madre",
+        "subtitle": "24 horas de fermentación lenta"
+      }
+    },
+    "sugarFreeBadge": "Sugar Free",
+    "priceEach": "c/u",
+    "viewDetails": "Ver detalles →",
+    "addToCart": "Agregar al carrito",
+    "soldOut": "Agotado"
+  },
+  "language": {
+    "switchTo": "English",
+    "current": "Español"
+  }
+}

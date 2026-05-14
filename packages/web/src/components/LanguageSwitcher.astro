@@ -1,0 +1,51 @@
+---
+import { LANGUAGES, switchLangUrl, type Language } from '../i18n/translations';
+
+interface Props {
+    currentLang: Language;
+    variant?: 'desktop' | 'mobile';
+}
+
+const { currentLang, variant = 'desktop' } = Astro.props;
+const currentPath = Astro.url.pathname;
+---
+
+{variant === 'desktop' ? (
+    <div class="flex items-center gap-1 text-xs font-bold uppercase tracking-widest">
+        {LANGUAGES.map((lang, i) => (
+            <>
+                {i > 0 && <span class="text-primary/30">|</span>}
+                <a
+                    href={switchLangUrl(currentPath, lang)}
+                    class={`px-2 py-1 transition-colors ${
+                        lang === currentLang
+                            ? 'text-primary font-black underline underline-offset-4 decoration-accent'
+                            : 'text-primary/60 hover:text-accent'
+                    }`}
+                    aria-current={lang === currentLang ? 'true' : undefined}
+                >
+                    {lang.toUpperCase()}
+                </a>
+            </>
+        ))}
+    </div>
+) : (
+    <div class="flex items-center gap-4 text-bg/60 text-xs font-sans uppercase tracking-[0.3em]">
+        {LANGUAGES.map((lang, i) => (
+            <>
+                {i > 0 && <span class="text-bg/20">·</span>}
+                <a
+                    href={switchLangUrl(currentPath, lang)}
+                    class={`transition-colors ${
+                        lang === currentLang
+                            ? 'text-accent font-bold'
+                            : 'text-bg/60 hover:text-accent'
+                    }`}
+                    aria-current={lang === currentLang ? 'true' : undefined}
+                >
+                    {lang.toUpperCase()}
+                </a>
+            </>
+        ))}
+    </div>
+)}

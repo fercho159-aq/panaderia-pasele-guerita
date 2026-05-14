@@ -1,0 +1,129 @@
+{
+  "meta": {
+    "siteName": "Pásele Güerita",
+    "defaultDescription": "Artisanal Sourdough Dallas, Handmade Cookies"
+  },
+  "nav": {
+    "home": "Home",
+    "menu": "Menu",
+    "locations": "Locations",
+    "about": "About Us",
+    "recipes": "Recipes",
+    "checkout": "Shop"
+  },
+  "footer": {
+    "tagline": "Made with sourdough and lots of love.",
+    "links": {
+      "home": "Home",
+      "story": "Our Story",
+      "policies": "Policies",
+      "legal": "Legal Notice"
+    },
+    "rights": "All rights reserved."
+  },
+  "whatsapp": {
+    "ariaLabel": "Contact us on WhatsApp",
+    "tooltip": "Order your cookies here!"
+  },
+  "home": {
+    "announcement": "🍪 Next delivery: this Saturday",
+    "hero": {
+      "badge": "Small Batches",
+      "title": "Natural bread and cookies, no preservatives and with real ingredients.",
+      "subtitle": "<strong>In Dallas</strong>, finding quality artisanal bread and desserts made with real ingredients is a challenge… until <strong>our Güerita</strong> arrived.",
+      "description": "Our cookies, made with sourdough, have a <strong>complexity and depth of flavor</strong> that makes them unique. Our rustic breads go through a <strong>natural fermentation of over 20 hours</strong>.",
+      "ctaSeeMenu": "See Menu",
+      "ctaBuyNow": "Shop Now"
+    },
+    "scarcity": {
+      "title": "Artisanal production in small batches.",
+      "text": "Don't miss out on your sourdough bread and cookies.",
+      "highlight": "If you blink, you'll miss your Sourdough.",
+      "badge": "Limited spots per delivery point"
+    },
+    "favorites": {
+      "title": "The Favorites",
+      "subtitle": "House recommendations",
+      "cookiesHeading": "Cookies",
+      "breadsHeading": "Sourdough Bread",
+      "popularBadge": "Popular",
+      "seeFullMenu": "See full menu →"
+    },
+    "occasions": {
+      "title": "Sourdough for every occasion",
+      "events": {
+        "title": "For your events",
+        "text": "Have a special dinner or gathering? We customize our cookie and loaf boxes to give your event the unique artisanal touch of Pásele Güerita."
+      },
+      "business": {
+        "title": "For your business",
+        "label": "Wholesale",
+        "text": "Bring the magic of our sourdough to your café or restaurant. We offer wholesale pricing for business partners seeking superior quality."
+      }
+    },
+    "testimonials": {
+      "quote": "\"From Farmersville Texas, we share this little piece of tradition and conscious flavor. For Dallas and surrounding areas.\"",
+      "items": [
+        {
+          "text": "The first bread in years that doesn't bloat me. The Matcha cookies are spectacular.",
+          "author": "— Mariana L., Uptown"
+        },
+        {
+          "text": "Worth every penny. You can taste the love and the 24-hour fermentation. I'm never going back to store-bought bread.",
+          "author": "— Roberto C., Oak Cliff"
+        }
+      ]
+    },
+    "gallery": {
+      "caption": "From the oven to your heart"
+    },
+    "contact": {
+      "title": "Write to us",
+      "subtitle": "At our oven, we believe the best decisions are the ones that nourish the soul.",
+      "cta": "Contact Us",
+      "subscriptions": {
+        "title": "Weekly Subscriptions",
+        "text": "Ask about our subscriptions: we deliver your sliced bread at no extra cost."
+      },
+      "labels": {
+        "whatsapp": "WhatsApp",
+        "location": "Location",
+        "social": "Social"
+      }
+    }
+  },
+  "menu": {
+    "title": "Full Menu",
+    "heading": "Our Menu",
+    "subtitle": "We bake small batches every week. Pick your favorites and get them fresh in Dallas.",
+    "categories": {
+      "all": "All",
+      "regulares": "Regular Cookies",
+      "sugarFree": "Sugar Free Cookies",
+      "pan": "Sourdough Bread"
+    },
+    "sections": {
+      "regulares": {
+        "title": "Regular Cookies",
+        "subtitle": "Crispy outside, soft inside"
+      },
+      "sugarFree": {
+        "title": "Sugar Free Cookies",
+        "subtitle": "Naturally sweetened with Allulose"
+      },
+      "pan": {
+        "title": "Sourdough Bread",
+        "subtitle": "24-hour slow fermentation"
+      }
+    },
+    "sugarFreeBadge": "Sugar Free",
+    "priceEach": "each",
+    "viewDetails": "View details →",
+    "addToCart": "Add to cart",
+    "soldOut": "Sold Out"
+  },
+  "language": {
+    "switchTo": "Español",
+    "current": "English"
+  }
+}

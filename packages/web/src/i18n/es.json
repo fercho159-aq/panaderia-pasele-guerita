@@ -122,6 +122,162 @@
     "addToCart": "Agregar al carrito",
     "soldOut": "Agotado"
   },
+  "cartDrawer": {
+    "title": "Tu Orden",
+    "emptyTitle": "Bolsa vacía...",
+    "emptySubtitle": "¿Huele a galletas?",
+    "mixedFlavors": "Sabores Mixtos",
+    "loaf": "Hogaza",
+    "unit": "Unidad",
+    "isGiftTitle": "¿Es un regalo?",
+    "removeMessage": "QUITAR MENSAJE",
+    "addMessage": "AÑADIR MENSAJE ESPECIAL (+)",
+    "messagePlaceholder": "Tu mensaje aquí...",
+    "subtotal": "Subtotal",
+    "continue": "CONTINUAR",
+    "orderNow": "PEDIR AHORA",
+    "footnote": "Entregas los Sábados en Dallas y alrededores. Revisa disponibilidad en el próximo paso.",
+    "stockLimit": {
+      "title": "Límite alcanzado",
+      "messageBefore": "Solo quedan",
+      "messageMiddle": "unidades disponibles de",
+      "messageAfter": "en este pedido.",
+      "subtitle": "Producción limitada por el horno",
+      "ok": "Entendido"
+    },
+    "slicedTag": "(Rebanado)"
+  },
+  "checkoutPage": {
+    "title": "Haz tu pedido",
+    "subtitle": "Horneamos bajo pedido para garantizar frescura."
+  },
+  "checkout": {
+    "loading": "Iniciando horno...",
+    "empty": {
+      "title": "Tu canasta está vacía",
+      "subtitle": "Agrega galletas o panes para comenzar tu pedido.",
+      "cta": "Ver el Menú"
+    },
+    "soldOut": {
+      "title": "¡Agotados por hoy!",
+      "subtitle": "Alcanzamos el límite de pedidos del día. Muy pronto abriremos la siguiente ronda. ¡Síguenos en Instagram para enterarte primero!",
+      "cta": "Volver al Inicio"
+    },
+    "steps": {
+      "logistics": "Logística",
+      "date": "Fecha",
+      "customize": "Personalizar",
+      "data": "Datos",
+      "payment": "Pago"
+    },
+    "stepCounter": "Paso {current} de {total}",
+    "step1": {
+      "title": "Tu Entrega",
+      "subtitle": "Elige tu punto de recolección.",
+      "specialName": "Lavon · Princeton · Wylie",
+      "specialDescription": "Si eres de estas áreas, selecciona esta opción y te haremos llegar los días donde podemos coordinar tu entrega.",
+      "next": "SIGUIENTE PASO"
+    },
+    "step2": {
+      "title": "¿Cuándo?",
+      "specialNote": "Coordinaremos tu fecha de entrega",
+      "onlyWednesday": "Solo Miércoles",
+      "onlySaturday": "Solo Sábados",
+      "wedAndSat": "Miércoles y Sábados",
+      "specialMessage": "Nos pondremos en contacto contigo para coordinar la mejor fecha y hora de entrega para tu zona.",
+      "back": "ATRÁS",
+      "next": "ARMAR TU PEDIDO"
+    },
+    "step3": {
+      "title": "Personaliza",
+      "subtitle": "Elige tus sabores y añade extras del horno.",
+      "yourBox": "Tu Caja",
+      "ofSize": "de",
+      "sugarFreeLabel": "Sugar Free",
+      "onlySugarFreeFlavors": "Solo sabores Sugar Free",
+      "boxComplete": "¡Caja completa!",
+      "remainingSingular": "Falta {n} galleta",
+      "remainingPlural": "Faltan {n} galletas",
+      "clear": "Limpiar",
+      "removeBox": "Eliminar caja",
+      "addExtras": "Añadir extras del horno",
+      "extraCookies": "Galletas extra",
+      "extraBreads": "Panes",
+      "extraCookiesNote": "Elige el tamaño de la caja. Podrás personalizar los sabores en la sección de arriba.",
+      "regularCookies": "Galletas Regulares",
+      "sugarFreeCookies": "Sugar Free",
+      "boxSmall": "Caja Chica (3)",
+      "boxMedium": "Caja Mediana (6)",
+      "boxLarge": "Caja Grande (9)",
+      "boxSmallSub": "3 galletas",
+      "boxMediumSub": "6 galletas",
+      "boxLargeSub": "9 galletas",
+      "sfSmall": "SF Chica (3)",
+      "sfMedium": "SF Mediana (6)",
+      "sfLarge": "SF Grande (9)",
+      "sfSmallSub": "3 galletas sugar free",
+      "sfMediumSub": "6 galletas sugar free",
+      "sfLargeSub": "9 galletas sugar free",
+      "artisanCookies": "Galletas Artesanales",
+      "mixDescription": "Mix de sabores a elegir",
+      "sugarFreeCookiesName": "Galletas Sugar Free",
+      "onlySugarFreeDescription": "Solo sabores Sugar Free",
+      "loafPrice": "Hogaza",
+      "slicedOption": "Rebanado (+$1.00)",
+      "fillBoxesWarning": "Por favor llena todas tus cajas con sabores antes de continuar",
+      "backToDate": "← FECHA",
+      "confirmOrder": "CONFIRMAR PEDIDO"
+    },
+    "step4": {
+      "title": "Tus Datos",
+      "recipeNote": "Recibirás tu receta por correo electrónico.",
+      "whatYouHave": "Lo que llevas:",
+      "emptyCart": "Tu canasta está vacía.",
+      "mixedFlavors": "Sabores Mixtos",
+      "quantity": "Cantidad",
+      "remove": "Quitar",
+      "total": "Total",
+      "nameLabel": "¿A nombre de quién?",
+      "emailLabel": "Tu Email",
+      "phoneLabel": "Tu WhatsApp",
+      "zelleLabel": "Nombre en Zelle",
+      "giftToggle": "¿Es un regalo?",
+      "giftSubtitle": "Añadir nota de regalo",
+      "giftPlaceholder": "Escribe tu mensaje de regalo aquí..."
+    },
+    "step5": {
+      "title": "El Pago",
+      "transferTitle": "Pagar vía Transferencia",
+      "zelleVenmo": "Zelle / Venmo",
+      "scanCode": "Escanea el código o envía tu pago al número de arriba.",
+      "uploadReceipt": "Sube tu comprobante (opcional)"
+    },
+    "errors": {
+      "processing": "Error al procesar:",
+      "uploading": "Procesando...",
+      "createOrder": "Error al crear pedido",
+      "unknown": "Error desconocido"
+    },
+    "nav": {
+      "back": "ATRÁS",
+      "continue": "CONTINUAR",
+      "orderNow": "PEDIR AHORA"
+    },
+    "stockLimit": {
+      "title": "Límite alcanzado",
+      "messageBefore": "Solo quedan",
+      "messageMiddle": "unidades disponibles de",
+      "messageAfter": "en este pedido.",
+      "subtitle": "Producción limitada por el horno",
+      "ok": "Entendido"
+    },
+    "success": {
+      "title": "¡Gracias por\ntu pedido!",
+      "orderId": "Pedido",
+      "subtitle": "Estamos preparando lo mejor de nuestro horno para ti.",
+      "cta": "REGRESAR AL INICIO"
+    }
+  },
   "productDetail": {
     "cookiePlans": {
       "regular": {

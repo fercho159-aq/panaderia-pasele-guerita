@@ -80,3 +80,30 @@ export function switchLangUrl(currentUrl: URL | string, targetLang: Language): s
 export function useTranslations(lang: Language) {
     return (key: string) => t(lang, key);
 }
+
+/**
+ * Detect the current language from window.location at render time.
+ * Used by client-side React components that aren't passed an explicit `lang` prop
+ * (e.g. CartDrawer is mounted globally in the Layout).
+ *
+ * SSR-safe: returns DEFAULT_LANG when window is not available.
+ */
+export function getLangFromPathname(): Language {
+    if (typeof window === 'undefined') return DEFAULT_LANG;
+    const first = window.location.pathname.split('/').filter(Boolean)[0];
+    return isValidLang(first) ? first : DEFAULT_LANG;
+}
+
+/**
+ * Internal sliced-bread marker. We keep `(Rebanado)` in the cart item name
+ * as the canonical identifier so all existing detection code keeps working,
+ * but swap it for the localized label at display time.
+ */
+export const SLICED_MARKER = '(Rebanado)';
+
+export function displaySlicedName(name: string, lang: Language): string {
+    if (lang === 'en' && name.includes(SLICED_MARKER)) {
+        return name.replace(SLICED_MARKER, '(Sliced)');
+    }
+    return name;
+}

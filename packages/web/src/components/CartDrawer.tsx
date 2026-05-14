@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { cartStore, toggleCart, updateQuantity, removeFromCart, setGiftMessage, setStockLimits } from '../stores/cartStore';
 import { Button } from '@pasele-guerita/ui';
+import { getLangFromPathname, useTranslations, displaySlicedName, localizedPath } from '../i18n/translations';
 
 export const CartDrawer: React.FC = () => {
     const { items, isOpen, gift } = useStore(cartStore);
     const [isClosing, setIsClosing] = useState(false);
     const [stockLimitMsg, setStockLimitMsg] = useState<{ flavor: string; max: number } | null>(null);
+    const lang = getLangFromPathname();
+    const t = useTranslations(lang);
 
     useEffect(() => {
         if (isOpen) {
@@ -62,16 +65,16 @@ export const CartDrawer: React.FC = () => {
     const stockLimitModal = stockLimitMsg ? (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/50 backdrop-blur-sm">
             <div className="bg-white rounded-[2.5rem] shadow-2xl p-10 max-w-sm w-full text-center animate-fade-in border border-primary/10">
-                <h3 className="font-serif text-2xl text-primary italic font-bold mb-3">Límite alcanzado</h3>
+                <h3 className="font-serif text-2xl text-primary italic font-bold mb-3">{t('cartDrawer.stockLimit.title')}</h3>
                 <p className="text-primary/70 font-serif mb-2">
-                    Solo quedan <span className="font-black text-primary">{stockLimitMsg.max}</span> unidades disponibles de <span className="font-black text-accent italic">{stockLimitMsg.flavor}</span> en este pedido.
+                    {t('cartDrawer.stockLimit.messageBefore')} <span className="font-black text-primary">{stockLimitMsg.max}</span> {t('cartDrawer.stockLimit.messageMiddle')} <span className="font-black text-accent italic">{stockLimitMsg.flavor}</span> {t('cartDrawer.stockLimit.messageAfter')}
                 </p>
-                <p className="text-xs text-primary/40 font-sans uppercase tracking-widest mb-8">Producción limitada por el horno</p>
+                <p className="text-xs text-primary/40 font-sans uppercase tracking-widest mb-8">{t('cartDrawer.stockLimit.subtitle')}</p>
                 <button
                     onClick={() => setStockLimitMsg(null)}
                     className="w-full h-14 bg-primary text-bg font-black text-sm uppercase tracking-widest rounded-2xl hover:bg-primary/90 transition-all shadow-lg"
                 >
-                    Entendido
+                    {t('cartDrawer.stockLimit.ok')}
                 </button>
             </div>
         </div>
@@ -82,16 +85,19 @@ export const CartDrawer: React.FC = () => {
     const cartItemsList = Object.entries(items);
     const subtotal = cartItemsList.reduce((acc, [_, item]) => acc + item.price * item.quantity, 0);
 
+    const checkoutPath = localizedPath(lang, '/checkout');
+    const isOnCheckout = typeof window !== 'undefined' && window.location.pathname.includes('/checkout');
+
     return (
         <>
         {stockLimitModal}
         <div className={`fixed inset-0 z-[100] transition-opacity duration-300 ${isClosing ? 'opacity-0' : 'opacity-100'}`}>
             {/* Backdrop */}
-            <div 
+            <div
                 className="absolute inset-0 bg-black/40 backdrop-blur-sm"
                 onClick={handleClose}
             />
-            
+
             {/* Drawer */}
             <div className={`absolute right-0 top-0 h-full w-full sm:max-w-sm md:max-w-md bg-[#FDF5E6] shadow-2xl flex flex-col transition-transform duration-300 transform ${isClosing ? 'translate-x-full' : 'translate-x-0'}`}>
                 {/* Header */}
@@ -104,9 +110,9 @@ export const CartDrawer: React.FC = () => {
                                 <text x="12" y="7" textAnchor="middle" fontSize="7" fontWeight="900" fill="currentColor" stroke="none" className="text-primary">{cartItemsList.length}</text>
                             </svg>
                         </div>
-                        <h2 className="font-serif text-3xl text-primary font-bold">Tu Orden</h2>
+                        <h2 className="font-serif text-3xl text-primary font-bold">{t('cartDrawer.title')}</h2>
                     </div>
-                    <button 
+                    <button
                         onClick={handleClose}
                         className="w-10 h-10 rounded-full border border-primary/20 flex items-center justify-center text-primary hover:bg-primary/5 transition-colors"
                     >
@@ -121,7 +127,7 @@ export const CartDrawer: React.FC = () => {
                     {cartItemsList.length === 0 ? (
                         <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
                             <span className="text-7xl mb-6"></span>
-                            <p className="font-serif text-xl text-primary italic font-medium">Bolsa vacía...<br/>¿Huele a galletas?</p>
+                            <p className="font-serif text-xl text-primary italic font-medium">{t('cartDrawer.emptyTitle')}<br/>{t('cartDrawer.emptySubtitle')}</p>
                         </div>
                     ) : (
                         cartItemsList.map(([id, item]) => (
@@ -139,8 +145,8 @@ export const CartDrawer: React.FC = () => {
                                         <div className="min-w-0">
                                             <h3 className="font-serif text-base text-primary leading-tight font-bold italic truncate">{
                                         item.boxSize && item.selections && Object.keys(item.selections).length > 0
-                                            ? (Object.keys(item.selections).length === 1 ? Object.keys(item.selections)[0] : 'Sabores Mixtos')
-                                            : item.name
+                                            ? (Object.keys(item.selections).length === 1 ? Object.keys(item.selections)[0] : t('cartDrawer.mixedFlavors'))
+                                            : displaySlicedName(item.name, lang)
                                     }</h3>
                                             {item.boxLabel && (
                                                 <p className="text-[10px] font-sans text-primary/60 font-bold uppercase tracking-widest mt-0.5">{item.boxLabel}</p>
@@ -154,10 +160,10 @@ export const CartDrawer: React.FC = () => {
                                                     ))}
                                                 </div>
                                             ) : !item.boxLabel && (
-                                                <p className="text-[10px] font-sans text-primary/50 font-bold uppercase tracking-widest mt-0.5">{item.category === 'bread' ? 'Hogaza' : 'Unidad'}</p>
+                                                <p className="text-[10px] font-sans text-primary/50 font-bold uppercase tracking-widest mt-0.5">{item.category === 'bread' ? t('cartDrawer.loaf') : t('cartDrawer.unit')}</p>
                                             )}
                                         </div>
-                                        <button 
+                                        <button
                                             onClick={() => removeFromCart(id)}
                                             className="text-primary/20 hover:text-red-500 transition-colors p-1"
                                         >
@@ -168,12 +174,12 @@ export const CartDrawer: React.FC = () => {
                                     </div>
                                     <div className="flex justify-between items-center mt-2">
                                         <div className="flex items-center gap-3 bg-bg rounded-full border border-primary/10 px-2 py-0.5 shadow-sm">
-                                            <button 
+                                            <button
                                                 onClick={() => updateQuantity(id, item.quantity - 1)}
                                                 className="text-primary font-black px-1.5 hover:scale-125 transition-transform"
                                             >-</button>
                                             <span className="font-sans font-bold text-primary min-w-[15px] text-center">{item.quantity}</span>
-                                            <button 
+                                            <button
                                                 onClick={() => updateQuantity(id, item.quantity + 1)}
                                                 className="text-primary font-black px-1.5 hover:scale-125 transition-transform"
                                             >+</button>
@@ -193,18 +199,18 @@ export const CartDrawer: React.FC = () => {
                         <div className="relative z-10">
                             <div className="flex items-center gap-3 mb-2">
                                 <span className="text-xl"></span>
-                                <h3 className="font-serif text-lg text-primary font-bold italic">¿Es un regalo?</h3>
+                                <h3 className="font-serif text-lg text-primary font-bold italic">{t('cartDrawer.isGiftTitle')}</h3>
                             </div>
-                            <button 
+                            <button
                                 onClick={() => setGiftMessage(!gift.is_gift, gift.message)}
                                 className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] transition-all ${gift.is_gift ? 'text-accent' : 'text-primary'}`}
                             >
-                                {gift.is_gift ? 'QUITAR MENSAJE' : 'AÑADIR MENSAJE ESPECIAL (+)'}
+                                {gift.is_gift ? t('cartDrawer.removeMessage') : t('cartDrawer.addMessage')}
                             </button>
                             {gift.is_gift && (
-                                <textarea 
+                                <textarea
                                     className="w-full mt-4 bg-white/50 border-b-2 border-accent/20 focus:border-accent outline-none text-primary font-serif italic py-3 px-4 rounded-xl resize-none shadow-inner"
-                                    placeholder="Tu mensaje aquí..."
+                                    placeholder={t('cartDrawer.messagePlaceholder')}
                                     rows={2}
                                     value={gift.message}
                                     onChange={(e) => setGiftMessage(true, e.target.value)}
@@ -215,7 +221,7 @@ export const CartDrawer: React.FC = () => {
 
                     <div className="space-y-3 pt-1">
                         <div className="flex justify-between font-serif text-2xl text-primary items-end">
-                            <span className="italic font-medium">Subtotal</span>
+                            <span className="italic font-medium">{t('cartDrawer.subtotal')}</span>
                             <span className="font-sans font-black text-primary">${subtotal.toFixed(2)}</span>
                         </div>
                         <Button
@@ -223,17 +229,17 @@ export const CartDrawer: React.FC = () => {
                             className="w-full h-14 text-base shadow-2xl flex items-center justify-center gap-3 rounded-2xl font-black tracking-widest"
                             disabled={cartItemsList.length === 0}
                             onClick={() => {
-                                if (window.location.pathname.startsWith('/checkout')) {
+                                if (isOnCheckout) {
                                     handleClose();
                                 } else {
-                                    window.location.href = '/checkout';
+                                    window.location.href = checkoutPath;
                                 }
                             }}
                         >
-                            {window.location.pathname.startsWith('/checkout') ? 'CONTINUAR' : 'PEDIR AHORA'}
+                            {isOnCheckout ? t('cartDrawer.continue') : t('cartDrawer.orderNow')}
                         </Button>
                         <p className="text-center text-[9px] uppercase font-black text-primary/30 tracking-[0.2em] px-4">
-                            Entregas los Sábados en Dallas y alrededores. Revisa disponibilidad en el próximo paso.
+                            {t('cartDrawer.footnote')}
                         </p>
                     </div>
                 </div>

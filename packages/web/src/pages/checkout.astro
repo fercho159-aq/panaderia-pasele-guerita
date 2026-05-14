@@ -1,17 +1,7 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { CheckoutFlow } from '../components/CheckoutFlow';
+// Legacy URL — redirect to localized version. Detects browser preference.
+const acceptLanguage = Astro.request.headers.get('accept-language') ?? '';
+const prefersEnglish = /^en\b|,\s*en\b/i.test(acceptLanguage) && !/^es\b|,\s*es\b/i.test(acceptLanguage);
+const lang = prefersEnglish ? 'en' : 'es';
+return Astro.redirect(`/${lang}/checkout`, 302);
 ---
-
-<Layout title="Checkout" description="Order your artisanal sourdough bread and cookies in Dallas.">
-	<section class="py-20 bg-white">
-		<div class="max-w-7xl mx-auto px-6 text-center">
-			<h1 class="font-serif text-6xl text-primary mb-4 italic">Haz tu pedido</h1>
-			<p class="text-gray-500 text-xl font-serif">Horneamos bajo pedido para garantizar frescura.</p>
-		</div>
-	</section>
-
-	<section class="pb-32 px-6">
-		<CheckoutFlow client:load />
-	</section>
-</Layout>

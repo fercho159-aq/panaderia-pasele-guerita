@@ -122,6 +122,162 @@
     "addToCart": "Add to cart",
     "soldOut": "Sold Out"
   },
+  "cartDrawer": {
+    "title": "Your Order",
+    "emptyTitle": "Empty bag...",
+    "emptySubtitle": "Smell those cookies?",
+    "mixedFlavors": "Mixed Flavors",
+    "loaf": "Loaf",
+    "unit": "Unit",
+    "isGiftTitle": "Is it a gift?",
+    "removeMessage": "REMOVE MESSAGE",
+    "addMessage": "ADD SPECIAL MESSAGE (+)",
+    "messagePlaceholder": "Your message here...",
+    "subtotal": "Subtotal",
+    "continue": "CONTINUE",
+    "orderNow": "ORDER NOW",
+    "footnote": "Deliveries Saturdays in Dallas and surrounding areas. Check availability in the next step.",
+    "stockLimit": {
+      "title": "Limit reached",
+      "messageBefore": "Only",
+      "messageMiddle": "units left of",
+      "messageAfter": "for this order.",
+      "subtitle": "Limited oven production",
+      "ok": "Got it"
+    },
+    "slicedTag": "(Sliced)"
+  },
+  "checkoutPage": {
+    "title": "Place your order",
+    "subtitle": "We bake to order to guarantee freshness."
+  },
+  "checkout": {
+    "loading": "Firing up the oven...",
+    "empty": {
+      "title": "Your basket is empty",
+      "subtitle": "Add cookies or bread to start your order.",
+      "cta": "See the Menu"
+    },
+    "soldOut": {
+      "title": "Sold out for today!",
+      "subtitle": "We reached today's order limit. We'll open the next round soon. Follow us on Instagram to be the first to know!",
+      "cta": "Back to Home"
+    },
+    "steps": {
+      "logistics": "Logistics",
+      "date": "Date",
+      "customize": "Customize",
+      "data": "Info",
+      "payment": "Payment"
+    },
+    "stepCounter": "Step {current} of {total}",
+    "step1": {
+      "title": "Your Delivery",
+      "subtitle": "Choose your pickup point.",
+      "specialName": "Lavon · Princeton · Wylie",
+      "specialDescription": "If you're in any of these areas, select this option and we'll let you know the days we can coordinate your delivery.",
+      "next": "NEXT STEP"
+    },
+    "step2": {
+      "title": "When?",
+      "specialNote": "We'll coordinate your delivery date",
+      "onlyWednesday": "Only Wednesdays",
+      "onlySaturday": "Only Saturdays",
+      "wedAndSat": "Wednesdays and Saturdays",
+      "specialMessage": "We'll get in touch with you to coordinate the best delivery date and time for your area.",
+      "back": "BACK",
+      "next": "BUILD YOUR ORDER"
+    },
+    "step3": {
+      "title": "Customize",
+      "subtitle": "Pick your flavors and add extras from the oven.",
+      "yourBox": "Your Box",
+      "ofSize": "of",
+      "sugarFreeLabel": "Sugar Free",
+      "onlySugarFreeFlavors": "Sugar Free flavors only",
+      "boxComplete": "Box complete!",
+      "remainingSingular": "{n} cookie left",
+      "remainingPlural": "{n} cookies left",
+      "clear": "Clear",
+      "removeBox": "Remove box",
+      "addExtras": "Add extras from the oven",
+      "extraCookies": "Extra cookies",
+      "extraBreads": "Bread",
+      "extraCookiesNote": "Pick the box size. You'll be able to customize flavors in the section above.",
+      "regularCookies": "Regular Cookies",
+      "sugarFreeCookies": "Sugar Free",
+      "boxSmall": "Small Box (3)",
+      "boxMedium": "Medium Box (6)",
+      "boxLarge": "Large Box (9)",
+      "boxSmallSub": "3 cookies",
+      "boxMediumSub": "6 cookies",
+      "boxLargeSub": "9 cookies",
+      "sfSmall": "SF Small (3)",
+      "sfMedium": "SF Medium (6)",
+      "sfLarge": "SF Large (9)",
+      "sfSmallSub": "3 sugar free cookies",
+      "sfMediumSub": "6 sugar free cookies",
+      "sfLargeSub": "9 sugar free cookies",
+      "artisanCookies": "Artisanal Cookies",
+      "mixDescription": "Mix of flavors to choose",
+      "sugarFreeCookiesName": "Sugar Free Cookies",
+      "onlySugarFreeDescription": "Sugar Free flavors only",
+      "loafPrice": "Loaf",
+      "slicedOption": "Sliced (+$1.00)",
+      "fillBoxesWarning": "Please fill all your boxes with flavors before continuing",
+      "backToDate": "← DATE",
+      "confirmOrder": "CONFIRM ORDER"
+    },
+    "step4": {
+      "title": "Your Info",
+      "recipeNote": "You'll receive your recipe by email.",
+      "whatYouHave": "What's in your bag:",
+      "emptyCart": "Your basket is empty.",
+      "mixedFlavors": "Mixed Flavors",
+      "quantity": "Quantity",
+      "remove": "Remove",
+      "total": "Total",
+      "nameLabel": "Who is it for?",
+      "emailLabel": "Your Email",
+      "phoneLabel": "Your WhatsApp",
+      "zelleLabel": "Name on Zelle",
+      "giftToggle": "Is it a gift?",
+      "giftSubtitle": "Add a gift note",
+      "giftPlaceholder": "Write your gift message here..."
+    },
+    "step5": {
+      "title": "Payment",
+      "transferTitle": "Pay via Transfer",
+      "zelleVenmo": "Zelle / Venmo",
+      "scanCode": "Scan the code or send your payment to the number above.",
+      "uploadReceipt": "Upload your receipt (optional)"
+    },
+    "errors": {
+      "processing": "Error processing:",
+      "uploading": "Processing...",
+      "createOrder": "Error creating order",
+      "unknown": "Unknown error"
+    },
+    "nav": {
+      "back": "BACK",
+      "continue": "CONTINUE",
+      "orderNow": "PLACE ORDER"
+    },
+    "stockLimit": {
+      "title": "Limit reached",
+      "messageBefore": "Only",
+      "messageMiddle": "units left of",
+      "messageAfter": "for this order.",
+      "subtitle": "Limited oven production",
+      "ok": "Got it"
+    },
+    "success": {
+      "title": "Thank you for\nyour order!",
+      "orderId": "Order",
+      "subtitle": "We're preparing the best of our oven for you.",
+      "cta": "BACK TO HOME"
+    }
+  },
   "productDetail": {
     "cookiePlans": {
       "regular": {

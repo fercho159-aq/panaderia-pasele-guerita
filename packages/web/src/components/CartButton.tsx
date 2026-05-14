@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from '@nanostores/react';
 import { cartStore, toggleCart } from '../stores/cartStore';
+import { getLangFromPathname, useTranslations } from '../i18n/translations';
 
 export const CartButton: React.FC = () => {
     const { items } = useStore(cartStore);
     const itemCount = Object.values(items).reduce((acc, item) => acc + item.quantity, 0);
     const [isAnimating, setIsAnimating] = useState(false);
+    const t = useTranslations(getLangFromPathname());
 
     useEffect(() => {
         if (itemCount > 0) {
@@ -20,7 +22,7 @@ export const CartButton: React.FC = () => {
             onClick={toggleCart}
             className={`relative flex items-center gap-2 text-primary hover:text-accent transition-colors group ${isAnimating ? 'scale-110 opacity-80' : 'scale-100 opacity-100'}`}
             style={{ transitionDuration: '300ms' }}
-            aria-label="Open Cart"
+            aria-label={t('nav.checkout')}
         >
             <div className="relative">
                 <svg viewBox="0 0 24 24" className="w-8 h-8 fill-none stroke-current" strokeWidth="2">

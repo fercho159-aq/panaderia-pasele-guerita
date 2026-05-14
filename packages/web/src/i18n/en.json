@@ -147,6 +147,130 @@
     },
     "slicedTag": "(Sliced)"
   },
+  "about": {
+    "metaTitle": "About Us",
+    "metaDescription": "Discover the story behind Pásele Güerita and our sourdough in Dallas.",
+    "heroTitle": "Our <br/> Story",
+    "heroSubtitle": "It all started with a sourdough loaf and the desire to share the true flavor of artisanal bread.",
+    "story": {
+      "p1": "It all started in my kitchen, with a bubbly jar called <strong>Güerita</strong>. What began as an attempt to make <strong>healthier desserts and bread</strong> for my family — no sugar, no refined flours — turned into <strong>Paséle Güerita</strong>, our small artisanal bakery.",
+      "p2": "We believe cravings should be <strong>delicious and conscious</strong>: less sugar, natural fermentation, and real benefits for your body. Every cookie and every loaf is made with care, <strong>with high-quality ingredients and lots of love</strong>, no artificial colors or flavors.",
+      "p3": "Our sourdough, <strong>our Güerita</strong>, goes through a slow fermentation that not only intensifies the flavor but also makes our bread and cookies easier to digest. Every batch is small, fresh, and full of love — just like we'd bake for our own family."
+    },
+    "values": {
+      "realIngredients": {
+        "title": "Real Ingredients",
+        "desc": "No preservatives, no artificial colors. Just the best that nature gives us."
+      },
+      "slowFermentation": {
+        "title": "Slow Fermentation",
+        "desc": "Over 20 hours of natural fermentation for deep flavor and easy digestion."
+      },
+      "madeWithLove": {
+        "title": "Made with Love",
+        "desc": "Every batch is small and personal. We bake as if it were for our own family."
+      }
+    },
+    "galleryTitle": "From the oven to your table",
+    "closingTagline": "From <strong>Farmersville Texas</strong>, we share this little piece of tradition and conscious flavor. <br/> For Dallas and surrounding areas",
+    "tagline": "¡Pásele Güerita, we've got bread!",
+    "ctaOrder": "Place my Order",
+    "ctaWhatsapp": "WhatsApp"
+  },
+  "locations": {
+    "metaTitle": "Locations",
+    "heading": "Locations",
+    "subtitle": "Pickup points and delivery times",
+    "wednesday": "Wednesday",
+    "saturday": "Saturday",
+    "importantTitle": "Important",
+    "important": [
+      "Times may vary slightly due to traffic.",
+      "We can wait up to 15 minutes per stop to avoid affecting other deliveries.",
+      "Deliveries are made in the parking lot."
+    ],
+    "weekdayDeliveriesTitle": "Weekday deliveries",
+    "weekdayDeliveriesIntro": "Based in Farmersville, we can coordinate deliveries in:",
+    "weekdayDeliveriesCities": "McKinney, Princeton, Wylie, Rockwall, and Lavon.",
+    "conditionsTitle": "Conditions",
+    "conditions": [
+      "Pre-orders only",
+      "By order with advance payment",
+      "No sales at the pickup point"
+    ]
+  },
+  "policies": {
+    "metaTitle": "Paséle Güerita Policies",
+    "metaDescription": "Learn our policies on ingredients, pickup, returns, and storage.",
+    "heading": "Paséle Güerita Policies",
+    "section1": {
+      "title": "1. Ingredients and allergies",
+      "p1": "Our products are made with natural, high-quality ingredients.",
+      "alertTitle": "Critical Information:",
+      "alert": "For your safety, review the allergen list — products may include eggs, walnuts, almonds, and wheat.",
+      "p2": "If you have severe allergies, please let us know before ordering so we can take the necessary precautions."
+    },
+    "section2": {
+      "title": "2. Wait time and pickup",
+      "p1": "We value your time and our customers'. The wait time at each pick-up point is a maximum of <strong>15 minutes</strong>.",
+      "p2": "If you can't pick up your order in that time, you can do it on the next available delivery by coordinating with us.",
+      "quote": "\"If the order isn't picked up at any of the agreed delivery locations, no refund will be issued due to the perishable nature of the artisanal product.\""
+    },
+    "section3": {
+      "title": "3. Returns and cancellations",
+      "p1": "All our products are handmade, customized, and fresh. Therefore, <strong>we don't accept returns or exchanges</strong> once the order has been made or delivered.",
+      "p2": "If a force majeure issue comes up with your order, contact us right away so we can find the best solution together."
+    },
+    "section4": {
+      "title": "4. Storage suggestions",
+      "p1": "To keep your bread and cookies fresh and with their unique texture, we recommend storing them in a <strong>cool, dry place away from direct light</strong>.",
+      "tipTitle": "Tip from la Güerita:",
+      "tip": "All our products can be frozen in airtight containers to extend their life by weeks while keeping their amazing flavor when thawed."
+    },
+    "footerTitle": "More questions?",
+    "footerText": "Our commitment is to give you the best experience. If you need personalized attention, don't hesitate to write to us.",
+    "footerCta": "Contact via WhatsApp"
+  },
+  "legal": {
+    "metaTitle": "Texas Legal Notice",
+    "metaDescription": "Texas Cottage Food Law licensing information for Pásele Güerita.",
+    "heading": "Legal Notice",
+    "productionTitle": "Production Information",
+    "homeKitchen": "\"This food is made in a home kitchen and is not inspected by the Department of State Health Services or a local health department.\"",
+    "cottageLawTitle": "Texas Cottage Food Law",
+    "cottageLawText": "All our products are made and sold operating under the <strong>Texas Cottage Food Law</strong>. This allows us to prepare low-risk foods in our home kitchen in Dallas, TX and sell them directly to our customers.",
+    "allergensTitle": "Ingredients and Allergens",
+    "allergensText": "Please note that our kitchen processes ingredients that can be known allergens, including (but not limited to): <strong>wheat, dairy, eggs, and various nuts (pecans, almonds, etc.)</strong>. If you have a severe cross-allergy, we recommend caution. All our packaging includes the labels required by law detailing the ingredients.",
+    "salesTitle": "Sales Terms",
+    "salesText": "Deliveries are limited to the state of Texas and must be hand-to-hand (Pick-up or local Delivery). Per current legislation, we don't ship by mail across state lines."
+  },
+  "recipes": {
+    "metaTitle": "Recipes & Guides",
+    "heroTitle": "Our <br/> Recipes",
+    "heroSubtitle": "Explore creative ways to enjoy our bread and cookies.",
+    "intro": "Download our official guides and recipes for free, ready to print. Bring the flavor of Pásele Güerita into your own kitchen.",
+    "items": {
+      "starter": {
+        "title": "Guide: Start your own Sourdough",
+        "description": "A step-by-step PDF to create, feed, and maintain your Sourdough Starter from scratch to your first loaf.",
+        "tag": "Beginner"
+      },
+      "cookies": {
+        "title": "Recipe: Classic Sourdough Cookies",
+        "description": "Our base secret recipe so you can try baking our famous cookies at home.",
+        "tag": "Intermediate"
+      },
+      "tips": {
+        "title": "Baking Tips & Long Fermentations",
+        "description": "Valuable info on cold fermentation, autolysis, and flavor development for home bakers.",
+        "tag": "Advanced"
+      }
+    },
+    "galleryTitle": "Oven inspiration",
+    "ctaTitle": "Prefer us to do it for you?",
+    "ctaSubtitle": "Skip the recipes and let us bake for you. Fresh weekly orders.",
+    "ctaButton": "Place my Order"
+  },
   "checkoutPage": {
     "title": "Place your order",
     "subtitle": "We bake to order to guarantee freshness."

@@ -147,6 +147,130 @@
     },
     "slicedTag": "(Rebanado)"
   },
+  "about": {
+    "metaTitle": "Quiénes Somos",
+    "metaDescription": "Conoce la historia detrás de Pásele Güerita y nuestra masa madre en Dallas.",
+    "heroTitle": "Nuestra <br/> Historia",
+    "heroSubtitle": "Todo comenzó con una hogaza de masa madre y el deseo de compartir el verdadero sabor del pan artesanal.",
+    "story": {
+      "p1": "Todo empezó en mi cocina, con un frasco burbujeante llamado <strong>Güerita</strong>. Lo que comenzó como un intento de crear <strong>postres y pan más saludables</strong> para mi familia, sin azúcar ni harinas refinadas, se convirtió en <strong>Paséle Güerita</strong>, nuestra pequeña panadería artesanal.",
+      "p2": "Creemos que los antojos deben ser <strong>deliciosos y conscientes</strong>: menos azúcar, fermentación natural y beneficios reales para tu cuerpo. Cada galleta y cada hogaza se hace con cuidado, <strong>con ingredientes de alta calidad y mucho amor</strong>, sin colorantes ni sabores artificiales.",
+      "p3": "Nuestra masa madre, <strong>nuestra Güerita</strong>, pasa por una fermentación lenta que no solo intensifica el sabor, sino que también hace que nuestros panes y galletas sean más amigables con la digestión. Cada lote es pequeño, fresco y lleno de cariño, como lo haríamos para nuestra propia familia."
+    },
+    "values": {
+      "realIngredients": {
+        "title": "Ingredientes Reales",
+        "desc": "Sin conservadores, sin colorantes artificiales. Solo lo mejor que nos da la naturaleza."
+      },
+      "slowFermentation": {
+        "title": "Fermentación Lenta",
+        "desc": "Más de 20 horas de fermentación natural para un sabor intenso y fácil digestión."
+      },
+      "madeWithLove": {
+        "title": "Hecho con Amor",
+        "desc": "Cada lote es pequeño y personal. Lo hacemos como para nuestra propia familia."
+      }
+    },
+    "galleryTitle": "Del horno a tu mesa",
+    "closingTagline": "Desde <strong>Farmersville Texas</strong>, compartimos este pedacito de tradición y sabor consciente. <br/> Para Dallas y alrededores",
+    "tagline": "¡Pásele Güerita, que sí hay pan!",
+    "ctaOrder": "Hacer mi Pedido",
+    "ctaWhatsapp": "WhatsApp"
+  },
+  "locations": {
+    "metaTitle": "Ubicaciones",
+    "heading": "Ubicaciones",
+    "subtitle": "Puntos de entrega y horarios de recolección",
+    "wednesday": "Miércoles",
+    "saturday": "Sábado",
+    "importantTitle": "Importante",
+    "important": [
+      "Los horarios pueden variar ligeramente debido al tráfico.",
+      "Se espera máximo 15 minutos por punto para no afectar el resto de las entregas.",
+      "Las entregas se realizan en el estacionamiento."
+    ],
+    "weekdayDeliveriesTitle": "Entregas entre semana",
+    "weekdayDeliveriesIntro": "Con base en Farmersville, se pueden coordinar entregas en:",
+    "weekdayDeliveriesCities": "McKinney, Princeton, Wylie, Rockwall y Lavon.",
+    "conditionsTitle": "Condiciones",
+    "conditions": [
+      "Entregas solo con pedido previo",
+      "Bajo pedido y con anticipo",
+      "No venta en punto de entrega"
+    ]
+  },
+  "policies": {
+    "metaTitle": "Políticas de Paséle Güerita",
+    "metaDescription": "Conoce nuestras políticas de ingredientes, recogida, devoluciones y almacenamiento.",
+    "heading": "Políticas de Paséle Güerita",
+    "section1": {
+      "title": "1. Ingredientes y alergias",
+      "p1": "Nuestros productos son elaborados con ingredientes naturales y de alta calidad.",
+      "alertTitle": "Información Crítica:",
+      "alert": "Por seguridad, revisen la lista de alérgenos: pueden incluir huevo, nueces, almendras y trigo.",
+      "p2": "Si tienes alergias severas, por favor avísanos antes de tu pedido para tomar las precauciones necesarias."
+    },
+    "section2": {
+      "title": "2. Tiempo de espera y recogida",
+      "p1": "Valoramos tu tiempo y el de nuestros clientes. El tiempo de espera por punto de pick-up es de un máximo de <strong>15 minutos</strong>.",
+      "p2": "Si no puedes recoger tu pedido en ese tiempo, podrás hacerlo en la siguiente entrega disponible coordinándolo con nosotros.",
+      "quote": "\"En caso de no recoger el pedido en ninguna de las ubicaciones de entrega acordadas, no se otorgará reembolso debido a la naturaleza perecedera del producto artesanal.\""
+    },
+    "section3": {
+      "title": "3. Devoluciones y cancelaciones",
+      "p1": "Todos nuestros productos son hechos a mano, personalizados y frescos. Por lo tanto, <strong>no aceptamos devoluciones ni cambios</strong> una vez que el pedido ha sido elaborado o entregado.",
+      "p2": "Si surge algún inconveniente de fuerza mayor con tu pedido, contáctanos de inmediato para evaluar la mejor solución juntos."
+    },
+    "section4": {
+      "title": "4. Sugerencias de almacenamiento",
+      "p1": "Para mantener la frescura y la textura única de tu pan y galletas, te recomendamos guardarlos en un <strong>lugar fresco, seco y alejado de la luz directa</strong>.",
+      "tipTitle": "Tip de la Güerita:",
+      "tip": "Todos nuestros productos se pueden congelar en recipientes herméticos para prolongar su duración por semanas, conservando su sabor espectacular al descongelar."
+    },
+    "footerTitle": "¿Tienes más dudas?",
+    "footerText": "Nuestro compromiso es brindarte la mejor experiencia. Si necesitas atención personalizada, no dudes en escribirnos.",
+    "footerCta": "Contactar vía WhatsApp"
+  },
+  "legal": {
+    "metaTitle": "Aviso Legal de Texas",
+    "metaDescription": "Información de licencias de Cottage Food Law en Texas para Pásele Güerita.",
+    "heading": "Aviso Legal",
+    "productionTitle": "Información de Producción",
+    "homeKitchen": "\"This food is made in a home kitchen and is not inspected by the Department of State Health Services or a local health department.\"",
+    "cottageLawTitle": "Texas Cottage Food Law",
+    "cottageLawText": "Todos nuestros productos son elaborados y vendidos operando bajo la <strong>Texas Cottage Food Law</strong>. Esto nos permite preparar alimentos de bajo riesgo en nuestra cocina doméstica en Dallas, TX y venderlos directamente a nuestros clientes.",
+    "allergensTitle": "Ingredientes y Alérgenos",
+    "allergensText": "Por favor ten en cuenta que nuestra cocina procesa ingredientes que pueden ser alérgenos conocidos, incluyendo (pero no limitándose a): <strong>trigo, lácteos, huevos, y distintos tipos de nueces (pecanas, almendras, etc.)</strong>. Si tienes una alergia severa cruzada, te recomendamos tener precaución. Todos nuestros empaques incluyen las etiquetas requeridas por ley detallando los ingredientes.",
+    "salesTitle": "Términos de Venta",
+    "salesText": "Las entregas se limitan al estado de Texas y deben ser mano a mano (Pick-up o Delivery local). De acuerdo con la legislación actual, no realizamos envíos por correo a través de fronteras estatales."
+  },
+  "recipes": {
+    "metaTitle": "Recetas y Guías",
+    "heroTitle": "Nuestras <br/> Recetas",
+    "heroSubtitle": "Explora formas creativas de disfrutar nuestro pan y galletas.",
+    "intro": "Descarga gratis nuestras guías y recetas oficiales listas para imprimir. Lleva el sabor de Pásele Güerita a tu propia cocina.",
+    "items": {
+      "starter": {
+        "title": "Guía: Inicia tu propia Masa Madre",
+        "description": "Un PDF paso a paso para crear, alimentar y mantener tu Sourdough Starter desde cero hasta tu primer pan.",
+        "tag": "Básico"
+      },
+      "cookies": {
+        "title": "Receta: Classic Sourdough Cookies",
+        "description": "Nuestra receta secreta base para que intentes hornear nuestras famosas galletas en casa.",
+        "tag": "Intermedio"
+      },
+      "tips": {
+        "title": "Tips de Horneado y Tiempos Largos",
+        "description": "Información valiosa sobre fermentación en frío, autolisis y desarrollo de sabor para panaderos caseros.",
+        "tag": "Avanzado"
+      }
+    },
+    "galleryTitle": "Inspiración del horno",
+    "ctaTitle": "¿Prefieres que lo hagamos nosotros?",
+    "ctaSubtitle": "Olvídate de las recetas y déjanos hornear por ti. Pedidos frescos, semanal.",
+    "ctaButton": "Hacer mi Pedido"
+  },
   "checkoutPage": {
     "title": "Haz tu pedido",
     "subtitle": "Horneamos bajo pedido para garantizar frescura."

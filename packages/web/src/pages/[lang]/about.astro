@@ -1,0 +1,95 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { Button } from '@pasele-guerita/ui';
+import { isValidLang, useTranslations, localizedPath, type Language } from '../../i18n/translations';
+
+const { lang: langParam } = Astro.params;
+if (!isValidLang(langParam)) {
+    return Astro.redirect('/es/about');
+}
+const lang: Language = langParam;
+const tr = useTranslations(lang);
+
+const galleryImages = [
+    { src: '/imagenes/IMG_6654.webp' },
+    { src: '/imagenes/IMG_6703.webp' },
+    { src: '/imagenes/IMG_6657.webp' },
+    { src: '/imagenes/IMG_6751.webp' },
+    { src: '/imagenes/IMG_6360.webp' },
+    { src: '/imagenes/IMG_6750.webp' },
+    { src: '/imagenes/IMG_6662.webp' },
+    { src: '/imagenes/IMG_6758.webp' },
+];
+
+const values = [
+    { icon: '🌾', titleKey: 'about.values.realIngredients.title', descKey: 'about.values.realIngredients.desc', img: '/imagenes/IMG_6755.webp' },
+    { icon: '⏳', titleKey: 'about.values.slowFermentation.title', descKey: 'about.values.slowFermentation.desc', img: '/imagenes/IMG_6749.webp' },
+    { icon: '💛', titleKey: 'about.values.madeWithLove.title', descKey: 'about.values.madeWithLove.desc', img: '/imagenes/IMG_6662.webp' },
+];
+
+const checkoutUrl = localizedPath(lang, '/checkout');
+---
+
+<Layout title={tr('about.metaTitle')} description={tr('about.metaDescription')} lang={lang}>
+    <section class="relative py-24 bg-bg overflow-hidden">
+		<div class="max-w-7xl mx-auto px-6 relative z-10">
+			<div class="max-w-3xl">
+				<h1 class="font-serif text-4xl sm:text-6xl md:text-8xl text-primary mb-8 leading-tight italic" set:html={tr('about.heroTitle')}></h1>
+				<p class="font-sans text-2xl md:text-3xl font-bold text-primary/70 mb-12 leading-relaxed">
+					{tr('about.heroSubtitle')}
+				</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="max-w-7xl mx-auto px-6 py-20 animate-fade-in">
+        <div class="grid md:grid-cols-2 gap-16 items-center mb-24">
+            <div class="space-y-8 text-xl text-gray-700 leading-relaxed font-sans">
+                <p set:html={tr('about.story.p1')}></p>
+                <p set:html={tr('about.story.p2')}></p>
+                <p set:html={tr('about.story.p3')}></p>
+            </div>
+            <div class="relative h-[500px]">
+                <img src="/imagenes/IMG_6703.webp" alt="Sourdough" class="absolute top-0 left-0 w-4/5 h-72 object-cover rounded-3xl shadow-2xl z-10 hover:scale-105 transition-transform duration-500" />
+                <img src="/imagenes/IMG_6657.webp" alt="Cookies" class="absolute bottom-0 right-0 w-3/5 h-56 object-cover rounded-3xl shadow-2xl z-20 border-4 border-white hover:scale-105 transition-transform duration-500" />
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-accent/20 rounded-full blur-3xl z-0"></div>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8 mb-24">
+            {values.map((value) => (
+                <div class="group relative overflow-hidden rounded-3xl h-72 cursor-default shadow-lg hover:shadow-2xl transition-all duration-500">
+                    <img src={value.img} alt={tr(value.titleKey)} class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent group-hover:from-primary/80 transition-all duration-500"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
+                        <span class="text-3xl mb-2 block">{value.icon}</span>
+                        <h3 class="font-serif text-2xl font-bold italic mb-2">{tr(value.titleKey)}</h3>
+                        <p class="text-sm text-white/80 leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-500 translate-y-2 group-hover:translate-y-0">{tr(value.descKey)}</p>
+                    </div>
+                </div>
+            ))}
+        </div>
+
+        <div class="mb-16">
+            <h2 class="font-serif text-4xl text-primary italic text-center mb-10">{tr('about.galleryTitle')}</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {galleryImages.map((img) => (
+                    <div class="aspect-square overflow-hidden rounded-2xl shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer">
+                        <img src={img.src} alt="Pásele Güerita" class="w-full h-full object-cover" loading="lazy" decoding="async" />
+                    </div>
+                ))}
+            </div>
+        </div>
+
+        <div class="pt-12 text-center space-y-6">
+            <p class="text-gray-600 text-xl italic font-serif" set:html={tr('about.closingTagline')}></p>
+            <p class="font-bold text-primary text-5xl font-serif pt-4 italic">
+                {tr('about.tagline')}
+            </p>
+            <div class="flex gap-4 justify-center mt-8 flex-wrap">
+                <a href={checkoutUrl}><Button variant="primary" className="h-14 px-10 text-xl">{tr('about.ctaOrder')}</Button></a>
+                <a href="https://wa.me/14303242593" target="_blank" rel="noopener noreferrer"><Button variant="outline" className="h-14 px-10 text-xl">{tr('about.ctaWhatsapp')}</Button></a>
+            </div>
+        </div>
+    </div>
+</Layout>

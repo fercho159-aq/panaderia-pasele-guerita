@@ -1,0 +1,77 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { isValidLang, useTranslations, type Language } from '../../i18n/translations';
+
+const { lang: langParam } = Astro.params;
+if (!isValidLang(langParam)) {
+    return Astro.redirect('/es/policies');
+}
+const lang: Language = langParam;
+const tr = useTranslations(lang);
+---
+
+<Layout title={tr('policies.metaTitle')} description={tr('policies.metaDescription')} lang={lang}>
+    <div class="max-w-4xl mx-auto px-6 py-20 animate-fade-in text-gray-800">
+        <h1 class="font-serif text-6xl text-primary mb-12 italic border-b border-bg pb-6">{tr('policies.heading')}</h1>
+
+        <div class="space-y-12 font-sans text-pretty">
+            <section class="bg-white p-8 lg:p-12 rounded-[2.5rem] shadow-sm border border-accent/10">
+                <h2 class="text-3xl font-bold text-primary mb-6 flex items-center gap-4">
+                    <span class="text-4xl">🧪</span> {tr('policies.section1.title')}
+                </h2>
+                <div class="space-y-4 text-xl leading-relaxed text-gray-700">
+                    <p>{tr('policies.section1.p1')}</p>
+                    <div class="bg-red-50/50 p-6 rounded-2xl border border-red-100 font-bold text-red-900 my-6">
+                        <p class="mb-2">⚠️ {tr('policies.section1.alertTitle')}</p>
+                        <p>{tr('policies.section1.alert')}</p>
+                    </div>
+                    <p>{tr('policies.section1.p2')}</p>
+                </div>
+            </section>
+
+            <section class="bg-white p-8 lg:p-12 rounded-[2.5rem] shadow-sm border border-accent/10">
+                <h2 class="text-3xl font-bold text-primary mb-6 flex items-center gap-4">
+                    <span class="text-4xl">⏰</span> {tr('policies.section2.title')}
+                </h2>
+                <div class="space-y-4 text-xl leading-relaxed text-gray-700">
+                    <p set:html={tr('policies.section2.p1')}></p>
+                    <p>{tr('policies.section2.p2')}</p>
+                    <div class="bg-primary/5 p-6 rounded-2xl border border-primary/10 italic text-primary/80 font-medium">
+                        {tr('policies.section2.quote')}
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white p-8 lg:p-12 rounded-[2.5rem] shadow-sm border border-accent/10">
+                <h2 class="text-3xl font-bold text-primary mb-6 flex items-center gap-4">
+                    <span class="text-4xl">🔄</span> {tr('policies.section3.title')}
+                </h2>
+                <div class="space-y-4 text-xl leading-relaxed text-gray-700">
+                    <p set:html={tr('policies.section3.p1')}></p>
+                    <p>{tr('policies.section3.p2')}</p>
+                </div>
+            </section>
+
+            <section class="bg-white p-8 lg:p-12 rounded-[2.5rem] shadow-sm border border-accent/10">
+                <h2 class="text-3xl font-bold text-primary mb-6 flex items-center gap-4">
+                    <span class="text-4xl">❄️</span> {tr('policies.section4.title')}
+                </h2>
+                <div class="space-y-4 text-xl leading-relaxed text-gray-700">
+                    <p set:html={tr('policies.section4.p1')}></p>
+                    <p class="flex items-start gap-3 bg-accent/10 p-5 rounded-2xl text-accent-dark font-medium leading-normal">
+                        <span class="text-2xl mt-0.5">💡</span>
+                        <span><strong>{tr('policies.section4.tipTitle')}</strong> {tr('policies.section4.tip')}</span>
+                    </p>
+                </div>
+            </section>
+        </div>
+
+        <div class="mt-24 text-center max-w-2xl mx-auto">
+            <h3 class="font-serif text-3xl text-primary mb-4 italic">{tr('policies.footerTitle')}</h3>
+            <p class="text-gray-500 text-lg mb-10 leading-relaxed font-sans">{tr('policies.footerText')}</p>
+            <a href="https://wa.me/14303242593" class="inline-flex items-center gap-3 bg-[#25D366] text-white font-serif text-2xl py-5 px-12 rounded-full shadow-xl hover:scale-105 transition-all transform hover:-translate-y-1 active:scale-95">
+                <span class="text-3xl">💬</span> {tr('policies.footerCta')}
+            </a>
+        </div>
+    </div>
+</Layout>

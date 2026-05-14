@@ -16,16 +16,13 @@ const tr = useTranslations(lang);
 const description = Astro.props.description ?? tr('meta.defaultDescription');
 const siteName = tr('meta.siteName');
 
-// Pages already migrated to /[lang]/ — links are localized
+// All public pages are now bilingual.
 const home = localizedPath(lang, '/');
 const menuUrl = localizedPath(lang, '/menu');
-
-// Pages still pending migration to /[lang]/ — links stay un-prefixed for now.
-// Once each page is migrated, swap to `localizedPath(lang, '/path')`.
-const locationsUrl = '/ubicaciones';
-const aboutUrl = '/about';
-const policiesUrl = '/policies';
-const legalUrl = '/legal';
+const locationsUrl = localizedPath(lang, '/ubicaciones');
+const aboutUrl = localizedPath(lang, '/about');
+const policiesUrl = localizedPath(lang, '/policies');
+const legalUrl = localizedPath(lang, '/legal');
 ---
 
 <!doctype html>

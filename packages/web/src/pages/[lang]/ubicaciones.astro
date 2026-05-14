@@ -1,0 +1,158 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { isValidLang, useTranslations, type Language } from '../../i18n/translations';
+
+const { lang: langParam } = Astro.params;
+if (!isValidLang(langParam)) {
+    return Astro.redirect('/es/ubicaciones');
+}
+const lang: Language = langParam;
+const tr = useTranslations(lang);
+
+const saturdayLocations = [
+    {
+        name: 'Huitzizilin Café — Oak Cliff, Dallas',
+        time: '10am – 3pm',
+        address: '1836 W Jefferson Blvd #120, Dallas, TX 75208',
+        maps: 'https://maps.google.com/?q=1836+W+Jefferson+Blvd+%23120+Dallas+TX+75208'
+    },
+    {
+        name: 'Irving (Las Colinas)',
+        time: '10:50am',
+        address: '6440 N MacArthur Blvd, Ste 110, Irving, TX 75039',
+        maps: 'https://maps.google.com/?q=6440+N+MacArthur+Blvd+Ste+110+Irving+TX+75039'
+    },
+    {
+        name: 'Carrollton',
+        time: '11:20am',
+        address: '2150 N Josey Ln, Suite 132, Carrollton, TX',
+        maps: 'https://maps.google.com/?q=2150+N+Josey+Ln+Suite+132+Carrollton+TX'
+    },
+    {
+        name: 'Plano',
+        time: '12:20pm',
+        address: '1001 14th St #100, Plano, TX 75074',
+        maps: 'https://maps.google.com/?q=1001+14th+St+%23100+Plano+TX+75074'
+    },
+    {
+        name: 'Garland',
+        time: '1:00pm',
+        address: '500 W Miller Rd, Garland, TX',
+        maps: 'https://maps.google.com/?q=500+W+Miller+Rd+Garland+TX'
+    },
+];
+
+const importantList = tr('locations.important') as string[];
+const conditionsList = tr('locations.conditions') as string[];
+const conditionEmojis = ['🧾', '💳', '🚫'];
+---
+
+<Layout title={tr('locations.metaTitle')} lang={lang}>
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+        <!-- Header -->
+        <div class="text-center mb-16">
+            <h1 class="font-serif text-5xl sm:text-6xl text-primary italic mb-4">{tr('locations.heading')}</h1>
+            <p class="text-primary/60 font-sans text-base">{tr('locations.subtitle')}</p>
+        </div>
+
+        <!-- WEDNESDAY -->
+        <section class="mb-14">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="h-px flex-1 bg-primary/10"></div>
+                <h2 class="font-sans text-xs font-black uppercase tracking-[0.25em] text-primary/40">{tr('locations.wednesday')}</h2>
+                <div class="h-px flex-1 bg-primary/10"></div>
+            </div>
+
+            <div class="bg-white rounded-3xl border border-primary/10 shadow-sm overflow-hidden">
+                <div class="p-6 sm:p-8">
+                    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
+                        <h3 class="font-serif text-xl text-primary italic font-bold">Huitzizilin Café — Oak Cliff, Dallas</h3>
+                        <span class="font-sans text-sm font-black text-accent whitespace-nowrap">1pm – 4pm</span>
+                    </div>
+                    <a
+                        href="https://maps.google.com/?q=1836+W+Jefferson+Blvd+%23120+Dallas+TX+75208"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center gap-2 text-sm text-primary/50 hover:text-primary transition-colors"
+                    >
+                        <span>📍</span>
+                        <span>1836 W Jefferson Blvd #120, Dallas, TX 75208</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SATURDAY -->
+        <section class="mb-14">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="h-px flex-1 bg-primary/10"></div>
+                <h2 class="font-sans text-xs font-black uppercase tracking-[0.25em] text-primary/40">{tr('locations.saturday')}</h2>
+                <div class="h-px flex-1 bg-primary/10"></div>
+            </div>
+
+            <div class="space-y-4">
+                {saturdayLocations.map((loc, i) => (
+                    <div class="bg-white rounded-3xl border border-primary/10 shadow-sm overflow-hidden">
+                        <div class="p-6 sm:p-8">
+                            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-7 h-7 rounded-full bg-primary/5 text-primary font-black text-xs flex items-center justify-center shrink-0">{i + 1}</span>
+                                    <h3 class="font-serif text-xl text-primary italic font-bold">{loc.name}</h3>
+                                </div>
+                                <span class="font-sans text-sm font-black text-accent whitespace-nowrap ml-10 sm:ml-0">{loc.time}</span>
+                            </div>
+                            <a
+                                href={loc.maps}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="inline-flex items-center gap-2 text-sm text-primary/50 hover:text-primary transition-colors ml-10 sm:ml-0"
+                            >
+                                <span>📍</span>
+                                <span>{loc.address}</span>
+                            </a>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </section>
+
+        <!-- Important -->
+        <section class="mb-10">
+            <div class="bg-amber-50 border border-amber-200 rounded-3xl p-6 sm:p-8 space-y-3">
+                <p class="font-sans font-black text-amber-700 text-sm uppercase tracking-widest flex items-center gap-2">
+                    <span>⚠️</span> {tr('locations.importantTitle')}
+                </p>
+                <ul class="space-y-2 text-sm text-amber-900/80 font-sans leading-relaxed">
+                    {importantList.map((line) => <li>{line}</li>)}
+                </ul>
+            </div>
+        </section>
+
+        <!-- Weekday deliveries -->
+        <section class="mb-10">
+            <div class="bg-primary/5 border border-primary/10 rounded-3xl p-6 sm:p-8">
+                <p class="font-sans font-black text-primary text-sm uppercase tracking-widest flex items-center gap-2 mb-3">
+                    <span>📍</span> {tr('locations.weekdayDeliveriesTitle')}
+                </p>
+                <p class="text-sm text-primary/70 font-sans leading-relaxed">
+                    {tr('locations.weekdayDeliveriesIntro')}<br />
+                    <span class="font-bold text-primary">{tr('locations.weekdayDeliveriesCities')}</span>
+                </p>
+            </div>
+        </section>
+
+        <!-- Conditions -->
+        <section>
+            <div class="bg-white border border-primary/10 rounded-3xl p-6 sm:p-8 space-y-3">
+                <p class="font-sans font-black text-primary text-sm uppercase tracking-widest flex items-center gap-2">
+                    <span>📦</span> {tr('locations.conditionsTitle')}
+                </p>
+                <ul class="space-y-2 text-sm text-primary/70 font-sans leading-relaxed">
+                    {conditionsList.map((line, i) => (
+                        <li class="flex items-center gap-2"><span>{conditionEmojis[i]}</span> {line}</li>
+                    ))}
+                </ul>
+            </div>
+        </section>
+    </div>
+</Layout>

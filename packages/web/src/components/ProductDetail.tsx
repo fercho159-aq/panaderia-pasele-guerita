@@ -2,22 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { addToCart, setStockLimits } from '../stores/cartStore';
 import { Button } from '@pasele-guerita/ui';
 import { allProducts } from '@pasele-guerita/core';
+import { useTranslations, DEFAULT_LANG, localizedPath, type Language } from '../i18n/translations';
 
 interface ProductDetailProps {
     product: any;
+    lang?: Language;
 }
 
-export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
+export const ProductDetail: React.FC<ProductDetailProps> = ({ product, lang = DEFAULT_LANG }) => {
+    const t = useTranslations(lang);
     const isSugarFree = !!(product as any).is_sugar_free;
     // Plans for cookies — different prices for Sugar Free
+    const planLabels = isSugarFree ? t('productDetail.cookiePlans.sugarFree') : t('productDetail.cookiePlans.regular');
     const cookiePlans = isSugarFree ? [
-        { count: 3, price: 13.50, label: 'SF Chica (3)' },
-        { count: 6, price: 27.00, label: 'SF Mediana (6)' },
-        { count: 9, price: 40.50, label: 'SF Grande (9)' }
+        { count: 3, price: 13.50, label: planLabels.small },
+        { count: 6, price: 27.00, label: planLabels.medium },
+        { count: 9, price: 40.50, label: planLabels.large }
     ] : [
-        { count: 3, price: 12.00, label: 'Caja Chica (3)' },
-        { count: 6, price: 24.00, label: 'Caja Mediana (6)' },
-        { count: 9, price: 31.50, label: 'Caja Grande (9)' }
+        { count: 3, price: 12.00, label: planLabels.small },
+        { count: 6, price: 24.00, label: planLabels.medium },
+        { count: 9, price: 31.50, label: planLabels.large }
     ];
 
     const [selectedPlan, setSelectedPlan] = useState(cookiePlans[0]);
@@ -87,7 +91,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
             addToCart({
                 ...product,
                 price: basePrice + (sliced ? 1 : 0),
-                name: sliced ? `${product.name} (Rebanado)` : product.name,
+                name: sliced ? `${product.name} ${t('productDetail.slicedTag')}` : product.name,
                 category: 'bread'
             });
         }
@@ -138,7 +142,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                     <h1 className="font-serif text-5xl md:text-7xl text-primary mb-6 font-bold tracking-tight">{product.name}</h1>
 
                     <div className="prose prose-lg text-gray-700 font-serif italic mb-10 leading-relaxed border-l-4 border-accent/30 pl-6">
-                        <p className="font-medium text-xl leading-relaxed">{product.description || "Deléitate con lo mejor de nuestra panadería artesanal. Hecho fresco cada día con ingredientes de la más alta calidad y un proceso de fermentación lenta que garantiza un sabor inigualable."}</p>
+                        <p className="font-medium text-xl leading-relaxed">{product.description || t('productDetail.defaultDescription')}</p>
                     </div>
 
                     {/* Options: Plan Selection for Cookies */}
@@ -146,12 +150,13 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                         <div className="mb-12">
                             {/* Promo text — moved ABOVE the plan picker and emphasized so users notice it */}
                             <div className="mb-8 p-5 rounded-2xl bg-accent/10 border-l-4 border-accent">
-                                <p className="font-serif text-lg sm:text-xl text-primary italic leading-snug">
-                                    Podrás <span className="font-bold not-italic text-accent">personalizar y mezclar los sabores</span> de tu caja en el siguiente paso.
-                                </p>
+                                <p
+                                    className="font-serif text-lg sm:text-xl text-primary italic leading-snug"
+                                    dangerouslySetInnerHTML={{ __html: t('productDetail.promoCustomize') }}
+                                />
                             </div>
 
-                            <label className="block text-[11px] font-black uppercase tracking-[0.25em] text-primary/60 mb-6">Selecciona tu Plan de Galletas</label>
+                            <label className="block text-[11px] font-black uppercase tracking-[0.25em] text-primary/60 mb-6">{t('productDetail.selectPlan')}</label>
                             <div className="grid grid-cols-1 gap-4">
                                 {cookiePlans.map((plan) => (
                                     <button
@@ -161,7 +166,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                     >
                                         <div className="text-left">
                                             <span className="font-serif text-2xl text-primary italic font-bold">{plan.label}</span>
-                                            <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mt-1">Receta original de la Güerita</p>
+                                            <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mt-1">{t('productDetail.originalRecipe')}</p>
                                         </div>
                                         <span className="font-black text-primary text-3xl">${plan.price.toFixed(2)}</span>
                                      </button>
@@ -172,8 +177,8 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                         <div className="mb-12 space-y-4">
                             <div className="flex justify-between items-center p-8 bg-white rounded-[2rem] border-2 border-primary/10 shadow-sm">
                                 <div>
-                                    <span className="font-serif text-2xl text-primary italic font-bold">Hogaza grande 950 gr</span>
-                                    <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mt-1">Fermentación natural +24h</p>
+                                    <span className="font-serif text-2xl text-primary italic font-bold">{t('productDetail.loafSize')}</span>
+                                    <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mt-1">{t('productDetail.naturalFermentation')}</p>
                                 </div>
                                 <span className="font-black text-primary text-3xl">${basePrice.toFixed(2)}</span>
                             </div>
@@ -189,8 +194,8 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                             className="w-5 h-5 rounded border-2 border-primary/30 text-primary accent-primary"
                                         />
                                         <div>
-                                            <span className="font-serif text-base text-primary italic font-bold">¿Deseas el pan rebanado?</span>
-                                            <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mt-0.5">Lo cortamos en rebanadas antes de empacar</p>
+                                            <span className="font-serif text-base text-primary italic font-bold">{t('productDetail.wantSliced')}</span>
+                                            <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mt-0.5">{t('productDetail.wantSlicedSubtitle')}</p>
                                         </div>
                                     </div>
                                     <span className="font-black text-accent text-lg whitespace-nowrap">+$1.00</span>
@@ -204,15 +209,15 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                         className="w-full h-20 text-xl shadow-2xl hover:scale-[1.02] active:scale-95 transition-all mb-16 rounded-[2.5rem] bg-primary text-bg hover:shadow-primary/20 font-black tracking-widest"
                         onClick={handleAddToBag}
                     >
-                        AGREGAR A LA BOLSA{!isCookie && !noSlice && wantSliced ? ' (REBANADO)' : ''} — ${displayPrice.toFixed(2)}
+                        {t('productDetail.addToBag')}{!isCookie && !noSlice && wantSliced ? ` ${t('productDetail.slicedTag')}` : ''} — ${displayPrice.toFixed(2)}
                     </Button>
 
                     {/* Accordion Sections */}
                     <div className="divide-y divide-primary/10 border-t border-primary/10 mb-4">
                         {[
-                            { id: 'Description', label: 'Descripción' },
-                            { id: 'Allergens', label: 'Alérgenos' },
-                            { id: 'Care', label: 'Cuidados y Conservación' }
+                            { id: 'Description', label: t('productDetail.sections.description') },
+                            { id: 'Allergens', label: t('productDetail.sections.allergens') },
+                            { id: 'Care', label: t('productDetail.sections.care') }
                         ].map((section) => (
                             <details key={section.id} className="group py-6" open={section.id === 'Description'}>
                                 <summary className="flex justify-between items-center cursor-pointer list-none font-sans font-black uppercase tracking-[0.15em] text-sm text-primary">
@@ -225,7 +230,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                             <p className="font-medium">{product.description}</p>
                                             {product.ingredients && (
                                                 <div className="pt-6 mt-6 border-t border-primary/5">
-                                                    <p className="text-[10px] uppercase tracking-widest font-black text-primary/40 mb-2">Ingredientes Protagónicos</p>
+                                                    <p className="text-[10px] uppercase tracking-widest font-black text-primary/40 mb-2">{t('productDetail.ingredientsLabel')}</p>
                                                     <p className="italic font-serif opacity-80">{product.ingredients}</p>
                                                 </div>
                                             )}
@@ -233,24 +238,24 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                     )}
                                     {section.id === 'Allergens' && (
                                         <div className="bg-bg/40 p-6 rounded-2xl border border-primary/5">
-                                            <p className="font-bold text-primary mb-2">Información importante para tu salud:</p>
-                                            <p>Contiene gluten (trigo). Nuestros productos son elaborados en una cocina artesanal que también procesa nueces, cacahuates, almendras y semillas. Si tienes alguna alergia severa, por favor contáctanos vía WhatsApp antes de realizar tu pedido.</p>
+                                            <p className="font-bold text-primary mb-2">{t('productDetail.allergens.title')}</p>
+                                            <p>{t('productDetail.allergens.body')}</p>
                                         </div>
                                     )}
                                     {section.id === 'Care' && (
                                         <table className="w-full text-sm">
                                             <tbody>
                                                 <tr>
-                                                    <td className="font-bold py-3 border-b border-primary/5 text-primary">Temp. Ambiente</td>
-                                                    <td className="py-3 border-b border-primary/5 italic opacity-80 text-right">3 días en recipiente hermético.</td>
+                                                    <td className="font-bold py-3 border-b border-primary/5 text-primary">{t('productDetail.care.ambient')}</td>
+                                                    <td className="py-3 border-b border-primary/5 italic opacity-80 text-right">{t('productDetail.care.ambientValue')}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td className="font-bold py-3 border-b border-primary/5 text-primary">Refrigeración</td>
-                                                    <td className="py-3 border-b border-primary/5 italic opacity-80 text-right">7 días. Calentar antes de consumir.</td>
+                                                    <td className="font-bold py-3 border-b border-primary/5 text-primary">{t('productDetail.care.refrigerated')}</td>
+                                                    <td className="py-3 border-b border-primary/5 italic opacity-80 text-right">{t('productDetail.care.refrigeratedValue')}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td className="font-bold py-3 text-primary">Congelación</td>
-                                                    <td className="py-3 italic opacity-80 text-right">{isCookie ? 'Hasta 2 meses.' : 'Hasta 2 meses. Cortar en rebanadas antes.'}</td>
+                                                    <td className="font-bold py-3 text-primary">{t('productDetail.care.frozen')}</td>
+                                                    <td className="py-3 italic opacity-80 text-right">{isCookie ? t('productDetail.care.frozenCookie') : t('productDetail.care.frozenBread')}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -266,18 +271,18 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
             {relatedProducts.length > 0 && (
                 <div className="mt-8 pt-8 border-t border-primary/10">
                     <h2 className="font-serif text-3xl text-primary mb-8">
-                        {isCookie ? 'Más galletas que te pueden gustar' : 'Más panes de masa madre'}
+                        {isCookie ? t('productDetail.related.cookies') : t('productDetail.related.breads')}
                     </h2>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         {relatedProducts.map(p => (
-                            <a key={p.id} href={`/product/${p.id}`} className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-bg/20 flex flex-col">
+                            <a key={p.id} href={localizedPath(lang, `/product/${p.id}`)} className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-bg/20 flex flex-col">
                                 <div className="h-40 overflow-hidden bg-gray-50">
                                     <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                 </div>
                                 <div className="p-4 flex-1 flex flex-col">
                                     <h3 className="font-serif text-lg text-primary italic mb-1">{p.name}</h3>
                                     <p className="text-xs text-gray-500 line-clamp-2 flex-1">{p.description}</p>
-                                    <span className="text-sm font-bold text-primary mt-3 group-hover:text-accent transition-colors">Ver producto →</span>
+                                    <span className="text-sm font-bold text-primary mt-3 group-hover:text-accent transition-colors">{t('productDetail.related.viewProduct')}</span>
                                 </div>
                             </a>
                         ))}
@@ -289,16 +294,16 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
             {stockLimitMsg && (
                 <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/50 backdrop-blur-sm">
                     <div className="bg-white rounded-[2.5rem] shadow-2xl p-10 max-w-sm w-full text-center animate-fade-in border border-primary/10">
-                        <h3 className="font-serif text-2xl text-primary italic font-bold mb-3">Límite alcanzado</h3>
+                        <h3 className="font-serif text-2xl text-primary italic font-bold mb-3">{t('productDetail.stockLimit.title')}</h3>
                         <p className="text-primary/70 font-serif mb-2">
-                            Solo quedan <span className="font-black text-primary">{stockLimitMsg.max}</span> unidades disponibles de <span className="font-black text-accent italic">{stockLimitMsg.flavor}</span> en este pedido.
+                            {t('productDetail.stockLimit.messageBefore')} <span className="font-black text-primary">{stockLimitMsg.max}</span> {t('productDetail.stockLimit.messageMiddle')} <span className="font-black text-accent italic">{stockLimitMsg.flavor}</span> {t('productDetail.stockLimit.messageAfter')}
                         </p>
-                        <p className="text-xs text-primary/40 font-sans uppercase tracking-widest mb-8">Producción limitada por el horno</p>
+                        <p className="text-xs text-primary/40 font-sans uppercase tracking-widest mb-8">{t('productDetail.stockLimit.subtitle')}</p>
                         <button
                             onClick={() => setStockLimitMsg(null)}
                             className="w-full h-14 bg-primary text-bg font-black text-sm uppercase tracking-widest rounded-2xl hover:bg-primary/90 transition-all shadow-lg"
                         >
-                            Entendido
+                            {t('productDetail.stockLimit.ok')}
                         </button>
                     </div>
                 </div>

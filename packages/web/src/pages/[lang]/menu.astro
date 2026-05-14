@@ -43,8 +43,7 @@ const categories = [
 
 const priceEach = tr('menu.priceEach');
 const viewDetailsLabel = tr('menu.viewDetails');
-// Product detail page is not yet migrated to /[lang]/, keep un-prefixed.
-const productPath = (id: string) => `/product/${id}`;
+const productPath = (id: string) => localizedPath(lang, `/product/${id}`);
 ---
 
 <Layout title={tr('menu.title')} lang={lang}>

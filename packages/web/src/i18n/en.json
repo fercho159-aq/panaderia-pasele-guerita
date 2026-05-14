@@ -122,6 +122,62 @@
     "addToCart": "Add to cart",
     "soldOut": "Sold Out"
   },
+  "productDetail": {
+    "cookiePlans": {
+      "regular": {
+        "small": "Small Box (3)",
+        "medium": "Medium Box (6)",
+        "large": "Large Box (9)"
+      },
+      "sugarFree": {
+        "small": "SF Small (3)",
+        "medium": "SF Medium (6)",
+        "large": "SF Large (9)"
+      }
+    },
+    "promoCustomize": "You'll be able to <strong>customize and mix the flavors</strong> of your box in the next step.",
+    "selectPlan": "Choose your Cookie Plan",
+    "originalRecipe": "Original recipe by la Güerita",
+    "loafSize": "Large loaf 950 g",
+    "naturalFermentation": "Natural fermentation +24h",
+    "wantSliced": "Would you like the bread sliced?",
+    "wantSlicedSubtitle": "We slice it before packing",
+    "addToBag": "ADD TO BAG",
+    "slicedTag": "(SLICED)",
+    "defaultDescription": "Treat yourself to the best of our artisanal bakery. Made fresh every day with the highest quality ingredients and a slow fermentation process that guarantees unmatched flavor.",
+    "sections": {
+      "description": "Description",
+      "allergens": "Allergens",
+      "care": "Care & Storage"
+    },
+    "ingredientsLabel": "Star Ingredients",
+    "allergens": {
+      "title": "Important health information:",
+      "body": "Contains gluten (wheat). Our products are made in an artisanal kitchen that also processes walnuts, peanuts, almonds, and seeds. If you have a severe allergy, please contact us via WhatsApp before placing your order."
+    },
+    "care": {
+      "ambient": "Room Temp.",
+      "ambientValue": "3 days in an airtight container.",
+      "refrigerated": "Refrigerated",
+      "refrigeratedValue": "7 days. Warm up before eating.",
+      "frozen": "Frozen",
+      "frozenCookie": "Up to 2 months.",
+      "frozenBread": "Up to 2 months. Slice before freezing."
+    },
+    "related": {
+      "cookies": "More cookies you might love",
+      "breads": "More sourdough breads",
+      "viewProduct": "View product →"
+    },
+    "stockLimit": {
+      "title": "Limit reached",
+      "messageBefore": "Only",
+      "messageMiddle": "units left of",
+      "messageAfter": "for this order.",
+      "subtitle": "Limited oven production",
+      "ok": "Got it"
+    }
+  },
   "language": {
     "switchTo": "Español",
     "current": "English"

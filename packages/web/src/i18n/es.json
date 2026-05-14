@@ -122,6 +122,62 @@
     "addToCart": "Agregar al carrito",
     "soldOut": "Agotado"
   },
+  "productDetail": {
+    "cookiePlans": {
+      "regular": {
+        "small": "Caja Chica (3)",
+        "medium": "Caja Mediana (6)",
+        "large": "Caja Grande (9)"
+      },
+      "sugarFree": {
+        "small": "SF Chica (3)",
+        "medium": "SF Mediana (6)",
+        "large": "SF Grande (9)"
+      }
+    },
+    "promoCustomize": "Podrás <strong>personalizar y mezclar los sabores</strong> de tu caja en el siguiente paso.",
+    "selectPlan": "Selecciona tu Plan de Galletas",
+    "originalRecipe": "Receta original de la Güerita",
+    "loafSize": "Hogaza grande 950 gr",
+    "naturalFermentation": "Fermentación natural +24h",
+    "wantSliced": "¿Deseas el pan rebanado?",
+    "wantSlicedSubtitle": "Lo cortamos en rebanadas antes de empacar",
+    "addToBag": "AGREGAR A LA BOLSA",
+    "slicedTag": "(REBANADO)",
+    "defaultDescription": "Deléitate con lo mejor de nuestra panadería artesanal. Hecho fresco cada día con ingredientes de la más alta calidad y un proceso de fermentación lenta que garantiza un sabor inigualable.",
+    "sections": {
+      "description": "Descripción",
+      "allergens": "Alérgenos",
+      "care": "Cuidados y Conservación"
+    },
+    "ingredientsLabel": "Ingredientes Protagónicos",
+    "allergens": {
+      "title": "Información importante para tu salud:",
+      "body": "Contiene gluten (trigo). Nuestros productos son elaborados en una cocina artesanal que también procesa nueces, cacahuates, almendras y semillas. Si tienes alguna alergia severa, por favor contáctanos vía WhatsApp antes de realizar tu pedido."
+    },
+    "care": {
+      "ambient": "Temp. Ambiente",
+      "ambientValue": "3 días en recipiente hermético.",
+      "refrigerated": "Refrigeración",
+      "refrigeratedValue": "7 días. Calentar antes de consumir.",
+      "frozen": "Congelación",
+      "frozenCookie": "Hasta 2 meses.",
+      "frozenBread": "Hasta 2 meses. Cortar en rebanadas antes."
+    },
+    "related": {
+      "cookies": "Más galletas que te pueden gustar",
+      "breads": "Más panes de masa madre",
+      "viewProduct": "Ver producto →"
+    },
+    "stockLimit": {
+      "title": "Límite alcanzado",
+      "messageBefore": "Solo quedan",
+      "messageMiddle": "unidades disponibles de",
+      "messageAfter": "en este pedido.",
+      "subtitle": "Producción limitada por el horno",
+      "ok": "Entendido"
+    }
+  },
   "language": {
     "switchTo": "English",
     "current": "Español"

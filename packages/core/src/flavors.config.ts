@@ -2,141 +2,185 @@ export const cookieFlavors = [
     {
         id: 'choco-nuts',
         name: 'Choco Nuts',
+        name_en: 'Choco Nuts',
         active: true,
         category: 'cookie',
         image: '/imagenes/cookie-choconuts.webp',
         description: 'Chocolate semiamargo y nuez.',
+        description_en: 'Semi-sweet chocolate and walnut.',
         ingredients: 'Alérgenos: trigo, almendras, nuez.',
+        ingredients_en: 'Allergens: wheat, almonds, walnut.',
         is_sourdough: true,
         is_gluten_free: false,
-        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.'
+        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.',
+        conservation_en: 'Refrigerated: 5-7 days. Frozen: Up to 2 months.'
     },
     {
         id: 'fresa-coco',
         name: 'Fresa y Coco',
+        name_en: 'Strawberry & Coconut',
         active: true,
         category: 'cookie',
         image: '/imagenes/IMG_6758.webp',
         description: 'Deliciosa combinación de fresas y coco rallado.',
+        description_en: 'Delicious combination of strawberries and shredded coconut.',
         ingredients: 'Alérgenos: trigo, almendras.',
+        ingredients_en: 'Allergens: wheat, almonds.',
         is_sourdough: true,
         is_gluten_free: false,
-        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.'
+        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.',
+        conservation_en: 'Refrigerated: 5-7 days. Frozen: Up to 2 months.'
     },
     {
         id: 'bicolor-frambuesa',
         name: 'Bicolor con Frambuesa',
+        name_en: 'Raspberry Bicolor',
         active: true,
         category: 'cookie',
         image: '/imagenes/cookie-bicolor.webp',
         description: 'Centro de frambuesa, mitad vainilla y mitad chocolate.',
+        description_en: 'Raspberry center, half vanilla and half chocolate.',
         ingredients: 'Alérgenos: trigo, almendras.',
+        ingredients_en: 'Allergens: wheat, almonds.',
         is_sourdough: true,
         is_gluten_free: false,
-        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.'
+        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.',
+        conservation_en: 'Refrigerated: 5-7 days. Frozen: Up to 2 months.'
     },
     {
         id: 'abuelita',
         name: 'Abuelita',
+        name_en: 'Abuelita',
         active: true,
         category: 'cookie',
         image: '/imagenes/cookie-abuelita.webp',
         description: 'El sabor tradicional del chocolate Abuelita en una galleta artesanal.',
+        description_en: 'The traditional Abuelita chocolate flavor in an artisanal cookie.',
         ingredients: 'Alérgenos: trigo, almendras.',
+        ingredients_en: 'Allergens: wheat, almonds.',
         is_sourdough: true,
         is_gluten_free: false,
-        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.'
+        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.',
+        conservation_en: 'Refrigerated: 5-7 days. Frozen: Up to 2 months.'
     },
     {
         id: 'matcha-dark',
         name: 'Matcha y Chocolate Oscuro',
+        name_en: 'Matcha & Dark Chocolate',
         active: true,
         category: 'cookie',
         image: '/imagenes/cookie-matcha.webp',
         description: 'Té matcha premium con trozos de chocolate oscuro.',
+        description_en: 'Premium matcha tea with dark chocolate chunks.',
         ingredients: 'Alérgenos: trigo, almendras.',
+        ingredients_en: 'Allergens: wheat, almonds.',
         is_sourdough: true,
         is_gluten_free: false,
-        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.'
+        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.',
+        conservation_en: 'Refrigerated: 5-7 days. Frozen: Up to 2 months.'
     },
     {
         id: 'dragon-pitahaya',
         name: 'Dragon',
+        name_en: 'Dragon',
         active: true,
         category: 'cookie',
         image: '/imagenes/cookie-dragon-new.webp',
         description: 'Pitahaya vibrante y arándanos frescos.',
+        description_en: 'Vibrant dragon fruit and fresh blueberries.',
         ingredients: 'Alérgenos: trigo, almendras.',
+        ingredients_en: 'Allergens: wheat, almonds.',
         is_sourdough: true,
         is_gluten_free: false,
-        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.'
+        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.',
+        conservation_en: 'Refrigerated: 5-7 days. Frozen: Up to 2 months.'
     },
     {
         id: 'blueberry',
         name: 'Blueberry',
+        name_en: 'Blueberry',
         active: true,
         category: 'cookie',
         image: '/imagenes/cookie-blueberry.webp',
         description: 'Arándanos azules frescos y un toque cítrico.',
+        description_en: 'Fresh blueberries with a citrus touch.',
         ingredients: 'Alérgenos: trigo, almendras.',
+        ingredients_en: 'Allergens: wheat, almonds.',
         is_sourdough: true,
         is_gluten_free: false,
-        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.'
+        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.',
+        conservation_en: 'Refrigerated: 5-7 days. Frozen: Up to 2 months.'
     },
     {
         id: 'sugar-free-platano-choco',
         name: 'Sugar Free de Plátano y Chocolate',
+        name_en: 'Sugar Free Banana & Chocolate',
         active: true,
         category: 'cookie',
         price: 13.50,
         image: '/imagenes/IMG_6759.webp',
         description: 'Endulzada con allulose, plátano natural y chispas de chocolate sin azúcar.',
+        description_en: 'Sweetened with allulose, natural banana, and sugar-free chocolate chips.',
         ingredients: 'Alérgenos: trigo.',
+        ingredients_en: 'Allergens: wheat.',
         is_sourdough: true,
         is_gluten_free: false,
         is_sugar_free: true,
-        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.'
+        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.',
+        conservation_en: 'Refrigerated: 5-7 days. Frozen: Up to 2 months.'
     },
     {
         id: 'sugar-free-platano-nuez',
         name: 'Sugar Free de Plátano y Nuez',
+        name_en: 'Sugar Free Banana & Pecan',
         active: true,
         category: 'cookie',
         price: 13.50,
         image: '/imagenes/IMG_6759.webp',
         description: 'Endulzada con allulose, plátano natural y trozos de nuez pecana.',
+        description_en: 'Sweetened with allulose, natural banana, and pecan pieces.',
         ingredients: 'Alérgenos: trigo, nuez.',
+        ingredients_en: 'Allergens: wheat, pecan.',
         is_sourdough: true,
         is_gluten_free: false,
         is_sugar_free: true,
-        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.'
+        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.',
+        conservation_en: 'Refrigerated: 5-7 days. Frozen: Up to 2 months.'
     },
     {
         id: 'sugar-free-blueberry',
         name: 'Sugar Free de Blueberry',
+        name_en: 'Sugar Free Blueberry',
         active: true,
         category: 'cookie',
         price: 13.50,
         image: '/imagenes/cookie-blueberry.webp',
         description: 'Endulzada con allulose, arándanos azules frescos y base de masa madre.',
+        description_en: 'Sweetened with allulose, fresh blueberries, and a sourdough base.',
         ingredients: 'Alérgenos: trigo.',
+        ingredients_en: 'Allergens: wheat.',
         is_sourdough: true,
         is_gluten_free: false,
         is_sugar_free: true,
-        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.'
+        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.',
+        conservation_en: 'Refrigerated: 5-7 days. Frozen: Up to 2 months.'
     },
     {
         id: 'chai-walnuts',
         name: 'Chai y Nueces',
+        name_en: 'Chai & Walnuts',
         active: true,
         category: 'cookie',
         price: 12.00,
         image: '/imagenes/galleta-chai-walnuts.webp',
         description: 'Especias aromáticas de chai con trozos de nuez y base de masa madre.',
+        description_en: 'Aromatic chai spices with walnut pieces and a sourdough base.',
         ingredients: 'Alérgenos: trigo, almendras, nuez.',
+        ingredients_en: 'Allergens: wheat, almonds, walnut.',
         is_sourdough: true,
         is_gluten_free: false,
-        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.'
+        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses.',
+        conservation_en: 'Refrigerated: 5-7 days. Frozen: Up to 2 months.'
     }
 ];
 
@@ -144,81 +188,105 @@ export const breadFlavors = [
     {
         id: 'hogaza-natural',
         name: 'Natural',
+        name_en: 'Natural',
         active: true,
         category: 'bread',
         price: 10.00,
         image: '/imagenes/hogaza-natural.webp',
         description: 'Nuestra hogaza clásica de masa madre.',
+        description_en: 'Our classic sourdough loaf.',
         ingredients: 'Alérgenos: trigo.',
+        ingredients_en: 'Allergens: wheat.',
         is_sourdough: true,
         is_gluten_free: false,
-        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses. Cortar en rebanadas antes.'
+        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses. Cortar en rebanadas antes.',
+        conservation_en: 'Refrigerated: 5-7 days. Frozen: Up to 2 months. Slice before freezing.'
     },
     {
         id: 'pan-centeno-avena',
         name: 'Centeno con corteza de avena',
+        name_en: 'Rye with Oat Crust',
         active: true,
         category: 'bread',
         price: 12.00,
         image: '/imagenes/hogaza-centeno.webp',
         description: 'Pan de centeno nutritivo con un toque de avena en la corteza.',
+        description_en: 'Nutritious rye bread with a touch of oats on the crust.',
         ingredients: 'Alérgenos: trigo.',
+        ingredients_en: 'Allergens: wheat.',
         is_sourdough: true,
         is_gluten_free: false,
-        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses. Cortar en rebanadas antes.'
+        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses. Cortar en rebanadas antes.',
+        conservation_en: 'Refrigerated: 5-7 days. Frozen: Up to 2 months. Slice before freezing.'
     },
     {
         id: 'pan-semillas',
         name: 'Semillas',
+        name_en: 'Seeds',
         active: true,
         category: 'bread',
         price: 12.00,
         image: '/imagenes/pan-semillas-new.webp',
         description: 'Mezcla de chía, linaza y semilla de girasol.',
+        description_en: 'Mix of chia, flax, and sunflower seeds.',
         ingredients: 'Alérgenos: trigo.',
+        ingredients_en: 'Allergens: wheat.',
         is_sourdough: true,
         is_gluten_free: false,
-        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses. Cortar en rebanadas antes.'
+        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses. Cortar en rebanadas antes.',
+        conservation_en: 'Refrigerated: 5-7 days. Frozen: Up to 2 months. Slice before freezing.'
     },
     {
         id: 'pan-cacao-arandanos',
         name: 'Cacao con arándanos',
+        name_en: 'Cacao with Blueberries',
         active: true,
         category: 'bread',
         price: 13.00,
         image: '/imagenes/IMG_6532.webp',
         description: 'Cacao, arándanos y chocolate sin azúcar.',
+        description_en: 'Cacao, blueberries, and sugar-free chocolate.',
         ingredients: 'Alérgenos: trigo.',
+        ingredients_en: 'Allergens: wheat.',
         is_sourdough: true,
         is_gluten_free: false,
-        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses. Cortar en rebanadas antes.'
+        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses. Cortar en rebanadas antes.',
+        conservation_en: 'Refrigerated: 5-7 days. Frozen: Up to 2 months. Slice before freezing.'
     },
     {
         id: 'jalapeño-cheddar',
         name: 'Jalapeño Cheddar',
+        name_en: 'Jalapeño Cheddar',
         active: true,
         category: 'bread',
         price: 12.00,
         image: '/imagenes/jalapeno-cheddar.webp',
         description: 'Picante sutil de jalapeño con queso cheddar fundido.',
+        description_en: 'Subtle jalapeño heat with melted cheddar cheese.',
         ingredients: 'Alérgenos: trigo.',
+        ingredients_en: 'Allergens: wheat.',
         is_sourdough: true,
         is_gluten_free: false,
-        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses. Cortar en rebanadas antes.'
+        conservation: 'Refrigeración: 5-7 días. Congelación: Hasta 2 meses. Cortar en rebanadas antes.',
+        conservation_en: 'Refrigerated: 5-7 days. Frozen: Up to 2 months. Slice before freezing.'
     },
     {
         id: 'panque-platano',
         name: 'Panqué Premium de Plátano',
+        name_en: 'Premium Banana Loaf',
         active: true,
         category: 'bread',
         price: 16.00,
         image: '/imagenes/panque-platano.webp',
         description: 'Panqué de plátano ultra húmedo con masa madre, mantequilla tostada y yogurt griego. Endulzado con allulose, con chocolate 55% cacao sin azúcar y pepita de calabaza.',
+        description_en: 'Ultra-moist banana loaf with sourdough, brown butter, and Greek yogurt. Sweetened with allulose, with 55% cacao sugar-free chocolate and pumpkin seeds.',
         ingredients: 'Alérgenos: trigo (gluten), huevo y lácteos.',
+        ingredients_en: 'Allergens: wheat (gluten), eggs, and dairy.',
         is_sourdough: true,
         is_gluten_free: false,
         no_slice: true,
-        conservation: 'Temp. Ambiente: 1–2 días en recipiente hermético. Refrigeración: 7 días. Calentar antes de consumir. Congelación: Hasta 2 meses.'
+        conservation: 'Temp. Ambiente: 1–2 días en recipiente hermético. Refrigeración: 7 días. Calentar antes de consumir. Congelación: Hasta 2 meses.',
+        conservation_en: 'Room Temp: 1–2 days in airtight container. Refrigerated: 7 days. Warm up before eating. Frozen: Up to 2 months.'
     }
 ];
 
@@ -227,5 +295,27 @@ export const allProducts = [...cookieFlavors, ...breadFlavors];
 
 export const monthlySpecial = {
     name: 'Dragon Fruit Sourdough',
-    description: 'Vibrant and artisanal.'
+    name_en: 'Dragon Fruit Sourdough',
+    description: 'Vibrant and artisanal.',
+    description_en: 'Vibrant and artisanal.'
 };
+
+/**
+ * Returns a product copy with name/description/ingredients/conservation
+ * swapped to the requested language if a *_en variant exists.
+ * Other fields (id, image, price, flags, etc.) are preserved.
+ */
+export function localizedProduct<T extends { name?: string; description?: string; ingredients?: string; conservation?: string }>(
+    product: T,
+    lang: 'es' | 'en'
+): T {
+    if (!product || lang !== 'en') return product;
+    const p = product as any;
+    return {
+        ...product,
+        name: p.name_en || product.name,
+        description: p.description_en || product.description,
+        ingredients: p.ingredients_en || product.ingredients,
+        conservation: p.conservation_en || product.conservation,
+    };
+}

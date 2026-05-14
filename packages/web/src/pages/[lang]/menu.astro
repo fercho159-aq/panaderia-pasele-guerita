@@ -2,7 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import { Button } from '@pasele-guerita/ui';
 import { AddToCartButton } from '../../components/AddToCartButton';
-import { cookieFlavors, breadFlavors } from '@pasele-guerita/core';
+import { cookieFlavors, breadFlavors, localizedProduct } from '@pasele-guerita/core';
 import { isValidLang, useTranslations, localizedPath, type Language } from '../../i18n/translations';
 
 const { lang: langParam } = Astro.params;
@@ -28,8 +28,10 @@ try {
     }
 } catch (e) {}
 
-const displayCookies = activeCookieIds ? cookieFlavors.filter(c => activeCookieIds!.has(c.id)) : cookieFlavors;
-const displayBreads = activeBreadIds ? breadFlavors.filter(b => activeBreadIds!.has(b.id)) : breadFlavors;
+const displayCookies = (activeCookieIds ? cookieFlavors.filter(c => activeCookieIds!.has(c.id)) : cookieFlavors)
+    .map(p => localizedProduct(p, lang));
+const displayBreads = (activeBreadIds ? breadFlavors.filter(b => activeBreadIds!.has(b.id)) : breadFlavors)
+    .map(p => localizedProduct(p, lang));
 
 const regularCookies = displayCookies.filter((c: any) => !c.is_sugar_free);
 const sugarFreeCookies = displayCookies.filter((c: any) => c.is_sugar_free);

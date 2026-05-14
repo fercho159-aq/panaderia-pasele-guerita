@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { addToCart, setStockLimits } from '../stores/cartStore';
 import { Button } from '@pasele-guerita/ui';
-import { allProducts } from '@pasele-guerita/core';
+import { allProducts, localizedProduct } from '@pasele-guerita/core';
 import { useTranslations, DEFAULT_LANG, localizedPath, type Language } from '../i18n/translations';
 
 interface ProductDetailProps {
@@ -11,6 +11,10 @@ interface ProductDetailProps {
 
 export const ProductDetail: React.FC<ProductDetailProps> = ({ product, lang = DEFAULT_LANG }) => {
     const t = useTranslations(lang);
+    const lookupFlavorName = (name: string): string => {
+        const p = allProducts.find(p => p.name === name);
+        return p ? (localizedProduct(p as any, lang).name || name) : name;
+    };
     const isSugarFree = !!(product as any).is_sugar_free;
     // Plans for cookies — different prices for Sugar Free
     const planLabels = isSugarFree ? t('productDetail.cookiePlans.sugarFree') : t('productDetail.cookiePlans.regular');
@@ -71,9 +75,10 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product, lang = DE
 
     // Related products: same category, excluding current
     const relatedCategory = isCookie ? 'cookie' : 'bread';
-    const relatedProducts = allProducts.filter(
-        p => p.category === relatedCategory && p.id !== product.id
-    ).slice(0, 4);
+    const relatedProducts = allProducts
+        .filter(p => p.category === relatedCategory && p.id !== product.id)
+        .slice(0, 4)
+        .map(p => localizedProduct(p, lang));
 
     const handleAddToBag = () => {
         if (isCookie) {
@@ -296,7 +301,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product, lang = DE
                     <div className="bg-white rounded-[2.5rem] shadow-2xl p-10 max-w-sm w-full text-center animate-fade-in border border-primary/10">
                         <h3 className="font-serif text-2xl text-primary italic font-bold mb-3">{t('productDetail.stockLimit.title')}</h3>
                         <p className="text-primary/70 font-serif mb-2">
-                            {t('productDetail.stockLimit.messageBefore')} <span className="font-black text-primary">{stockLimitMsg.max}</span> {t('productDetail.stockLimit.messageMiddle')} <span className="font-black text-accent italic">{stockLimitMsg.flavor}</span> {t('productDetail.stockLimit.messageAfter')}
+                            {t('productDetail.stockLimit.messageBefore')} <span className="font-black text-primary">{stockLimitMsg.max}</span> {t('productDetail.stockLimit.messageMiddle')} <span className="font-black text-accent italic">{lookupFlavorName(stockLimitMsg.flavor)}</span> {t('productDetail.stockLimit.messageAfter')}
                         </p>
                         <p className="text-xs text-primary/40 font-sans uppercase tracking-widest mb-8">{t('productDetail.stockLimit.subtitle')}</p>
                         <button

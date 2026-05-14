@@ -8,7 +8,9 @@ import {
     cookieFlavors,
     breadFlavors,
     pickupLocations,
-    isWednesdayOrSaturday
+    isWednesdayOrSaturday,
+    allProducts,
+    localizedProduct
 } from '@pasele-guerita/core';
 import { Button } from '@pasele-guerita/ui';
 import { CustomCalendar } from './CustomCalendar';
@@ -21,6 +23,24 @@ interface CheckoutFlowProps {
 export const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ lang = DEFAULT_LANG }) => {
     const t = useTranslations(lang);
     const { items: cartItems, gift: cartGift } = useStore(cartStore);
+
+    // Look up a flavor by its canonical (Spanish) name and return the localized name.
+    // Keys in box.selections stay in Spanish so admin order notes remain consistent.
+    const lookupFlavorName = (name: string): string => {
+        const p = allProducts.find(p => p.name === name);
+        return p ? (localizedProduct(p as any, lang).name || name) : name;
+    };
+
+    // Resolve the display name for a cart item, preserving the sliced marker.
+    const displayCartItemName = (item: any): string => {
+        const product = allProducts.find(p => p.id === item.id);
+        if (product) {
+            const localized = localizedProduct(product as any, lang);
+            const isSliced = item.name?.includes(SLICED_MARKER);
+            return isSliced ? `${localized.name} ${SLICED_MARKER === '(Rebanado)' && lang === 'en' ? '(Sliced)' : SLICED_MARKER}` : (localized.name || item.name);
+        }
+        return displaySlicedName(item.name, lang);
+    };
 
     // Data states
     const [liveLocations, setLiveLocations] = useState<PickupLocation[]>([]);
@@ -489,7 +509,7 @@ export const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ lang = DEFAULT_LANG 
                                     <div className="flex flex-wrap gap-2 mb-6">
                                         {Object.entries(box.selections || {}).map(([name, qty]) => (
                                             <span key={name} className="bg-accent/10 text-accent text-xs font-black px-3 py-1.5 rounded-full border border-accent/20">
-                                                {qty}x {name}
+                                                {qty}x {lookupFlavorName(name)}
                                             </span>
                                         ))}
                                     </div>
@@ -511,7 +531,7 @@ export const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ lang = DEFAULT_LANG 
                                                 <div className={`w-16 h-16 rounded-full overflow-hidden border-2 transition-all ${count > 0 ? 'border-accent scale-110' : 'border-primary/5'}`}>
                                                     <img src={f.image} alt={f.name} className="w-full h-full object-cover" />
                                                 </div>
-                                                <span className="text-[11px] font-bold text-primary text-center leading-tight">{f.name}</span>
+                                                <span className="text-[11px] font-bold text-primary text-center leading-tight">{lookupFlavorName(f.name)}</span>
                                                 <div
                                                     className="flex items-center gap-3 bg-bg/50 rounded-full px-3 py-1 border border-primary/5"
                                                     onClick={(e) => e.stopPropagation()}
@@ -652,11 +672,11 @@ export const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ lang = DEFAULT_LANG 
                                     <div key={b.id} className="bg-white rounded-[2.5rem] border border-primary/10 overflow-hidden flex flex-col hover:shadow-2xl hover:border-primary/30 transition-all duration-300 group">
                                         <div className="w-full h-44 overflow-hidden relative">
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10 pointer-events-none"></div>
-                                            <img src={b.image || '/imagenes/IMG_6703.webp'} alt={b.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                                            <h4 className="absolute bottom-5 left-6 right-6 font-serif text-2xl text-white italic font-bold leading-tight z-20 drop-shadow-md">{b.name}</h4>
+                                            <img src={b.image || '/imagenes/IMG_6703.webp'} alt={lookupFlavorName(b.name)} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                            <h4 className="absolute bottom-5 left-6 right-6 font-serif text-2xl text-white italic font-bold leading-tight z-20 drop-shadow-md">{lookupFlavorName(b.name)}</h4>
                                         </div>
                                         <div className="p-6 bg-gradient-to-b from-white to-primary/5 flex flex-col justify-between gap-5 flex-1">
-                                            <p className="text-sm text-primary/60 leading-relaxed line-clamp-2">{b.description}</p>
+                                            <p className="text-sm text-primary/60 leading-relaxed line-clamp-2">{(localizedProduct(b as any, lang) as any).description}</p>
                                             <button
                                                 onClick={() => {
                                                     const sliced = noSlice ? 0 : wantSliced;
@@ -747,15 +767,15 @@ export const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ lang = DEFAULT_LANG 
                                                         <p className="font-serif text-xl text-primary italic font-bold leading-tight">
                                                             {item.boxSize && item.selections && Object.keys(item.selections).length > 0
                                                                 ? (Object.keys(item.selections).length === 1
-                                                                    ? Object.keys(item.selections)[0]
+                                                                    ? lookupFlavorName(Object.keys(item.selections)[0])
                                                                     : t('checkout.step4.mixedFlavors'))
-                                                                : displaySlicedName(item.name, lang)}
+                                                                : displayCartItemName(item)}
                                                         </p>
                                                         <span className="font-black text-primary text-lg">${(item.price * item.quantity).toFixed(2)}</span>
                                                     </div>
                                                     {item.boxSize && (
                                                         <p className="text-[10px] text-primary/60 font-black uppercase tracking-wider mt-1 leading-relaxed">
-                                                            {Object.entries(item.selections || {}).filter(([_, q]) => q > 0).map(([n, q]) => `${q}x ${n}`).join(' · ')}
+                                                            {Object.entries(item.selections || {}).filter(([_, q]) => q > 0).map(([n, q]) => `${q}x ${lookupFlavorName(n)}`).join(' · ')}
                                                         </p>
                                                     )}
                                                     {!item.boxSize && item.quantity > 1 && (
@@ -874,7 +894,7 @@ export const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ lang = DEFAULT_LANG 
                         <span className="text-5xl block mb-4"></span>
                         <h3 className="font-serif text-2xl text-primary italic font-bold mb-3">{t('checkout.stockLimit.title')}</h3>
                         <p className="text-primary/70 font-serif mb-2">
-                            {t('checkout.stockLimit.messageBefore')} <span className="font-black text-primary">{flavorStockMap[stockLimitFlavor]}</span> {t('checkout.stockLimit.messageMiddle')} <span className="font-black text-accent italic">{stockLimitFlavor}</span> {t('checkout.stockLimit.messageAfter')}
+                            {t('checkout.stockLimit.messageBefore')} <span className="font-black text-primary">{flavorStockMap[stockLimitFlavor]}</span> {t('checkout.stockLimit.messageMiddle')} <span className="font-black text-accent italic">{lookupFlavorName(stockLimitFlavor)}</span> {t('checkout.stockLimit.messageAfter')}
                         </p>
                         <p className="text-xs text-primary/40 font-sans uppercase tracking-widest mb-8">{t('checkout.stockLimit.subtitle')}</p>
                         <button

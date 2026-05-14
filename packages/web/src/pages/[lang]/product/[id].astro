@@ -1,7 +1,7 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
 import { ProductDetail } from '../../../components/ProductDetail';
-import { allProducts } from '@pasele-guerita/core';
+import { allProducts, localizedProduct } from '@pasele-guerita/core';
 import { isValidLang, type Language } from '../../../i18n/translations';
 
 const { lang: langParam, id } = Astro.params;
@@ -29,10 +29,12 @@ if (!product) {
 if (!product) {
     return Astro.redirect(`/${lang}`);
 }
+
+const localized = localizedProduct(product, lang);
 ---
 
-<Layout title={product.name} description={product.description} lang={lang}>
+<Layout title={localized.name} description={localized.description} lang={lang}>
 	<div class="bg-bg min-h-screen">
-		<ProductDetail client:load product={product} lang={lang} />
+		<ProductDetail client:load product={localized} lang={lang} />
 	</div>
 </Layout>

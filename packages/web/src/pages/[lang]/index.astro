@@ -2,7 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import { Button, Badge } from '@pasele-guerita/ui';
 import { AddToCartButton } from '../../components/AddToCartButton';
-import { cookieFlavors, breadFlavors, monthlySpecial, allProducts } from '@pasele-guerita/core';
+import { cookieFlavors, breadFlavors, monthlySpecial, allProducts, localizedProduct } from '@pasele-guerita/core';
 import { isValidLang, useTranslations, localizedPath, type Language } from '../../i18n/translations';
 
 const { lang: langParam } = Astro.params;
@@ -130,8 +130,9 @@ const testimonials = tr('home.testimonials.items') as Array<{ text: string; auth
 					{ id: 'fresa-coco', cat: 'regulares' },
 					{ id: 'bicolor-frambuesa', cat: 'regulares' },
 				].filter((item: any) => activeFlavorIds.has(item.id)).map((item: any) => {
-					const fav = allProducts.find(p => p.id === item.id);
-					if (!fav) return null;
+					const rawFav = allProducts.find(p => p.id === item.id);
+					if (!rawFav) return null;
+					const fav = localizedProduct(rawFav, lang);
 					return (
 						<div class="bg-white p-6 rounded-3xl shadow-sm border border-bg hover:shadow-xl transition-all group overflow-hidden relative flex flex-col">
 							<div class="relative h-64 -mx-6 -mt-6 mb-6 overflow-hidden">
@@ -156,8 +157,9 @@ const testimonials = tr('home.testimonials.items') as Array<{ text: string; auth
 					{ id: 'pan-semillas', cat: 'pan' },
 					{ id: 'jalapeño-cheddar', cat: 'pan' }
 				].filter((item: any) => activeFlavorIds.has(item.id)).map((item: any) => {
-					const fav = allProducts.find(p => p.id === item.id);
-					if (!fav) return null;
+					const rawFav = allProducts.find(p => p.id === item.id);
+					if (!rawFav) return null;
+					const fav = localizedProduct(rawFav, lang);
 					return (
 						<div class="bg-white p-6 rounded-3xl shadow-sm border border-bg hover:shadow-xl transition-all group overflow-hidden relative flex flex-col">
 							<div class="relative h-64 -mx-6 -mt-6 mb-6 overflow-hidden">

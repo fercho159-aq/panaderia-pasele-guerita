@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { cartStore, toggleCart, updateQuantity, removeFromCart, setGiftMessage, setStockLimits } from '../stores/cartStore';
 import { Button } from '@pasele-guerita/ui';
-import { getLangFromPathname, useTranslations, displaySlicedName, localizedPath } from '../i18n/translations';
+import { allProducts, localizedProduct } from '@pasele-guerita/core';
+import { getLangFromPathname, useTranslations, displaySlicedName, localizedPath, SLICED_MARKER } from '../i18n/translations';
 
 export const CartDrawer: React.FC = () => {
     const { items, isOpen, gift } = useStore(cartStore);
@@ -10,6 +11,22 @@ export const CartDrawer: React.FC = () => {
     const [stockLimitMsg, setStockLimitMsg] = useState<{ flavor: string; max: number } | null>(null);
     const lang = getLangFromPathname();
     const t = useTranslations(lang);
+
+    const lookupFlavorName = (name: string): string => {
+        const p = allProducts.find(p => p.name === name);
+        return p ? (localizedProduct(p as any, lang).name || name) : name;
+    };
+
+    const displayCartItemName = (item: any): string => {
+        const product = allProducts.find(p => p.id === item.id);
+        if (product) {
+            const localized = localizedProduct(product as any, lang);
+            const isSliced = item.name?.includes(SLICED_MARKER);
+            const slicedSuffix = lang === 'en' ? '(Sliced)' : SLICED_MARKER;
+            return isSliced ? `${localized.name} ${slicedSuffix}` : (localized.name || item.name);
+        }
+        return displaySlicedName(item.name, lang);
+    };
 
     useEffect(() => {
         if (isOpen) {
@@ -67,7 +84,7 @@ export const CartDrawer: React.FC = () => {
             <div className="bg-white rounded-[2.5rem] shadow-2xl p-10 max-w-sm w-full text-center animate-fade-in border border-primary/10">
                 <h3 className="font-serif text-2xl text-primary italic font-bold mb-3">{t('cartDrawer.stockLimit.title')}</h3>
                 <p className="text-primary/70 font-serif mb-2">
-                    {t('cartDrawer.stockLimit.messageBefore')} <span className="font-black text-primary">{stockLimitMsg.max}</span> {t('cartDrawer.stockLimit.messageMiddle')} <span className="font-black text-accent italic">{stockLimitMsg.flavor}</span> {t('cartDrawer.stockLimit.messageAfter')}
+                    {t('cartDrawer.stockLimit.messageBefore')} <span className="font-black text-primary">{stockLimitMsg.max}</span> {t('cartDrawer.stockLimit.messageMiddle')} <span className="font-black text-accent italic">{lookupFlavorName(stockLimitMsg.flavor)}</span> {t('cartDrawer.stockLimit.messageAfter')}
                 </p>
                 <p className="text-xs text-primary/40 font-sans uppercase tracking-widest mb-8">{t('cartDrawer.stockLimit.subtitle')}</p>
                 <button
@@ -145,8 +162,8 @@ export const CartDrawer: React.FC = () => {
                                         <div className="min-w-0">
                                             <h3 className="font-serif text-base text-primary leading-tight font-bold italic truncate">{
                                         item.boxSize && item.selections && Object.keys(item.selections).length > 0
-                                            ? (Object.keys(item.selections).length === 1 ? Object.keys(item.selections)[0] : t('cartDrawer.mixedFlavors'))
-                                            : displaySlicedName(item.name, lang)
+                                            ? (Object.keys(item.selections).length === 1 ? lookupFlavorName(Object.keys(item.selections)[0]) : t('cartDrawer.mixedFlavors'))
+                                            : displayCartItemName(item)
                                     }</h3>
                                             {item.boxLabel && (
                                                 <p className="text-[10px] font-sans text-primary/60 font-bold uppercase tracking-widest mt-0.5">{item.boxLabel}</p>
@@ -155,7 +172,7 @@ export const CartDrawer: React.FC = () => {
                                                 <div className="mt-1 flex flex-wrap gap-1">
                                                     {Object.entries(item.selections).map(([flavor, count]) => (
                                                         <p key={flavor} className="text-[9px] font-sans text-accent font-black uppercase tracking-wider bg-accent/5 px-1.5 py-0.5 rounded-full">
-                                                            {count}x {flavor}
+                                                            {count}x {lookupFlavorName(flavor)}
                                                         </p>
                                                     ))}
                                                 </div>

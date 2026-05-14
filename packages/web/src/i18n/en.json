@@ -309,6 +309,7 @@
       "onlySaturday": "Only Saturdays",
       "wedAndSat": "Wednesdays and Saturdays",
       "specialMessage": "We'll get in touch with you to coordinate the best delivery date and time for your area.",
+      "calendarFooter": "Available delivery days (Wed & Sat)",
       "back": "BACK",
       "next": "BUILD YOUR ORDER"
     },

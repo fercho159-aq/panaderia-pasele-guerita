@@ -10,7 +10,8 @@ import {
     pickupLocations,
     isWednesdayOrSaturday,
     allProducts,
-    localizedProduct
+    localizedProduct,
+    localizedLocation
 } from '@pasele-guerita/core';
 import { Button } from '@pasele-guerita/ui';
 import { CustomCalendar } from './CustomCalendar';
@@ -406,13 +407,16 @@ export const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ lang = DEFAULT_LANG 
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {liveLocations.filter(l => l.id !== 'special-coordination').map(l => (
-                            <button key={l.id} onClick={() => { setLocationId(l.id); setSelectedDate(''); }} className={`p-6 rounded-3xl border-2 text-left transition-all ${locationId === l.id ? 'border-primary bg-white shadow-lg' : 'border-primary/5 bg-bg/5 hover:bg-white'}`}>
-                                <h4 className="font-serif text-lg text-primary">{l.name}</h4>
-                                <p className="text-xs text-primary/60 mt-1 font-bold">{l.hours}</p>
-                                <p className="text-xs text-primary/40 truncate mt-0.5">{l.address}</p>
-                            </button>
-                        ))}
+                        {liveLocations.filter(l => l.id !== 'special-coordination').map(l => {
+                            const ll = localizedLocation(l as any, lang);
+                            return (
+                                <button key={l.id} onClick={() => { setLocationId(l.id); setSelectedDate(''); }} className={`p-6 rounded-3xl border-2 text-left transition-all ${locationId === l.id ? 'border-primary bg-white shadow-lg' : 'border-primary/5 bg-bg/5 hover:bg-white'}`}>
+                                    <h4 className="font-serif text-lg text-primary">{ll.name}</h4>
+                                    <p className="text-xs text-primary/60 mt-1 font-bold">{ll.hours}</p>
+                                    <p className="text-xs text-primary/40 truncate mt-0.5">{ll.address}</p>
+                                </button>
+                            );
+                        })}
                     </div>
                     {/* Special coordination option */}
                     <button
@@ -450,7 +454,7 @@ export const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ lang = DEFAULT_LANG 
                         </div>
                     ) : (
                         <div className="max-w-md mx-auto">
-                            <CustomCalendar selectedDate={selectedDate} onDateSelect={setSelectedDate} minDate={earliestDate} allowedDays={allowedCalendarDays as ('Wednesday' | 'Saturday')[]} />
+                            <CustomCalendar selectedDate={selectedDate} onDateSelect={setSelectedDate} minDate={earliestDate} allowedDays={allowedCalendarDays as ('Wednesday' | 'Saturday')[]} lang={lang} />
                         </div>
                     )}
                     <div className="flex gap-6 mt-10" ref={nextStep2Ref}>

@@ -1,25 +1,29 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslations, DEFAULT_LANG, type Language } from '../i18n/translations';
 
 interface CustomCalendarProps {
     selectedDate: string;
     onDateSelect: (date: string) => void;
     minDate: Date;
     allowedDays: string[]; // e.g., ['Wednesday', 'Saturday']
+    lang?: Language;
 }
 
-export const CustomCalendar: React.FC<CustomCalendarProps> = ({ 
-    selectedDate, 
-    onDateSelect, 
-    minDate, 
-    allowedDays 
+export const CustomCalendar: React.FC<CustomCalendarProps> = ({
+    selectedDate,
+    onDateSelect,
+    minDate,
+    allowedDays,
+    lang = DEFAULT_LANG
 }) => {
+    const t = useTranslations(lang);
     const [viewDate, setViewDate] = useState(new Date(minDate));
     const [days, setDays] = useState<Date[]>([]);
 
     useEffect(() => {
         const start = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1);
         const end = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 0);
-        
+
         const dayList: Date[] = [];
         // Fill empty days at the start
         for (let i = 0; i < start.getDay(); i++) {
@@ -27,11 +31,11 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
             d.setDate(d.getDate() - (start.getDay() - i));
             dayList.push(new Date(0)); // Placeholder for empty
         }
-        
+
         for (let i = 1; i <= end.getDate(); i++) {
             dayList.push(new Date(viewDate.getFullYear(), viewDate.getMonth(), i));
         }
-        
+
         setDays(dayList);
     }, [viewDate]);
 
@@ -46,42 +50,46 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
         return date.toISOString().split('T')[0];
     };
 
-    const monthName = viewDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+    const locale = lang === 'en' ? 'en-US' : 'es-ES';
+    const monthName = viewDate.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
+    const dayHeaders = lang === 'en'
+        ? ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+        : ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá'];
 
     return (
         <div className="bg-white rounded-[2rem] shadow-xl border border-primary/5 overflow-hidden font-sans">
             <div className="bg-primary p-6 text-white flex justify-between items-center">
-                <button 
+                <button
                     onClick={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1))}
                     className="hover:opacity-70 transition-opacity p-2"
                 >
                     ←
                 </button>
                 <h3 className="font-serif text-2xl italic capitalize">{monthName}</h3>
-                <button 
+                <button
                     onClick={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1))}
                     className="hover:opacity-70 transition-opacity p-2"
                 >
                     →
                 </button>
             </div>
-            
+
             <div className="p-6">
                 <div className="grid grid-cols-7 gap-1 mb-4">
-                    {['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá'].map(d => (
+                    {dayHeaders.map(d => (
                         <div key={d} className="text-center text-[10px] font-black uppercase text-gray-400 tracking-widest py-2">
                             {d}
                         </div>
                     ))}
                 </div>
-                
+
                 <div className="grid grid-cols-7 gap-2">
                     {days.map((date, i) => {
                         if (date.getTime() === 0) return <div key={i} />;
-                        
+
                         const enabled = isDateEnabled(date);
                         const isSelected = selectedDate === formatDate(date);
-                        
+
                         return (
                             <button
                                 key={i}
@@ -105,10 +113,10 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
                     })}
                 </div>
             </div>
-            
+
             <div className="bg-bg/10 p-4 border-t border-primary/5 flex items-center gap-3">
                 <div className="w-4 h-4 rounded bg-accent/20 border border-accent/30"></div>
-                <span className="text-[10px] font-bold text-primary/60 uppercase tracking-widest">Días de entrega disponibles (Mié & Sáb)</span>
+                <span className="text-[10px] font-bold text-primary/60 uppercase tracking-widest">{t('checkout.step2.calendarFooter')}</span>
             </div>
         </div>
     );

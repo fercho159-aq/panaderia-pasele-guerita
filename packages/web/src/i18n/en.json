@@ -372,10 +372,23 @@
     },
     "step5": {
       "title": "Payment",
+      "introTitle": "💳 Last step to complete your order",
+      "introSubtitle": "This is where you finalize your purchase.",
+      "introInstruction": "Pay the full amount <strong>only via Zelle</strong> using the details shown below (QR code or number).",
+      "introAfterLabel": "After making the transfer:",
+      "introUpload": "👉 Upload your receipt here to confirm your order.",
+      "introWarning": "Your order is not processed until we receive the receipt.",
+      "orderSummary": "Your order summary",
+      "orderTotal": "Total to pay",
+      "quantity": "Qty",
+      "zelleSendTo": "Send your Zelle payment to:",
+      "zelleName": "Name",
+      "orScanQr": "Or scan our QR code",
       "transferTitle": "Pay via Transfer",
       "zelleVenmo": "Zelle / Venmo",
       "scanCode": "Scan the code or send your payment to the number above.",
-      "uploadReceipt": "Upload your receipt (optional)"
+      "uploadReceipt": "Upload your receipt here",
+      "receiptHint": "Photo or PDF of the transfer. Your order won't be processed without it."
     },
     "errors": {
       "processing": "Error processing:",

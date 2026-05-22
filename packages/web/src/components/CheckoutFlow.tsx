@@ -842,31 +842,122 @@ export const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ lang = DEFAULT_LANG 
                             </div>
                         </div>
                     ) : (
-                        <div className="flex flex-col items-center gap-8 max-w-2xl mx-auto w-full animate-fade-in">
-                            <div className="p-4 sm:p-6 rounded-[2rem] sm:rounded-[3.5rem] bg-accent/5 border-2 border-accent/10 text-center w-full shadow-inner">
-                                <h3 className="font-serif text-4xl text-primary italic mb-6">{t('checkout.step5.transferTitle')}</h3>
+                        <div className="flex flex-col gap-8 max-w-2xl mx-auto w-full animate-fade-in">
 
-                                {/* QR Section */}
-                                <div className="bg-white p-4 rounded-[2.5rem] shadow-xl border border-primary/5 flex flex-col items-center gap-4 mb-8">
-                                    <div className="w-full rounded-2xl overflow-hidden shadow-inner">
-                                        <img src="/imagenes/zelle.png" alt="Zelle QR" className="w-full object-contain" />
-                                    </div>
-                                    <div className="text-center space-y-1">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-primary/40">{t('checkout.step5.zelleVenmo')}</p>
-                                        <p className="font-serif text-2xl text-primary italic">Maria Soto</p>
-                                        <p className="font-sans text-lg font-bold text-primary/70">430 324 2593</p>
-                                    </div>
+                            {/* 1. Intro destacado con instrucciones */}
+                            <div className="bg-gradient-to-br from-accent/15 to-accent/5 border-2 border-accent/30 rounded-[2.5rem] p-6 sm:p-8 shadow-md">
+                                <h2 className="font-serif text-2xl sm:text-3xl text-primary font-bold mb-3 leading-tight">
+                                    {t('checkout.step5.introTitle')}
+                                </h2>
+                                <p className="text-primary/80 text-base sm:text-lg font-serif italic mb-4">
+                                    {t('checkout.step5.introSubtitle')}
+                                </p>
+                                <p
+                                    className="text-primary/80 text-base leading-relaxed mb-5"
+                                    dangerouslySetInnerHTML={{ __html: t('checkout.step5.introInstruction') }}
+                                />
+                                <div className="border-t border-accent/30 pt-5 space-y-2">
+                                    <p className="font-bold text-primary text-sm uppercase tracking-wider">
+                                        {t('checkout.step5.introAfterLabel')}
+                                    </p>
+                                    <p className="text-primary text-base leading-relaxed">
+                                        {t('checkout.step5.introUpload')}
+                                    </p>
+                                    <p className="text-red-600 font-bold text-sm bg-red-50 border border-red-200 rounded-xl px-4 py-3 mt-3">
+                                        ⚠️ {t('checkout.step5.introWarning')}
+                                    </p>
                                 </div>
+                            </div>
 
-                                <p className="text-primary/60 mb-10 leading-relaxed font-serif text-lg">
-                                    {t('checkout.step5.scanCode')}
+                            {/* 2. Resumen de la orden (desglose + total grande) */}
+                            <div className="bg-white border border-primary/10 rounded-[2.5rem] p-6 sm:p-8 shadow-sm">
+                                <h3 className="font-serif text-2xl text-primary italic font-bold mb-5">
+                                    {t('checkout.step5.orderSummary')}
+                                </h3>
+                                <div className="space-y-3 mb-5">
+                                    {cartItemsList.map(item => {
+                                        const displayName = item.boxSize && item.selections && Object.keys(item.selections).length > 0
+                                            ? (Object.keys(item.selections).length === 1
+                                                ? lookupFlavorName(Object.keys(item.selections)[0])
+                                                : t('checkout.step4.mixedFlavors'))
+                                            : displayCartItemName(item);
+                                        const selectionDetail = item.boxSize
+                                            ? Object.entries(item.selections || {})
+                                                .filter(([_, q]) => q > 0)
+                                                .map(([n, q]) => `${q}x ${lookupFlavorName(n)}`)
+                                                .join(' · ')
+                                            : '';
+                                        return (
+                                            <div key={item.id} className="flex justify-between items-start gap-3 py-2 border-b border-primary/5 last:border-b-0">
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="font-serif text-base text-primary font-bold italic leading-tight">{displayName}</p>
+                                                    {selectionDetail && (
+                                                        <p className="text-[10px] text-primary/60 mt-1 leading-snug">{selectionDetail}</p>
+                                                    )}
+                                                    {!item.boxSize && item.quantity > 1 && (
+                                                        <p className="text-[10px] text-primary/60 font-bold uppercase tracking-wider mt-1">
+                                                            {t('checkout.step5.quantity')}: {item.quantity}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                                <span className="font-sans font-black text-primary whitespace-nowrap text-base">
+                                                    ${(item.price * item.quantity).toFixed(2)}
+                                                </span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                                <div className="bg-primary text-bg rounded-[1.5rem] p-5 flex justify-between items-center shadow-lg">
+                                    <span className="font-sans text-sm font-black uppercase tracking-widest">
+                                        {t('checkout.step5.orderTotal')}
+                                    </span>
+                                    <span className="font-serif text-4xl sm:text-5xl font-bold italic">
+                                        ${totalAmount.toFixed(2)}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* 3. Datos de Zelle (número + nombre) + QR */}
+                            <div className="bg-white border border-primary/10 rounded-[2.5rem] p-6 sm:p-8 shadow-sm text-center">
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/40 mb-5">
+                                    {t('checkout.step5.zelleSendTo')}
                                 </p>
 
-                                <label className="block p-8 rounded-[2.5rem] border-2 border-dashed border-primary/10 cursor-pointer hover:bg-white transition-all group">
-                                    <div className="flex flex-col items-center gap-2">
-                                        <span className="text-2xl"></span>
-                                        <span className="font-black text-base uppercase tracking-wider text-primary/40 group-hover:text-primary transition-colors text-center truncate max-w-full px-2">
+                                <div className="bg-accent/5 border border-accent/20 rounded-[1.5rem] p-5 mb-6">
+                                    <p className="font-sans text-3xl sm:text-4xl font-black text-primary tracking-wide mb-2">
+                                        430 324 2593
+                                    </p>
+                                    <p className="text-xs uppercase tracking-widest text-primary/50 font-bold mb-1">
+                                        {t('checkout.step5.zelleName')}
+                                    </p>
+                                    <p className="font-serif text-xl text-primary italic font-bold">
+                                        María Soto
+                                    </p>
+                                </div>
+
+                                <div className="flex items-center gap-3 mb-5">
+                                    <div className="h-px flex-1 bg-primary/10" />
+                                    <span className="text-xs font-bold text-primary/50 italic font-serif">
+                                        {t('checkout.step5.orScanQr')}
+                                    </span>
+                                    <div className="h-px flex-1 bg-primary/10" />
+                                </div>
+
+                                <div className="bg-white p-3 rounded-[1.5rem] shadow-inner border border-primary/5 inline-block max-w-xs mx-auto">
+                                    <img src="/imagenes/zelle.png" alt="Zelle QR" className="w-full object-contain rounded-xl" />
+                                </div>
+                            </div>
+
+                            {/* 4. Subir comprobante (destacado por importancia) */}
+                            <div className="bg-gradient-to-br from-primary/5 to-accent/5 border-2 border-primary/20 rounded-[2.5rem] p-6 sm:p-8">
+                                <label className="block cursor-pointer group">
+                                    <div className={`flex flex-col items-center gap-3 p-6 rounded-[2rem] border-2 border-dashed transition-all ${receiptFile ? 'border-primary bg-primary/5' : 'border-primary/30 hover:border-primary hover:bg-white'}`}>
+                                        <span className="text-4xl">{receiptFile ? '✅' : '📎'}</span>
+                                        <span className="font-black text-base uppercase tracking-wider text-primary text-center truncate max-w-full px-2">
                                             {receiptFile ? receiptFile.name.slice(0, 30) + (receiptFile.name.length > 30 ? '...' : '') : t('checkout.step5.uploadReceipt')}
+                                        </span>
+                                        <span className="text-xs text-primary/60 text-center italic max-w-xs">
+                                            {t('checkout.step5.receiptHint')}
                                         </span>
                                     </div>
                                     <input type="file" className="hidden" accept="image/*,.pdf" onChange={e => setReceiptFile(e.target.files?.[0] || null)} />

@@ -372,10 +372,23 @@
     },
     "step5": {
       "title": "El Pago",
+      "introTitle": "💳 Último paso para completar tu pedido",
+      "introSubtitle": "Aquí es donde finalizas tu compra.",
+      "introInstruction": "Realiza el pago total <strong>únicamente por Zelle</strong> usando los datos que aparecen abajo (QR o número).",
+      "introAfterLabel": "Después de hacer la transferencia:",
+      "introUpload": "👉 Sube tu comprobante aquí para confirmar tu pedido.",
+      "introWarning": "Tu pedido no se procesa hasta que recibamos el comprobante.",
+      "orderSummary": "Resumen de tu orden",
+      "orderTotal": "Total a pagar",
+      "quantity": "Cant.",
+      "zelleSendTo": "Envía tu pago por Zelle a:",
+      "zelleName": "Nombre",
+      "orScanQr": "O escanea nuestro QR",
       "transferTitle": "Pagar vía Transferencia",
       "zelleVenmo": "Zelle / Venmo",
       "scanCode": "Escanea el código o envía tu pago al número de arriba.",
-      "uploadReceipt": "Sube tu comprobante (opcional)"
+      "uploadReceipt": "Sube tu comprobante aquí",
+      "receiptHint": "Foto o PDF de la transferencia. Sin esto no se procesa tu pedido."
     },
     "errors": {
       "processing": "Error al procesar:",

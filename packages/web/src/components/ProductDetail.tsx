@@ -62,11 +62,14 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product, lang = DE
         };
     }, []);
 
-    const images = [
-        product.image,
-        product.category === 'cookie' ? '/imagenes/IMG_6654.webp' : '/imagenes/IMG_6753.webp',
-        product.category === 'cookie' ? '/imagenes/IMG_6662.webp' : '/imagenes/IMG_6755.webp',
-    ].filter(Boolean);
+    // Prefer the per-product `images` array when present (multiple photos
+    // sent by the client per product). Fall back to the single `image` field
+    // so products without a curated gallery still render one photo, instead
+    // of the old hardcoded IMG_* fallbacks that bled into every product.
+    const productImages = Array.isArray((product as any).images) && (product as any).images.length > 0
+        ? ((product as any).images as string[])
+        : [];
+    const images = (productImages.length > 0 ? productImages : [product.image]).filter(Boolean);
 
     const isCookie = product.category === 'cookie';
     const basePrice = isCookie ? selectedPlan.price : (product.price || 18.00);
@@ -125,21 +128,25 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product, lang = DE
                             <span className="absolute text-accent font-serif text-sm font-bold italic">Pásele</span>
                         </div>
 
-                        {/* Arrows */}
-                        <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 flex justify-between opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onClick={() => setCurrentImageIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1))} className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md text-primary flex items-center justify-center hover:bg-white transition-colors shadow-lg">←</button>
-                            <button onClick={() => setCurrentImageIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0))} className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md text-primary flex items-center justify-center hover:bg-white transition-colors shadow-lg">→</button>
-                        </div>
+                        {/* Arrows — only shown when there is more than one photo */}
+                        {images.length > 1 && (
+                            <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 flex justify-between opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button onClick={() => setCurrentImageIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1))} className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md text-primary flex items-center justify-center hover:bg-white transition-colors shadow-lg">←</button>
+                                <button onClick={() => setCurrentImageIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0))} className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md text-primary flex items-center justify-center hover:bg-white transition-colors shadow-lg">→</button>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Thumbnails */}
-                    <div className="flex gap-4">
-                        {images.map((img, i) => (
-                            <button key={i} onClick={() => setCurrentImageIndex(i)} className={`w-20 h-20 rounded-2xl overflow-hidden border-2 transition-all ${currentImageIndex === i ? 'border-primary scale-105 shadow-md' : 'border-transparent opacity-60 hover:opacity-100'}`}>
-                                <img src={img} className="w-full h-full object-cover" alt="" />
-                            </button>
-                        ))}
-                    </div>
+                    {/* Thumbnails — only shown when there is more than one photo */}
+                    {images.length > 1 && (
+                        <div className="flex gap-4 flex-wrap">
+                            {images.map((img, i) => (
+                                <button key={i} onClick={() => setCurrentImageIndex(i)} className={`w-20 h-20 rounded-2xl overflow-hidden border-2 transition-all ${currentImageIndex === i ? 'border-primary scale-105 shadow-md' : 'border-transparent opacity-60 hover:opacity-100'}`}>
+                                    <img src={img} className="w-full h-full object-cover" alt="" />
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Details - Right Column */}

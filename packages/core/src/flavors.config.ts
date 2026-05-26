@@ -101,7 +101,7 @@ export const cookieFlavors = [
         name_en: 'Ube - Blueberry',
         active: true,
         category: 'cookie',
-        image: '/imagenes/cookie-ube-blueberry.webp',
+        image: '/imagenes/cookie-blueberry.webp',
         description: 'Arándanos azules deshidratados y un toque de vainilla por Ube.',
         description_en: 'Dehydrated blueberries with a hint of vanilla from Ube.',
         ingredients: 'Alérgenos: trigo, almendras.',
@@ -119,6 +119,10 @@ export const cookieFlavors = [
         category: 'cookie',
         price: 12.00,
         image: '/imagenes/cookie-durazno.webp',
+        images: [
+            '/imagenes/cookie-durazno.webp',
+            '/imagenes/cookie-durazno-2.webp'
+        ],
         description: 'Inspirada en los sabores de primavera: durazno, apricots y fruta deshidratada en una galleta suave y frutal. Spring special 🍑',
         description_en: 'Inspired by spring flavors: peach, apricots and dehydrated fruit in a soft, fruity cookie. Spring special 🍑',
         ingredients: 'Alérgenos: trigo, almendras.',
@@ -136,6 +140,12 @@ export const cookieFlavors = [
         category: 'cookie',
         price: 12.00,
         image: '/imagenes/cookie-chocomenta.webp',
+        images: [
+            '/imagenes/cookie-chocomenta.webp',
+            '/imagenes/cookie-chocomenta-2.webp',
+            '/imagenes/cookie-chocomenta-3.webp',
+            '/imagenes/cookie-chocomenta-4.webp'
+        ],
         description: 'Galleta artesanal con extracto de menta natural y chocolate de leche. Sin saborizantes artificiales.',
         description_en: 'Artisanal cookie with natural mint extract and milk chocolate. No artificial flavors.',
         ingredients: 'Alérgenos: trigo, almendras, lácteos.',
@@ -188,7 +198,12 @@ export const cookieFlavors = [
         active: true,
         category: 'cookie',
         price: 13.50,
-        image: '/imagenes/cookie-blueberry.webp',
+        image: '/imagenes/cookie-sugar-free-blueberry.webp',
+        images: [
+            '/imagenes/cookie-sugar-free-blueberry.webp',
+            '/imagenes/cookie-sugar-free-blueberry-2.webp',
+            '/imagenes/cookie-sugar-free-blueberry-3.webp'
+        ],
         description: 'Endulzada con allulose, arándanos azules frescos y base de masa madre.',
         description_en: 'Sweetened with allulose, fresh blueberries, and a sourdough base.',
         ingredients: 'Alérgenos: trigo.',
@@ -227,6 +242,10 @@ export const breadFlavors = [
         category: 'bread',
         price: 10.00,
         image: '/imagenes/hogaza-natural.webp',
+        images: [
+            '/imagenes/hogaza-natural.webp',
+            '/imagenes/hogaza-natural-2.webp'
+        ],
         description: 'Nuestra hogaza clásica de masa madre.',
         description_en: 'Our classic sourdough loaf.',
         ingredients: 'Alérgenos: trigo.',
@@ -278,6 +297,11 @@ export const breadFlavors = [
         category: 'bread',
         price: 12.00,
         image: '/imagenes/hogaza-golden-milk.webp',
+        images: [
+            '/imagenes/hogaza-golden-milk.webp',
+            '/imagenes/hogaza-golden-milk-2.webp',
+            '/imagenes/hogaza-golden-milk-3.webp'
+        ],
         description: 'Masa madre artesanal con cúrcuma, jengibre, especias aromáticas y pasas amarillas. Una hogaza cálida, ligeramente dulce y llena de sabor. ✨',
         description_en: 'Artisanal sourdough with turmeric, ginger, aromatic spices and yellow raisins. A warm loaf, slightly sweet and packed with flavor. ✨',
         ingredients: 'Alérgenos: trigo.',
